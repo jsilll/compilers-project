@@ -28,3 +28,11 @@
 *.app
 
 .dropbox.attr
+
+#######
+.auto
+l22
+l22_parser.output
+l22_parser.tab.c
+l22_parser.tab.h
+l22_scanner.cpp
