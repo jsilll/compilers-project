@@ -246,7 +246,30 @@ void l22::type_checker::do_if_else_node(l22::if_else_node *const node, int lvl)
 }
 
 //---------------------------------------------------------------------------
+void l22::type_checker::do_again_node(l22::again_node *const node, int lvl)
+{
+}
 
-// void l22::type_checker::do_function_definition_node(l22::function_definition_node *const node, int lvl)
-// {
-// }
+void l22::type_checker::do_block_node(l22::block_node *const node, int lvl)
+{
+}
+
+void l22::type_checker::do_function_definition_node(l22::function_definition_node *const node, int lvl)
+{
+}
+
+void l22::type_checker::do_function_type_node(l22::function_type_node *const node, int lvl)
+{
+}
+
+void l22::type_checker::do_return_node(l22::return_node *const node, int lvl)
+{
+}
+
+void l22::type_checker::do_stop_node(l22::stop_node *const node, int lvl)
+{
+}
+
+void l22::type_checker::do_variable_declaration_node(l22::variable_declaration_node *const node, int lvl)
+{
+}

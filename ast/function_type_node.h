@@ -9,17 +9,17 @@ namespace l22
     /**
      * Class for describing if-then-else nodes.
      */
-    class function_definition_node : public cdk::typed_node
+    class function_type_node : public cdk::typed_node
     {
         cdk::sequence_node *_arguments;
         cdk::basic_node *_return_type;
         cdk::basic_node *_block;
 
     public:
-        inline function_definition_node(int lineno,
-                                        cdk::sequence_node *arguments,
-                                        cdk::basic_node *return_type,
-                                        cdk::basic_node *block)
+        inline function_type_node(int lineno,
+                                  cdk::sequence_node *arguments,
+                                  cdk::basic_node *return_type,
+                                  cdk::basic_node *block)
             : typed_node(lineno), _arguments(arguments), _return_type(return_type), _block(block)
         {
             type();
