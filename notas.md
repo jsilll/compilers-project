@@ -33,5 +33,7 @@ tipo-de-funcao:
 - function_call.h (DUVIDA: é preciso definir isto ??)
 
 misc:
+- [x] null_pointer_node.h (implementamos ?)
 - DUVIDA: devemos remover o read_node.h ??
 - DUVIDA: todas as variaveis cdk::basic_node _block; passar a block_node _block (para isso é preciso meter o parser a reconhecer blocos primeiro)
+- cdk/types/functional_type.h, como usar?
