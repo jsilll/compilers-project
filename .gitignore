@@ -40,3 +40,5 @@ l22_parser.tab.h
 l22_scanner.cpp
 
 .vscode
+.idea
+libs/
