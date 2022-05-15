@@ -170,7 +170,7 @@ void l22::xml_writer::do_evaluation_node(l22::evaluation_node *const node, int l
   closeTag(node, lvl);
 }
 
-void l22::xml_writer::do_print_node(l22::print_node *const node, int lvl)
+void l22::xml_writer::do_writeln_node(l22::writeln_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
   openTag(node, lvl);
@@ -236,30 +236,54 @@ void l22::xml_writer::do_if_else_node(l22::if_else_node *const node, int lvl)
 
 //---------------------------------------------------------------------------
 
-void l22::xml_writer::do_again_node(l22::again_node *const node, int lvl)
+void l22::xml_writer::do_again_node(l22::again_node *node, int lvl)
 {
 }
 
-void l22::xml_writer::do_block_node(l22::block_node *const node, int lvl)
+//---------------------------------------------------------------------------
+
+void l22::xml_writer::do_block_node(l22::block_node *node, int lvl)
 {
 }
 
-void l22::xml_writer::do_function_definition_node(l22::function_definition_node *const node, int lvl)
+//---------------------------------------------------------------------------
+
+void l22::xml_writer::do_file_node(l22::file_node *node, int lvl)
 {
 }
 
-void l22::xml_writer::do_function_type_node(l22::function_type_node *const node, int lvl)
+//---------------------------------------------------------------------------
+
+void l22::xml_writer::do_function_declaration_node(l22::function_declaration_node *node, int lvl)
 {
 }
 
-void l22::xml_writer::do_return_node(l22::return_node *const node, int lvl)
+//---------------------------------------------------------------------------
+
+void l22::xml_writer::do_main_program_node(l22::main_program_node *node, int lvl)
 {
 }
 
-void l22::xml_writer::do_stop_node(l22::stop_node *const node, int lvl)
+//---------------------------------------------------------------------------
+
+void l22::xml_writer::do_return_node(l22::return_node *node, int lvl)
 {
 }
 
-void l22::xml_writer::do_variable_declaration_node(l22::variable_declaration_node *const node, int lvl)
+//---------------------------------------------------------------------------
+
+void l22::xml_writer::do_stop_node(l22::stop_node *node, int lvl)
+{
+}
+
+//---------------------------------------------------------------------------
+
+void l22::xml_writer::do_variable_declaration_node(l22::variable_declaration_node *node, int lvl)
+{
+}
+
+//---------------------------------------------------------------------------
+
+void l22::xml_writer::do_write_node(l22::write_node *node, int lvl)
 {
 }

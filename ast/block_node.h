@@ -2,36 +2,28 @@
 #define __L22_AST_BLOCK_NODE_H__
 
 #include <cdk/ast/basic_node.h>
+#include <cdk/ast/sequence_node.h>
 
 namespace l22
 {
 
-    /**
-     * Class for describing block nodes.
-     */
     class block_node : public cdk::basic_node
     {
-        cdk::basic_node *_declarations, *_instructions;
-        int _type;
+        cdk::sequence_node *_declarations, *_instructions;
 
     public:
-        inline block_node(int lineno, cdk::basic_node *declarations, cdk::basic_node *instructions, int type = 1) : cdk::basic_node(lineno), _declarations(declarations), _instructions(instructions), _type(type)
+        block_node(int lineno, cdk::sequence_node *declarations, cdk::sequence_node *instructions) : cdk::basic_node(lineno), _declarations(declarations), _instructions(instructions)
         {
         }
 
     public:
-        inline cdk::basic_node *declarations()
+        cdk::sequence_node *declarations()
         {
             return _declarations;
         }
-        inline cdk::basic_node *instructions()
+        cdk::sequence_node *instructions()
         {
             return _instructions;
-        }
-
-        int type()
-        {
-            return _type;
         }
 
         void accept(basic_ast_visitor *sp, int level)

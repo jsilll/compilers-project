@@ -5,12 +5,14 @@
 #include <cdk/yy_factory.h>
 #include "l22_scanner.h"
 
-namespace l22 {
+namespace l22
+{
 
   /**
    * This class implements the compiler factory for the Simple compiler.
    */
-  class factory: public cdk::yy_factory<l22_scanner> {
+  class factory : public cdk::yy_factory<l22_scanner>
+  {
     /**
      * This object is automatically registered by the constructor in the
      * superclass' language registry.
@@ -21,10 +23,9 @@ namespace l22 {
     /**
      * @param language name of the language handled by this factory (see .cpp file)
      */
-    factory(const std::string &language = "l22") :
-        cdk::yy_factory<l22_scanner>(language) {
+    factory(const std::string &language = "l22") : cdk::yy_factory<l22_scanner>(language)
+    {
     }
-
   };
 
 } // l22

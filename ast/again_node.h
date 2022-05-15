@@ -5,17 +5,22 @@
 
 namespace l22
 {
-    /**
-     * Class for describing again nodes.
-     */
+
     class again_node : public cdk::basic_node
     {
+        int _level;
+
     public:
-        inline again_node(int lineno) : cdk::basic_node(lineno)
+        again_node(int lineno, int level = 1) : cdk::basic_node(lineno), _level(level)
         {
         }
 
     public:
+        int level() const
+        {
+            return _level;
+        }
+
         void accept(basic_ast_visitor *sp, int level)
         {
             sp->do_again_node(this, level);

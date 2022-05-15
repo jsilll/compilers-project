@@ -1,44 +1,38 @@
-#ifndef __L22_AST_VARIABLE_DECLARATION_NODE_H_
-#define __L22_AST_VARIABLE_DECLARATION_NODE_H_
+#ifndef __L22_AST_VARIABLE_DECLARATION_H__
+#define __L22_AST_VARIABLE_DECLARATION_H__
 
+#include <cdk/ast/typed_node.h>
 #include <cdk/ast/expression_node.h>
+#include <cdk/types/basic_type.h>
 
 namespace l22
 {
-    /**
-     * Class for describing if-then-else nodes.
-     */
+
     class variable_declaration_node : public cdk::typed_node
     {
         int _qualifier;
         std::string _identifier;
-        cdk::expression_node *_expression;
+        cdk::expression_node *_initializer;
 
     public:
-        variable_declaration_node(int lineno,
-                                  int qualifier,
-                                  std::string &indentifier,
-                                  cdk::expression_node *expression,
-                                  std::shared_ptr<cdk::basic_type> varType = cdk::primitive_type::create(0, cdk::TYPE_VOID))
-            : typed_node(lineno), _identifier(indentifier), _expression(expression)
+        variable_declaration_node(int lineno, int qualifier, std::shared_ptr<cdk::basic_type> varType, const std::string &identifier,
+                                  cdk::expression_node *initializer) : cdk::typed_node(lineno), _qualifier(qualifier), _identifier(identifier), _initializer(initializer)
         {
             type(varType);
         }
 
     public:
-        inline int qualifier()
+        int qualifier()
         {
             return _qualifier;
         }
-
-        inline std::string &identifier()
+        const std::string &identifier() const
         {
             return _identifier;
         }
-
-        inline cdk::expression_node *expression()
+        cdk::expression_node *initializer()
         {
-            return _expression;
+            return _initializer;
         }
 
         void accept(basic_ast_visitor *sp, int level)
@@ -46,6 +40,7 @@ namespace l22
             sp->do_variable_declaration_node(this, level);
         }
     };
-}
+
+} // l22
 
 #endif
