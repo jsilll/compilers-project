@@ -287,3 +287,9 @@ void l22::xml_writer::do_variable_declaration_node(l22::variable_declaration_nod
 void l22::xml_writer::do_write_node(l22::write_node *node, int lvl)
 {
 }
+
+//---------------------------------------------------------------------------
+
+void l22::xml_writer::do_nullptr_node(l22::nullptr_node *node, int lvl)
+{
+}

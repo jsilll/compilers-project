@@ -14,7 +14,8 @@ namespace l22
         cdk::sequence_node *_arguments;
 
     public:
-        function_declaration_node(int lineno, std::shared_ptr<cdk::basic_type> funType, const std::string &identifier, cdk::sequence_node *arguments) : cdk::typed_node(lineno), _identifier(identifier), _arguments(arguments)
+        function_declaration_node(int lineno, std::shared_ptr<cdk::basic_type> funType, const std::string &identifier, cdk::sequence_node *arguments)
+         : cdk::typed_node(lineno), _identifier(identifier), _arguments(arguments)
         {
             type(funType);
         }

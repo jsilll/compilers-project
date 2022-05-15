@@ -298,3 +298,9 @@ void l22::type_checker::do_variable_declaration_node(l22::variable_declaration_n
 void l22::type_checker::do_write_node(l22::write_node *node, int lvl)
 {
 }
+
+//---------------------------------------------------------------------------
+
+void l22::type_checker::do_nullptr_node(l22::nullptr_node *node, int lvl)
+{
+}
