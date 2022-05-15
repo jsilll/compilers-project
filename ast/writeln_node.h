@@ -7,7 +7,7 @@ namespace l22
 {
 
   /**
-   * Class for describing print nodes.
+   * Class for describing writeln nodes.
    */
   class writeln_node : public cdk::basic_node
   {

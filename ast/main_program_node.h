@@ -9,6 +9,9 @@
 namespace l22
 {
 
+    /**
+     * Class for describing main program nodes.
+     */
     class main_program_node : public cdk::basic_node
     {
         block_node *_block;

@@ -9,6 +9,9 @@
 namespace l22
 {
 
+    /**
+     * Class for describing file nodes.
+     */
     class file_node : public cdk::basic_node
     {
         cdk::sequence_node *_declarations;

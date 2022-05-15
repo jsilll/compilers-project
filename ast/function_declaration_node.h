@@ -8,6 +8,9 @@
 namespace l22
 {
 
+    /**
+     * Class for describing function declaration nodes.
+     */
     class function_declaration_node : public cdk::typed_node
     {
         std::string _identifier;
@@ -15,7 +18,7 @@ namespace l22
 
     public:
         function_declaration_node(int lineno, std::shared_ptr<cdk::basic_type> funType, const std::string &identifier, cdk::sequence_node *arguments)
-         : cdk::typed_node(lineno), _identifier(identifier), _arguments(arguments)
+            : cdk::typed_node(lineno), _identifier(identifier), _arguments(arguments)
         {
             type(funType);
         }

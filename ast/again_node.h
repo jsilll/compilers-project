@@ -6,6 +6,9 @@
 namespace l22
 {
 
+    /**
+     * Class for describing again nodes.
+     */
     class again_node : public cdk::basic_node
     {
         int _level;

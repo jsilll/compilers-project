@@ -3,19 +3,24 @@
 
 #include <cdk/ast/expression_node.h>
 
-namespace l22 {
+namespace l22
+{
 
-  class nullptr_node: public cdk::expression_node {
+  /**
+   * Class for describing nullptr nodes.
+   */
+  class nullptr_node : public cdk::expression_node
+  {
   public:
-    nullptr_node(int lineno) :
-        cdk::expression_node(lineno) {
+    nullptr_node(int lineno) : cdk::expression_node(lineno)
+    {
     }
 
   public:
-    void accept(basic_ast_visitor *sp, int level) {
+    void accept(basic_ast_visitor *sp, int level)
+    {
       sp->do_nullptr_node(this, level);
     }
-
   };
 
 } // l22

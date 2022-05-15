@@ -7,6 +7,9 @@
 namespace l22
 {
 
+    /**
+     * Class for describing return nodes.
+     */
     class return_node : public cdk::basic_node
     {
         cdk::expression_node *_retval;

@@ -6,6 +6,9 @@
 namespace l22
 {
 
+    /**
+     * Class for describing stop nodes.
+     */
     class stop_node : public cdk::basic_node
     {
         int _level;
