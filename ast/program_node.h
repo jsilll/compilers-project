@@ -11,7 +11,7 @@ namespace l22
    */
   class program_node : public cdk::basic_node
   {
-    cdk::basic_node *_statements;
+    cdk::basic_node *_statements; // TODO: change to l22::block_node
 
   public:
     inline program_node(int lineno, cdk::basic_node *statements) : cdk::basic_node(lineno), _statements(statements)

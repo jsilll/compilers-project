@@ -170,7 +170,7 @@ void l22::xml_writer::do_evaluation_node(l22::evaluation_node *const node, int l
   closeTag(node, lvl);
 }
 
-void l22::xml_writer::do_writeln_node(l22::writeln_node *const node, int lvl)
+void l22::xml_writer::do_print_node(l22::print_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
   openTag(node, lvl);
@@ -254,13 +254,7 @@ void l22::xml_writer::do_file_node(l22::file_node *node, int lvl)
 
 //---------------------------------------------------------------------------
 
-void l22::xml_writer::do_function_declaration_node(l22::function_declaration_node *node, int lvl)
-{
-}
-
-//---------------------------------------------------------------------------
-
-void l22::xml_writer::do_main_program_node(l22::main_program_node *node, int lvl)
+void l22::xml_writer::do_function_definition_node(l22::function_definition_node *node, int lvl)
 {
 }
 
@@ -284,12 +278,36 @@ void l22::xml_writer::do_variable_declaration_node(l22::variable_declaration_nod
 
 //---------------------------------------------------------------------------
 
-void l22::xml_writer::do_write_node(l22::write_node *node, int lvl)
+void l22::xml_writer::do_nullptr_node(l22::nullptr_node *node, int lvl)
 {
 }
 
 //---------------------------------------------------------------------------
 
-void l22::xml_writer::do_nullptr_node(l22::nullptr_node *node, int lvl)
+void l22::xml_writer::do_address_of_node(l22::address_of_node *node, int lvl)
+{
+}
+
+//---------------------------------------------------------------------------
+
+void l22::xml_writer::do_index_node(l22::index_node *node, int lvl)
+{
+}
+
+//---------------------------------------------------------------------------
+
+void l22::xml_writer::do_input_node(l22::input_node *node, int lvl)
+{
+}
+
+//---------------------------------------------------------------------------
+
+void l22::xml_writer::do_sizeof_node(l22::sizeof_node *node, int lvl)
+{
+}
+
+//---------------------------------------------------------------------------
+
+void l22::xml_writer::do_stack_alloc_node(l22::stack_alloc_node *node, int lvl)
 {
 }

@@ -6,7 +6,7 @@ declaration: (nao sei quantas sao precisas? )
     é inferido em compile time)
 
 programa-principal:
-- [x] main_program_node.h 
+- [x] program_node.h 
 
 bloco:
 - [x] block_node.h (DUVIDA: quando é que devemos usar este nó nos outros nodes ???)

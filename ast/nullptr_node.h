@@ -1,5 +1,5 @@
-#ifndef __L22_AST_NULLPTR_H__
-#define __L22_AST_NULLPTR_H__
+#ifndef __L22_AST_NULLPTR_NODE_H__
+#define __L22_AST_NULLPTR_NODE_H__
 
 #include <cdk/ast/expression_node.h>
 

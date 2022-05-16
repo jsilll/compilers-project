@@ -4,7 +4,7 @@
 #include <cdk/ast/basic_node.h>
 #include <cdk/ast/sequence_node.h>
 
-#include "main_program_node.h"
+#include "program_node.h"
 
 namespace l22
 {
@@ -15,10 +15,10 @@ namespace l22
     class file_node : public cdk::basic_node
     {
         cdk::sequence_node *_declarations;
-        main_program_node *_main_program;
+        l22::program_node *_program;
 
     public:
-        file_node(int lineno, cdk::sequence_node *declarations, main_program_node *main_program) : cdk::basic_node(lineno), _declarations(declarations), _main_program(main_program)
+        file_node(int lineno, cdk::sequence_node *declarations, l22::program_node *program) : cdk::basic_node(lineno), _declarations(declarations), _program(program)
         {
         }
 
@@ -27,9 +27,9 @@ namespace l22
         {
             return _declarations;
         }
-        main_program_node *main_program()
+        l22::program_node *main_program()
         {
-            return _main_program;
+            return _program;
         }
 
         void accept(basic_ast_visitor *sp, int level)

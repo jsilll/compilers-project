@@ -1,5 +1,5 @@
-#ifndef __L22_AST_STOP_H__
-#define __L22_AST_STOP_H__
+#ifndef __L22_AST_STOP_NODE_H__
+#define __L22_AST_STOP_NODE_H__
 
 #include <cdk/ast/basic_node.h>
 

@@ -207,7 +207,7 @@ void l22::type_checker::do_evaluation_node(l22::evaluation_node *const node, int
   node->argument()->accept(this, lvl + 2);
 }
 
-void l22::type_checker::do_writeln_node(l22::writeln_node *const node, int lvl)
+void l22::type_checker::do_print_node(l22::print_node *const node, int lvl)
 {
   node->argument()->accept(this, lvl + 2);
 }
@@ -265,13 +265,7 @@ void l22::type_checker::do_file_node(l22::file_node *node, int lvl)
 
 //---------------------------------------------------------------------------
 
-void l22::type_checker::do_function_declaration_node(l22::function_declaration_node *node, int lvl)
-{
-}
-
-//---------------------------------------------------------------------------
-
-void l22::type_checker::do_main_program_node(l22::main_program_node *node, int lvl)
+void l22::type_checker::do_function_definition_node(l22::function_definition_node *node, int lvl)
 {
 }
 
@@ -295,12 +289,36 @@ void l22::type_checker::do_variable_declaration_node(l22::variable_declaration_n
 
 //---------------------------------------------------------------------------
 
-void l22::type_checker::do_write_node(l22::write_node *node, int lvl)
+void l22::type_checker::do_nullptr_node(l22::nullptr_node *node, int lvl)
 {
 }
 
 //---------------------------------------------------------------------------
 
-void l22::type_checker::do_nullptr_node(l22::nullptr_node *node, int lvl)
+void l22::type_checker::do_address_of_node(l22::address_of_node *node, int lvl)
+{
+}
+
+//---------------------------------------------------------------------------
+
+void l22::type_checker::do_index_node(l22::index_node *node, int lvl)
+{
+}
+
+//---------------------------------------------------------------------------
+
+void l22::type_checker::do_input_node(l22::input_node *node, int lvl)
+{
+}
+
+//---------------------------------------------------------------------------
+
+void l22::type_checker::do_sizeof_node(l22::sizeof_node *node, int lvl)
+{
+}
+
+//---------------------------------------------------------------------------
+
+void l22::type_checker::do_stack_alloc_node(l22::stack_alloc_node *node, int lvl)
 {
 }
