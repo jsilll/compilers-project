@@ -336,6 +336,12 @@ void l22::postfix_writer::do_file_node(l22::file_node *node, int lvl)
 
 //---------------------------------------------------------------------------
 
+void l22::postfix_writer::do_function_call_node(l22::function_call_node *node, int lvl)
+{
+}
+
+//---------------------------------------------------------------------------
+
 void l22::postfix_writer::do_function_definition_node(l22::function_definition_node *node, int lvl)
 {
 }
