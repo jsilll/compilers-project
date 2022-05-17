@@ -2,7 +2,7 @@ ficheiro:
 - [x] file_node.h
 
 declaration: (nao sei quantas sao precisas? )
-- [x] variable_declaration_node.h (só é preciso uma, para a declaracao com tipo e com 'var', porque o tipo
+- [x] declaration_node.h (só é preciso uma, para a declaracao com tipo e com 'var', porque o tipo
     é inferido em compile time)
 
 programa-principal:

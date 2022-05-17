@@ -1,5 +1,5 @@
-#ifndef __L22_AST_VARIABLE_DECLARATION_NODE_H__
-#define __L22_AST_VARIABLE_DECLARATION_NODE_H__
+#ifndef __L22_AST_DECLARATION_NODE_H__
+#define __L22_AST_DECLARATION_NODE_H__
 
 #include <cdk/ast/typed_node.h>
 #include <cdk/ast/expression_node.h>
@@ -11,15 +11,15 @@ namespace l22
     /**
      * Class for describing variable declaration nodes.
      */
-    class variable_declaration_node : public cdk::typed_node
+    class declaration_node : public cdk::typed_node
     {
         int _qualifier;
         std::string _identifier;
         cdk::expression_node *_initializer;
 
     public:
-        variable_declaration_node(int lineno, int qualifier, std::shared_ptr<cdk::basic_type> varType, const std::string &identifier,
-                                  cdk::expression_node *initializer) : cdk::typed_node(lineno), _qualifier(qualifier), _identifier(identifier), _initializer(initializer)
+        declaration_node(int lineno, int qualifier, std::shared_ptr<cdk::basic_type> varType, const std::string &identifier,
+                         cdk::expression_node *initializer) : cdk::typed_node(lineno), _qualifier(qualifier), _identifier(identifier), _initializer(initializer)
         {
             type(varType);
         }
@@ -40,7 +40,7 @@ namespace l22
 
         void accept(basic_ast_visitor *sp, int level)
         {
-            sp->do_variable_declaration_node(this, level);
+            sp->do_declaration_node(this, level);
         }
     };
 

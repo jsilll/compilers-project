@@ -245,34 +245,32 @@ void l22::postfix_writer::do_evaluation_node(l22::evaluation_node *const node, i
 void l22::postfix_writer::do_print_node(l22::print_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  node->argument()->accept(this, lvl); // determine the value to print
-  if (node->argument()->is_typed(cdk::TYPE_INT))
+  for (size_t ix = 0; ix < node->arguments()->size(); ix++)
   {
-    _pf.CALL("printi");
-    _pf.TRASH(4); // delete the printed value
+    auto child = dynamic_cast<cdk::expression_node *>(node->arguments()->node(ix));
+    std::shared_ptr<cdk::basic_type> etype = child->type();
+    child->accept(this, lvl); // expression to print
+    if (etype->name() == cdk::TYPE_INT)
+    {
+      _pf.CALL("printi");
+      _pf.TRASH(4); // trash int
+    }
+    else if (etype->name() == cdk::TYPE_STRING)
+    {
+      _pf.CALL("prints");
+      _pf.TRASH(4); // trash char pointer
+    }
+    else
+    {
+      std::cerr << "cannot print expression of unknown type" << std::endl;
+      return;
+    }
   }
-  else if (node->argument()->is_typed(cdk::TYPE_STRING))
-  {
-    _pf.CALL("prints");
-    _pf.TRASH(4); // delete the printed value's address
-  }
-  else
-  {
-    std::cerr << "ERROR: CANNOT HAPPEN!" << std::endl;
-    exit(1);
-  }
-  _pf.CALL("println"); // print a newline
-}
 
-//---------------------------------------------------------------------------
-
-void l22::postfix_writer::do_read_node(l22::read_node *const node, int lvl)
-{
-  ASSERT_SAFE_EXPRESSIONS;
-  _pf.CALL("readi");
-  _pf.LDFVAL32();
-  node->argument()->accept(this, lvl);
-  _pf.STINT();
+  if (node->newline())
+  {
+    _pf.CALL("println");
+  }
 }
 
 //---------------------------------------------------------------------------
@@ -342,7 +340,7 @@ void l22::postfix_writer::do_function_call_node(l22::function_call_node *node, i
 
 //---------------------------------------------------------------------------
 
-void l22::postfix_writer::do_function_definition_node(l22::function_definition_node *node, int lvl)
+void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)
 {
 }
 
@@ -360,7 +358,7 @@ void l22::postfix_writer::do_stop_node(l22::stop_node *node, int lvl)
 
 //---------------------------------------------------------------------------
 
-void l22::postfix_writer::do_variable_declaration_node(l22::variable_declaration_node *node, int lvl)
+void l22::postfix_writer::do_declaration_node(l22::declaration_node *node, int lvl)
 {
 }
 

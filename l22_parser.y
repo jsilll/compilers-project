@@ -63,8 +63,8 @@ list : stmt	                         { $$ = new cdk::sequence_node(LINE, $1); }
      ;
 
 stmt : expr ';'                         { $$ = new l22::evaluation_node(LINE, $1); }
-     | tPRINT expr ';'                  { $$ = new l22::print_node(LINE, $2); }
-     | tREAD lval ';'                   { $$ = new l22::read_node(LINE, $2); }
+     | tPRINT list ';'                  { $$ = new l22::print_node(LINE, $2); }
+     /* | tREAD lval ';'                   { $$ = new l22::read_node(LINE, $2); } */
      | tWHILE '(' expr ')' stmt         { $$ = new l22::while_node(LINE, $3, $5); }
      | tIF '(' expr ')' stmt %prec tIFX { $$ = new l22::if_node(LINE, $3, $5); }
      | tIF '(' expr ')' stmt tELSE stmt { $$ = new l22::if_else_node(LINE, $3, $5, $7); }

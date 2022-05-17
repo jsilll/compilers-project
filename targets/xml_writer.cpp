@@ -174,17 +174,7 @@ void l22::xml_writer::do_print_node(l22::print_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
   openTag(node, lvl);
-  node->argument()->accept(this, lvl + 2);
-  closeTag(node, lvl);
-}
-
-//---------------------------------------------------------------------------
-
-void l22::xml_writer::do_read_node(l22::read_node *const node, int lvl)
-{
-  ASSERT_SAFE_EXPRESSIONS;
-  openTag(node, lvl);
-  node->argument()->accept(this, lvl + 2);
+  node->arguments()->accept(this, lvl + 2);
   closeTag(node, lvl);
 }
 
@@ -260,7 +250,7 @@ void l22::xml_writer::do_function_call_node(l22::function_call_node *node, int l
 
 //---------------------------------------------------------------------------
 
-void l22::xml_writer::do_function_definition_node(l22::function_definition_node *node, int lvl)
+void l22::xml_writer::do_lambda_node(l22::lambda_node *node, int lvl)
 {
 }
 
@@ -278,7 +268,7 @@ void l22::xml_writer::do_stop_node(l22::stop_node *node, int lvl)
 
 //---------------------------------------------------------------------------
 
-void l22::xml_writer::do_variable_declaration_node(l22::variable_declaration_node *node, int lvl)
+void l22::xml_writer::do_declaration_node(l22::declaration_node *node, int lvl)
 {
 }
 
