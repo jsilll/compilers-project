@@ -69,7 +69,7 @@ $(COMPILER): $(L_NAME).o $(Y_NAME).tab.o $(OFILES)
 	$(CXX) -o $@ $^ $(LDFLAGS)
 
 clean:
-	$(RM) .auto/all_nodes.h .auto/visitor_decls.h *.tab.[ch] *.o $(OFILES) $(L_NAME).cpp $(Y_NAME).output $(COMPILER)
+	$(RM) tests/*.asm tests/*.o .auto/all_nodes.h .auto/visitor_decls.h *.tab.[ch] *.o $(OFILES) $(L_NAME).cpp $(Y_NAME).output $(COMPILER)
 
 depend: .auto/all_nodes.h
 	$(CXX) $(CXXFLAGS) -MM $(SRC_CPP) > .makedeps
