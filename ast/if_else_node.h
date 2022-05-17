@@ -12,7 +12,7 @@ namespace l22
   class if_else_node : public cdk::basic_node
   {
     cdk::expression_node *_condition;
-    cdk::basic_node *_thenblock, *_elseblock; // TODO: change to l22::block_node
+    cdk::basic_node *_thenblock, *_elseblock; // TODO: change this to l22::block_node
 
   public:
     inline if_else_node(int lineno, cdk::expression_node *condition, cdk::basic_node *thenblock, cdk::basic_node *elseblock) : cdk::basic_node(lineno), _condition(condition), _thenblock(thenblock), _elseblock(elseblock)

@@ -11,7 +11,7 @@ namespace l22
    */
   class print_node : public cdk::basic_node
   {
-    cdk::expression_node *_argument; // TODO: cdk::expression_node -> cdk::sequence_node
+    cdk::expression_node *_argument; // TODO: change this to cdk::sequence_node
     bool _newline = false;
 
   public:

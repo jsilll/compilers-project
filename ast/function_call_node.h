@@ -18,19 +18,11 @@ namespace l22
         cdk::sequence_node *_arguments;
 
     public:
-        /**
-         * Constructor for a function call without arguments.
-         * An empty sequence is automatically inserted to represent
-         * the missing arguments.
-         */
         function_call_node(int lineno, const std::string &identifier)
             : cdk::expression_node(lineno), _identifier(identifier), _arguments(new cdk::sequence_node(lineno))
         {
         }
 
-        /**
-         * Constructor for a function call with arguments.
-         */
         function_call_node(int lineno, const std::string &identifier, cdk::sequence_node *arguments)
             : cdk::expression_node(lineno), _identifier(identifier), _arguments(arguments)
         {
