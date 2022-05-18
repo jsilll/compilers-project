@@ -6,6 +6,9 @@
 namespace l22
 {
 
+  /**
+   * Class for describing stack_alloc nodes.
+   */
   class stack_alloc_node : public cdk::unary_operation_node
   {
   public:

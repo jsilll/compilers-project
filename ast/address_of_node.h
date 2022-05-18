@@ -7,6 +7,9 @@
 namespace l22
 {
 
+    /**
+     * Class for describing address_of nodes.
+     */
     class address_of_node : public cdk::expression_node
     {
         cdk::lvalue_node *_lvalue;

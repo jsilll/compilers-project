@@ -6,6 +6,9 @@
 namespace l22
 {
 
+  /**
+   * Class for describing sizeof nodes.
+   */
   class sizeof_node : public cdk::expression_node
   {
     cdk::expression_node *_expression;

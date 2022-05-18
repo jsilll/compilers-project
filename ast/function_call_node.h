@@ -10,7 +10,7 @@ namespace l22
 {
 
     /**
-     * Class for describing function definitions.
+     * Class for describing function definition nodes.
      */
     class function_call_node : public cdk::expression_node
     {

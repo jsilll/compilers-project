@@ -7,7 +7,7 @@ namespace l22
 {
 
   /**
-   * Class for describing input nodes
+   * Class for describing input nodes.
    */
   class input_node : public cdk::expression_node
   {
