@@ -41,3 +41,5 @@ l22_scanner.cpp
 .vscode
 .idea
 libs/
+
+CVS/
