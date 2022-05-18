@@ -9,7 +9,7 @@ namespace l22
 {
 
     /**
-     * Class for describing variable declaration nodes.
+     * Class for describing declaration nodes.
      */
     class declaration_node : public cdk::typed_node
     {
