@@ -11,17 +11,17 @@ namespace l22
    */
   class program_node : public cdk::basic_node
   {
-    cdk::basic_node *_statements; // TODO: change this to l22::block_node (parser needs to recognize blocks)
+    cdk::basic_node *_block; // TODO: change this to l22::block_node (parser needs to recognize blocks)
 
   public:
-    inline program_node(int lineno, cdk::basic_node *statements) : cdk::basic_node(lineno), _statements(statements)
+    inline program_node(int lineno, cdk::basic_node *block) : cdk::basic_node(lineno), _block(block)
     {
     }
 
   public:
     inline cdk::basic_node *statements()
     {
-      return _statements;
+      return _block;
     }
 
     void accept(basic_ast_visitor *sp, int level)

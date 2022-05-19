@@ -245,12 +245,6 @@ void l22::type_checker::do_block_node(l22::block_node *node, int lvl)
 
 //---------------------------------------------------------------------------
 
-void l22::type_checker::do_file_node(l22::file_node *node, int lvl)
-{
-}
-
-//---------------------------------------------------------------------------
-
 void l22::type_checker::do_function_call_node(l22::function_call_node *node, int lvl)
 {
 }
