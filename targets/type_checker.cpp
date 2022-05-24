@@ -308,3 +308,9 @@ void l22::type_checker::do_sizeof_node(l22::sizeof_node *node, int lvl)
 void l22::type_checker::do_stack_alloc_node(l22::stack_alloc_node *node, int lvl)
 {
 }
+
+//---------------------------------------------------------------------------
+
+void l22::type_checker::do_identity_node(l22::identity_node *node, int lvl)
+{
+}
