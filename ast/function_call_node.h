@@ -14,8 +14,8 @@ namespace l22
      */
     class function_call_node : public cdk::expression_node
     {
-        std::string _identifier;
-        cdk::sequence_node *_arguments; // TODO: there's something to fix here
+        std::string _identifier; // TODO: there's something to fix here
+        cdk::sequence_node *_arguments;
 
     public:
         function_call_node(int lineno, const std::string &identifier)
