@@ -44,6 +44,8 @@ yydebug=1; set_debug(1);
 "double"                  return tTYPE_REAL;
 "text"                    return tTYPE_STRING;
 "void"                    return tVOID;
+"null"                    return tNULL_PTR;
+
 
 "var"                     return tTYPE_VAR;
 [\[\]]                    return tTYPE_POINTER; /* ver melhor tipo de ponteiro */

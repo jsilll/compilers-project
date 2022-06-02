@@ -55,8 +55,41 @@
 %}
 %%
 
+// ver como fazer para representar o file node
+// file : declarations program {  }
+
 program : tBEGIN list tEND { compiler->ast(new l22::program_node(LINE, $2)); }
         ;
+
+declarations :              declaration { $$ = new cdk::sequence_node(LINE, $1); }
+             | declarations declaration { $$ = new cdk::sequence_node(LINE, $2, $1); }
+             ;
+
+declaration : qualifier tTYPE_VAR tID '=' expression      { $$ = new cdk::declaration_node(LINE, $1, nullptr, *$3, $5); }
+            |           tTYPE_VAR tID '=' expression      { $$ = new cdk::declaration_node(LINE, tPRIVATE, nullptr, *$2, $4); }     
+            |                     tID '=' expression      { $$ = new cdk::declaration_node(LINE, tPRIVATE, nullptr, *$1, $3); } 
+            | qualifier type      tID '=' opt_initializer { $$ = new cdk::declaration_node(LINE, $1, $2, *$3, $5); }  
+            |           type      tID '=' opt_initializer { $$ = new cdk::declaration_node(LINE, tPRIVATE, $1, *$2, $4); }
+            ;
+
+qualifier : tPRIVATE { $$ = $1; }
+          | tPUBLIC  { $$ = $1; }
+          | tUSE     { $$ = $1; }
+          ;
+
+type : tTYPE_INT          { $$ = cdk::primitive_type::create(4, cdk::TYPE_INT); }
+     | tTYPE_DOUBLE       { $$ = cdk::primitive_type::create(8, cdk::TYPE_DOUBLE);  }
+     | tTYPE_STRING       { $$ = cdk::primitive_type::create(4, cdk::TYPE_STRING);  }
+     // ver como fazer com null type
+     | '[' data_type ']'  { $$ = cdk::reference_type::create(4, $3); }
+     | func_type          { $$ = cdk::primitive_type::create }
+     ;
+
+opt_initializer  : /* empty */         { $$ = nullptr; /* must be nullptr, not NIL */ }
+                 | '=' expression      { $$ = $2; }
+                 ;
+
+block : declarations instructions { $$ = new cdk::block_node(LINE, $1, $2); }
 
 list : stmt	                         { $$ = new cdk::sequence_node(LINE, $1); }
      | list stmt                        { $$ = new cdk::sequence_node(LINE, $2, $1); }
