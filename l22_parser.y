@@ -58,18 +58,14 @@
 // ver como fazer para representar o file node
 // file : declarations program {  }
 
-program : tBEGIN list tEND { compiler->ast(new l22::program_node(LINE, $2)); }
+program : tBEGIN block tEND { compiler->ast(new l22::program_node(LINE, $2)); }
         ;
 
-declarations :              declaration { $$ = new cdk::sequence_node(LINE, $1); }
-             | declarations declaration { $$ = new cdk::sequence_node(LINE, $2, $1); }
-             ;
-
-declaration : qualifier tTYPE_VAR tID '=' expression      { $$ = new cdk::declaration_node(LINE, $1, nullptr, *$3, $5); }
-            |           tTYPE_VAR tID '=' expression      { $$ = new cdk::declaration_node(LINE, tPRIVATE, nullptr, *$2, $4); }     
-            |                     tID '=' expression      { $$ = new cdk::declaration_node(LINE, tPRIVATE, nullptr, *$1, $3); } 
-            | qualifier type      tID '=' opt_initializer { $$ = new cdk::declaration_node(LINE, $1, $2, *$3, $5); }  
-            |           type      tID '=' opt_initializer { $$ = new cdk::declaration_node(LINE, tPRIVATE, $1, *$2, $4); }
+declaration : qualifier tTYPE_VAR tID '=' expr            { $$ = new l22::declaration_node(LINE, $1, nullptr, *$3, $5); }
+            |           tTYPE_VAR tID '=' expr            { $$ = new l22::declaration_node(LINE, tPRIVATE, nullptr, *$2, $4); }     
+            |                     tID '=' expr            { $$ = new l22::declaration_node(LINE, tPRIVATE, nullptr, *$1, $3); } 
+            | qualifier type      tID  opt_initializer    { $$ = new l22::declaration_node(LINE, $1, $2, *$3, $5); }  
+            |           type      tID  opt_initializer    { $$ = new l22::declaration_node(LINE, tPRIVATE, $1, *$2, $4); }
             ;
 
 qualifier : tPRIVATE { $$ = $1; }
@@ -80,30 +76,72 @@ qualifier : tPRIVATE { $$ = $1; }
 type : tTYPE_INT          { $$ = cdk::primitive_type::create(4, cdk::TYPE_INT); }
      | tTYPE_DOUBLE       { $$ = cdk::primitive_type::create(8, cdk::TYPE_DOUBLE);  }
      | tTYPE_STRING       { $$ = cdk::primitive_type::create(4, cdk::TYPE_STRING);  }
-     // ver como fazer com null type
-     | '[' data_type ']'  { $$ = cdk::reference_type::create(4, $3); }
-     | func_type          { $$ = cdk::primitive_type::create }
+     | '[' data_type ']'  { $$ = cdk::reference_type::create(4, $2); }
+     // ver como fazer com function type
+     //| func_type          { $$ = cdk::primitive_type::create }
      ;
 
-opt_initializer  : /* empty */         { $$ = nullptr; /* must be nullptr, not NIL */ }
-                 | '=' expression      { $$ = $2; }
+opt_initializer : /* empty */         { $$ = nullptr; /* must be nullptr, not NIL */ }
+                | '=' expr            { $$ = $2; }
+                ;
+
+function : '(' argdecs ')' '-''>' type ':' block { $$ = new l22::lambda_node(LINE, $6, $2, $8); }
+         ;
+
+argdecs : /* empty */     { $$ = new cdk::sequence_node(LINE); }
+     | argdec             { $$ = new cdk::sequence_node(LINE, $1); }
+     | argdecs ',' argdec { $$ = new cdk::sequence_node(LINE, $2, $1); }
+
+argdec : type tID         { $$ = new cdk::declaration_node(LINE, tPRIVATE, $1, *$2, nullptr) }
+
+block : '{'            opt_instructions '}' { $$ = new l22::block_node(LINE, nullptr, $2); }
+      | '{' innerdecls opt_instructions '}' { $$ = new l22::block_node(LINE, $2, $3); }
+      ;
+
+innerdecls :            declaration ';' { $$ = new cdk::sequence_node(LINE, $1);     }
+           | innerdecls declaration ';' { $$ = new cdk::sequence_node(LINE, $2, $1); }
+           ;
+
+opt_instructions : /* empty */  { $$ = new cdk::sequence_node(LINE); }
+                 | instructions { $$ = $1; }
                  ;
 
-block : declarations instructions { $$ = new cdk::block_node(LINE, $1, $2); }
+instructions : instruction              { $$ = new cdk::sequence_node(LINE, $1); }
+             | instructions instruction { $$ = new cdk::sequence_node(LINE, $2, $1); }
+             ;
 
-list : stmt	                         { $$ = new cdk::sequence_node(LINE, $1); }
-     | list stmt                        { $$ = new cdk::sequence_node(LINE, $2, $1); }
-     ;
+///////////  instructions here   //////////
 
-stmt : expr ';'                         { $$ = new l22::evaluation_node(LINE, $1); }
-     | tPRINT list ';'                  { $$ = new l22::print_node(LINE, $2); }
-     /* | tREAD lval ';'                   { $$ = new l22::read_node(LINE, $2); } */
-     | tWHILE '(' expr ')' stmt         { $$ = new l22::while_node(LINE, $3, $5); }
-     | tIF '(' expr ')' stmt %prec tIFX { $$ = new l22::if_node(LINE, $3, $5); }
-     | tIF '(' expr ')' stmt tELSE stmt { $$ = new l22::if_else_node(LINE, $3, $5, $7); }
-     | '{' list '}'                     { $$ = $2; }
-     ;
+// ver como fazer com os pontos e virgula
+instruction : expr ';'                                 { $$ = new l22::evaluation_node(LINE, $1); }
+            //print instructions
+            | tWRITE exprs ';'                         { $$ = new l22::print_node(LINE, $2); }
+            | tWRITELN exprs ';'                       { $$ = new l22::print_node(LINE, $2, true); }
+            //early stop instructions
+            | tAGAIN ';'                               { $$ = new l22::again_node(LINE); }
+            | tSTOP ';'                                { $$ = new l22::stop_node(LINE); }
+            | tRETURN ';'                              { $$ = new l22::return_node(LINE); }
+            | tRETURN expr ';'                         { $$ = new l22::return_noed(LINE, $2) }
+            //conditional instructions 
+            | tIF '(' expr ')' 'then' ':' block        { $$ = new l22::if_node(LINE, $3, $7); }
+            | tIF '(' expr ')' 'then' ':' block elsif  { $$ = new l22::if_else_node(LINE, $3, $7, $8); }
+            //loop instructions
+            | tWHILE '(' expr ')' 'do' ':' block       { $$ = new l22::while_node(LINE, $3, $7); }
+            //block
+            | block                                    { $$ = $1; }
+            ;
+            
+exprs : expr                            { $$ = new cdk::sequence_node(LINE, $1); }
+      | exprs ',' expr                  { $$ = new cdk::sequence_node(LINE, $3, $1); }
+      ;
 
+elsif : tELSE ':' block                                       { $$ = $3; }
+      | tELIF '(' expression ')' 'then' ':' block             { $$ = new l22::if_node(LINE, $3, $7); }
+      | tELIF '(' expression ')' 'then' ':' block elsif       { $$ = new l22::if_else_node(LINE, $3, $7, $8); }
+
+////////  expressions here  ////////
+
+// function vai ter de aparecer nas expressions
 expr : tINTEGER                         { $$ = new cdk::integer_node(LINE, $1); }
      | tSTRING                          { $$ = new cdk::string_node(LINE, $1); }
      | '-' expr %prec tUNARY            { $$ = new cdk::neg_node(LINE, $2); }
@@ -123,7 +161,7 @@ expr : tINTEGER                         { $$ = new cdk::integer_node(LINE, $1); 
      | lval '=' expr                    { $$ = new cdk::assignment_node(LINE, $1, $3); }
      ;
 
-lval : tIDENTIFIER                      { $$ = new cdk::variable_node(LINE, $1); }
+lval : tID                              { $$ = new cdk::variable_node(LINE, $1); }
      ;
 
 %%
