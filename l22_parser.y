@@ -72,15 +72,15 @@
 %left '*' '/' '%'
 %right tUMINUS
 
-%type<node> elif_block
 %type<block> block 
 %type<declaration> argdec declaration
 %type<expression> expr lambda opt_initializer
 %type<i> qualifier
 %type<lvalue> lval
+%type<node> elif_block
 %type<node> instruction program
-%type<sequence> exprs file opt_arg_decs opt_declarations opt_exprs opt_instructions
 %type<s> text
+%type<sequence> exprs file opt_arg_decs opt_declarations opt_exprs opt_instructions
 %type<type> function_type type
 %type<vtypes> arg_types
 
@@ -94,19 +94,19 @@ file : opt_declarations         { compiler->ast($$ = $1); }
      | opt_declarations program { compiler->ast($$ = new cdk::sequence_node(LINE, $2, $1)); }
      ;
 
-program : tBEGIN block tEND { compiler->ast(new l22::program_node(LINE, $2)); }
+program : tBEGIN block tEND     { $$ = new l22::program_node(LINE, $2); }
         ;
 
 block : '{' opt_declarations opt_instructions '}' { $$ = new l22::block_node(LINE, $2, $3); }
       ;
 
-opt_declarations : /* empty */                  { $$ = new cdk::sequence_node(LINE); }
-                 |                  declaration { $$ = new cdk::sequence_node(LINE, $1); }
-                 | opt_declarations declaration { $$ = new cdk::sequence_node(LINE, $2, $1);  }
+opt_declarations : /* empty */                      { $$ = new cdk::sequence_node(LINE); }
+                 |                      declaration { $$ = new cdk::sequence_node(LINE, $1); }
+                 | opt_declarations ';' declaration { $$ = new cdk::sequence_node(LINE, $3, $1);  }
 
-opt_instructions : /* empty */                  { $$ = new cdk::sequence_node(LINE); }
-                 | instruction                  { $$ = new cdk::sequence_node(LINE, $1); }
-                 | opt_instructions instruction { $$ = new cdk::sequence_node(LINE, $2, $1); }
+opt_instructions : /* empty */                      { $$ = new cdk::sequence_node(LINE); }
+                 | instruction                      { $$ = new cdk::sequence_node(LINE, $1); }
+                 | opt_instructions ';' instruction { $$ = new cdk::sequence_node(LINE, $3, $1); }
                  ;
 
 declaration : qualifier tVAR tID '=' expr         { $$ = new l22::declaration_node(LINE, $1, nullptr, *$3, $5); }
@@ -181,8 +181,8 @@ opt_arg_decs : /* empty */            { $$ = new cdk::sequence_node(LINE); }
 argdec : type tID { $$ = new l22::declaration_node(LINE, tPRIVATE, $1, *$2, nullptr); }
        ;
 
-exprs : expr       { $$ = new cdk::sequence_node(LINE, $1); }
-      | exprs expr { $$ = new cdk::sequence_node(LINE, $2, $1); }
+exprs : expr        { $$ = new cdk::sequence_node(LINE, $1); }
+      | exprs expr  { $$ = new cdk::sequence_node(LINE, $2, $1); }
       ;
 
 opt_exprs : /* empty */ { $$ = new cdk::sequence_node(LINE); }
@@ -224,9 +224,9 @@ expr : tINTEGER                  { $$ = new cdk::integer_node(LINE, $1); }
      | expr tOR  expr            { $$ = new cdk::or_node (LINE, $1, $3); }
      
      /* Unary Expressions */
-     | '-' expr %prec tUNARY     { $$ = new cdk::neg_node(LINE, $2); }
-     | '+' expr %prec tUNARY     { $$ = new l22::identity_node(LINE, $2); }
-     | '~' expr                  { $$ = new cdk::not_node(LINE, $2); }
+     | '-'  expr %prec tUNARY     { $$ = new cdk::neg_node(LINE, $2); }
+     | '+'  expr %prec tUNARY     { $$ = new l22::identity_node(LINE, $2); }
+     | tNOT expr                  { $$ = new cdk::not_node(LINE, $2); }
      
      /* Input Expression */
      | tINPUT                    { $$ = new l22::input_node(LINE); }
