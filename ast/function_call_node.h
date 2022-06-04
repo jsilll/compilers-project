@@ -40,7 +40,7 @@ namespace l22
         }
 
     public:
-        inline std::string &identidier()
+        inline std::string &identifier()
         {
             return _identifier;
         }
