@@ -14,17 +14,28 @@ namespace l22
      */
     class function_call_node : public cdk::expression_node
     {
-        std::string _identifier; // TODO: there's something to fix here
+        std::string _identifier;
+        cdk::expression_node *_fptr;
         cdk::sequence_node *_arguments;
 
     public:
         function_call_node(int lineno, const std::string &identifier)
-            : cdk::expression_node(lineno), _identifier(identifier), _arguments(new cdk::sequence_node(lineno))
+            : cdk::expression_node(lineno), _identifier(identifier), _fptr(nullptr), _arguments(new cdk::sequence_node(lineno))
         {
         }
 
         function_call_node(int lineno, const std::string &identifier, cdk::sequence_node *arguments)
-            : cdk::expression_node(lineno), _identifier(identifier), _arguments(arguments)
+            : cdk::expression_node(lineno), _identifier(identifier), _fptr(nullptr), _arguments(arguments)
+        {
+        }
+
+        function_call_node(int lineno, cdk::expression_node *fptr)
+            : cdk::expression_node(lineno), _identifier(""), _fptr(fptr), _arguments(new cdk::sequence_node(lineno))
+        {
+        }
+
+        function_call_node(int lineno, cdk::expression_node *fptr, cdk::sequence_node *arguments)
+            : cdk::expression_node(lineno), _identifier(""), _fptr(fptr), _arguments(arguments)
         {
         }
 
@@ -32,6 +43,11 @@ namespace l22
         inline std::string &identidier()
         {
             return _identifier;
+        }
+
+        cdk::basic_node *fptr()
+        {
+            return _fptr;
         }
 
         inline cdk::sequence_node *arguments()
