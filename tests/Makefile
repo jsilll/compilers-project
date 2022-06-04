@@ -29,4 +29,4 @@ asm: $(ASMS)
 	$(LD) $< -o $@ $(LDFLAGS)
 
 clean:
-	$(RM) $(OBJECTS) $(EXECUTABLES) $(XMLS) *.asm
+	$(RM) $(OBJECTS) $(EXECUTABLES) $(ASMS) $(XMLS)
