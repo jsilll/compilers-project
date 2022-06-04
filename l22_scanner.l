@@ -214,15 +214,15 @@ IDENTIFIER   {LETTER}({LETTER}|[:digit:])*
 
 "if"                           return tIF;
 "elif"                         return tELIF;
-"then"                         return tTHEN;
-"else"                         return tELSE;
+"then:"                         return tTHEN;
+"else:"                         return tELSE;
 
   /* ===================================================================== */
   /* ====[                 6.3 - Iteration Instructions              ]==== */
   /* ===================================================================== */
 
 "while"                        return tWHILE; 
-"do"                           return tDO;
+"do:"                          return tDO;
 
   /* ===================================================================== */
   /* ====[                 6.4 - Termination Instructions            ]==== */
