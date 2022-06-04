@@ -260,7 +260,7 @@ IDENTIFIER   {LETTER}({LETTER}|[:digit:])*
   /* ====[                 7 - Expressions                            ]==== */
   /* ====================================================================== */
 
-[\[\]()+-?*/%~<>=@:]           return *yytext;
+[\[\]()+-?*/%<>=@:]            return *yytext;
 "not"                          return tNOT;
 "and"                          return tAND;
 "or"                           return tOR;

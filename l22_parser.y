@@ -100,13 +100,13 @@ program : tBEGIN block tEND     { $$ = new l22::program_node(LINE, $2); }
 block : '{' opt_declarations opt_instructions '}' { $$ = new l22::block_node(LINE, $2, $3); }
       ;
 
-opt_declarations : /* empty */                  { $$ = new cdk::sequence_node(LINE); }
-                 |                  declaration { $$ = new cdk::sequence_node(LINE, $1); }
-                 | opt_declarations declaration { $$ = new cdk::sequence_node(LINE, $2, $1);  }
+opt_declarations : /* empty */                      { $$ = new cdk::sequence_node(LINE); }
+                 |                      declaration { $$ = new cdk::sequence_node(LINE, $1); }
+                 | opt_declarations ';' declaration { $$ = new cdk::sequence_node(LINE, $3, $1);  }
 
-opt_instructions : /* empty */                  { $$ = new cdk::sequence_node(LINE); }
-                 | instruction                  { $$ = new cdk::sequence_node(LINE, $1); }
-                 | opt_instructions instruction { $$ = new cdk::sequence_node(LINE, $2, $1); }
+opt_instructions : /* empty */                      { $$ = new cdk::sequence_node(LINE); }
+                 | instruction                      { $$ = new cdk::sequence_node(LINE, $1); }
+                 | opt_instructions ';' instruction { $$ = new cdk::sequence_node(LINE, $3, $1); }
                  ;
 
 declaration : qualifier tVAR tID '=' expr         { $$ = new l22::declaration_node(LINE, $1, nullptr, *$3, $5); }
@@ -181,8 +181,8 @@ opt_arg_decs : /* empty */            { $$ = new cdk::sequence_node(LINE); }
 argdec : type tID { $$ = new l22::declaration_node(LINE, tPRIVATE, $1, *$2, nullptr); }
        ;
 
-exprs : expr       { $$ = new cdk::sequence_node(LINE, $1); }
-      | exprs expr { $$ = new cdk::sequence_node(LINE, $2, $1); }
+exprs : expr        { $$ = new cdk::sequence_node(LINE, $1); }
+      | exprs expr  { $$ = new cdk::sequence_node(LINE, $2, $1); }
       ;
 
 opt_exprs : /* empty */ { $$ = new cdk::sequence_node(LINE); }
