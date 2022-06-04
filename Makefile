@@ -17,7 +17,7 @@ L_NAME=$(LANGUAGE)_scanner
 Y_NAME=$(LANGUAGE)_parser
 
 LFLAGS   = 
-YFLAGS   = -dtv
+YFLAGS   = -dtv --debug --verbose
 CXXFLAGS = -std=c++17 -DYYDEBUG=1 -pedantic -Wall -Wextra -ggdb -I. -I$(CDK_INC_DIR) -Wno-unused-parameter
 LDFLAGS  = -L$(CDK_LIB_DIR) -lcdk #-lLLVM
 COMPILER = $(LANGUAGE)
