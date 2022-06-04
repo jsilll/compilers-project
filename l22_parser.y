@@ -94,7 +94,7 @@ file : opt_declarations         { compiler->ast($$ = $1); }
      | opt_declarations program { compiler->ast($$ = new cdk::sequence_node(LINE, $2, $1)); }
      ;
 
-program : tEND block tBEGIN     { compiler->ast(new l22::program_node(LINE, $2)); }
+program : tBEGIN block tEND { compiler->ast(new l22::program_node(LINE, $2)); }
         ;
 
 block : '{' opt_declarations opt_instructions '}' { $$ = new l22::block_node(LINE, $2, $3); }
