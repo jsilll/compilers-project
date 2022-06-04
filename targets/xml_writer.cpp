@@ -1,37 +1,14 @@
 #include "targets/xml_writer.h"
 
-#include <cdk/types/primitive_type.h>
-#include <cdk/types/typename_type.h>
+#include <cdk/types/types.h>
 
 #include "targets/type_checker.h"
 #include ".auto/all_nodes.h" // automatically generated
+#include "targets/symbol.h"
+#include "l22_parser.tab.h"
 
 #include <string>
-
-static std::string type_name(cdk::basic_type *type)
-{
-  if (type->name() == cdk::TYPE_INT)
-    return "integer";
-  if (type->name() == cdk::TYPE_DOUBLE)
-    return "double";
-  if (type->name() == cdk::TYPE_STRING)
-    return "string";
-  if (type->name() == cdk::TYPE_VOID)
-    return "void";
-  if (type->name() == cdk::TYPE_POINTER)
-  {
-    std::string s = "pointer";
-    cdk::basic_type *p = type->subtype();
-    while (p != nullptr)
-    {
-      s += " to " + type_name(p);
-      p = p->subtype();
-    }
-    return s;
-  }
-  else
-    return "unknown type";
-}
+#include <iostream>
 
 static std::string qualifier_name(int qualifier)
 {
@@ -300,41 +277,39 @@ void l22::xml_writer::do_if_else_node(l22::if_else_node *const node, int lvl)
 
 void l22::xml_writer::do_lambda_node(l22::lambda_node *node, int lvl)
 {
-  if (_inFunctionBody || _inFunctionArgs)
-  {
-    error(node->lineno(), "cannot define function in body or in args");
-    return;
-  }
-
   ASSERT_SAFE_EXPRESSIONS;
 
   _function = new_symbol();
   reset_new_symbol();
 
-  _inFunctionBody = true;
   _symtab.push();
 
-  os() << std::string(lvl, ' ') << "<" << node->label() << " name='" << node->identifier() << "' qualifier='"
-       << qualifier_name(node->qualifier()) << "' type='" << type_name(node->type()) << "'>" << std::endl;
+  os() << std::string(lvl, ' ') << "<" << node->label() << "' type='" << cdk::to_string(node->type()) << "'>" << std::endl;
 
   openTag("arguments", lvl);
   if (node->arguments())
   {
-    _inFunctionArgs = true;
     node->arguments()->accept(this, lvl + 4);
-    _inFunctionArgs = false;
   }
   closeTag("arguments", lvl);
   node->block()->accept(this, lvl + 2);
   closeTag(node, lvl);
 
   _symtab.pop();
-  _inFunctionBody = false;
 }
 
 void l22::xml_writer::do_function_call_node(l22::function_call_node *node, int lvl)
 {
-  os() << std::string(lvl, ' ') << "<" << node->label() << " name='" << node->identifier() << "'>" << std::endl;
+  if (node->identifier() != "")
+  {
+    os() << std::string(lvl, ' ') << "<" << node->label() << " name='" << node->identifier() << "'>" << std::endl;
+  }
+  else
+  {
+    openTag("pointer", lvl);
+    node->fptr()->accept(this, lvl + 4);
+    openTag("pointer", lvl);
+  }
   openTag("arguments", lvl);
   if (node->arguments())
   {
@@ -364,7 +339,7 @@ void l22::xml_writer::do_declaration_node(l22::declaration_node *node, int lvl)
   reset_new_symbol();
 
   os() << std::string(lvl, ' ') << "<" << node->label() << " name='" << node->identifier() << "' qualifier='"
-       << qualifier_name(node->qualifier()) << "' type='" << type_name(node->varType()) << "'>"
+       << qualifier_name(node->qualifier()) << "' type='" << cdk::to_string(node->type()) << "'>"
        << std::endl;
 
   if (node->initializer())

@@ -24,14 +24,9 @@ namespace l22
 
     // TODO: see what is necessary from here
     // semantic analysis
-    bool _errors, _inFunctionArgs, _inFunctionBody;
-    bool _inForInit;
-    bool _returnSeen;                           // when building a function
     std::stack<int> _forIni, _forStep, _forEnd; // for break/repeat
     std::stack<bool> _globals;                  // for deciding whether a variable is global or not
     std::shared_ptr<l22::symbol> _function;     // for keeping track of the current function and its arguments
-    int _offset;                                // current framepointer offset (0 means no vars defined)
-    basic_type::type _lvalueType;
 
   public:
     xml_writer(std::shared_ptr<cdk::compiler> compiler, cdk::symbol_table<l22::symbol> &symtab) : basic_ast_visitor(compiler), _symtab(symtab)
