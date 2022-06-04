@@ -77,10 +77,9 @@
 %type<expression> expr lambda opt_initializer
 %type<i> qualifier
 %type<lvalue> lval
-%type<node> elif_block
-%type<node> instruction program
+%type<node> program instruction block_instruction elif_block 
 %type<s> text
-%type<sequence> exprs file opt_arg_decs opt_declarations opt_exprs opt_instructions
+%type<sequence> exprs file opt_arg_decs declarations opt_declarations opt_exprs instructions opt_instructions
 %type<type> function_type type
 %type<vtypes> arg_types
 
@@ -94,19 +93,26 @@ file : opt_declarations         { compiler->ast($$ = $1); }
      | opt_declarations program { compiler->ast($$ = new cdk::sequence_node(LINE, $2, $1)); }
      ;
 
-program : tBEGIN block tEND     { $$ = new l22::program_node(LINE, $2); }
+program : tBEGIN block tEND { $$ = new l22::program_node(LINE, $2); }
         ;
 
 block : '{' opt_declarations opt_instructions '}' { $$ = new l22::block_node(LINE, $2, $3); }
       ;
 
-opt_declarations : /* empty */                      { $$ = new cdk::sequence_node(LINE); }
-                 |                      declaration { $$ = new cdk::sequence_node(LINE, $1); }
-                 | opt_declarations ';' declaration { $$ = new cdk::sequence_node(LINE, $3, $1);  }
+opt_declarations : /* empty */  { $$ = new cdk::sequence_node(LINE); }
+                 | declarations { $$ = $1; }
 
-opt_instructions : /* empty */                      { $$ = new cdk::sequence_node(LINE); }
-                 | instruction                      { $$ = new cdk::sequence_node(LINE, $1); }
-                 | opt_instructions ';' instruction { $$ = new cdk::sequence_node(LINE, $3, $1); }
+declarations :                  declaration ';' { $$ = new cdk::sequence_node(LINE, $1); }
+             | opt_declarations declaration ';' { $$ = new cdk::sequence_node(LINE, $2, $1);  }
+
+instructions : instruction                    { $$ = new cdk::sequence_node(LINE, $1);     }
+             | block_instruction              { $$ = new cdk::sequence_node(LINE, $1);     }
+             | instruction ';' instructions   { std::reverse($3->nodes().begin(), $3->nodes().end()); $$ = new cdk::sequence_node(LINE, $1, $3); std::reverse($$->nodes().begin(), $$->nodes().end()); }
+             | block_instruction instructions { std::reverse($2->nodes().begin(), $2->nodes().end()); $$ = new cdk::sequence_node(LINE, $1, $2); std::reverse($$->nodes().begin(), $$->nodes().end()); }
+             ;
+
+opt_instructions : /* empty */  { $$ = new cdk::sequence_node(LINE); }
+                 | instructions { $$ = $1; }
                  ;
 
 declaration : qualifier tVAR tID '=' expr         { $$ = new l22::declaration_node(LINE, $1, nullptr, *$3, $5); }
@@ -148,28 +154,24 @@ arg_types : type               { $$ = std::vector<std::shared_ptr<cdk::basic_typ
           | arg_types ',' type { $1.push_back($3); $$ = $1; }
           ;
 
-instruction : expr                              { $$ = new l22::evaluation_node(LINE, $1); }
+instruction : expr                                    { $$ = new l22::evaluation_node(LINE, $1); }
             
             /* Print Instructions */
-            | tWRITE   exprs                    { $$ = new l22::print_node(LINE, $2); }
-            | tWRITELN exprs                    { $$ = new l22::print_node(LINE, $2, true); }
+            | tWRITE   exprs                          { $$ = new l22::print_node(LINE, $2); }
+            | tWRITELN exprs                          { $$ = new l22::print_node(LINE, $2, true); }
             
             /* Early Stop Instructions */
-            | tAGAIN                            { $$ = new l22::again_node(LINE); }
-            | tSTOP                             { $$ = new l22::stop_node(LINE); }
-            | tRETURN                           { $$ = new l22::return_node(LINE); }
-            | tRETURN expr                      { $$ = new l22::return_node(LINE, $2); }
-            
-            /* Conditional Instructions  */
-            | tIF '(' expr ')' tTHEN block            { $$ = new l22::if_node(LINE, $3, $6); }
-            | tIF '(' expr ')' tTHEN block elif_block { $$ = new l22::if_else_node(LINE, $3, $6, $7); }
-            
-            /* Loop Instructions */
-            | tWHILE '(' expr ')' tDO block     { $$ = new l22::while_node(LINE, $3, $6); }
-             
-            /* Block */
-            | block                             { $$ = $1; }
+            | tAGAIN                                  { $$ = new l22::again_node(LINE); }
+            | tSTOP                                   { $$ = new l22::stop_node(LINE); }
+            | tRETURN                                 { $$ = new l22::return_node(LINE); }
+            | tRETURN expr                            { $$ = new l22::return_node(LINE, $2); }
             ;
+
+block_instruction : tIF '(' expr ')' tTHEN block            { $$ = new l22::if_node(LINE, $3, $6); }
+                  | tIF '(' expr ')' tTHEN block elif_block { $$ = new l22::if_else_node(LINE, $3, $6, $7); }
+                  | tWHILE '(' expr ')' tDO block           { $$ = new l22::while_node(LINE, $3, $6); }
+                  | block                                   { $$ = $1; }
+                  ;
 
 lambda : '(' opt_arg_decs ')' '-''>' type ':' block { $$ = new l22::lambda_node(LINE, $6, $2, $8); }
        ;
