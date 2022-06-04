@@ -39,14 +39,14 @@ inline bool valid(int indent) {
 #define yyerror LexerError
 %}
 
-SPACE        [ \t]
+SPACE        [ ]
 INT          [[:digit:]]+
 
 LETTER       [A-Za-z_]
 IDENTIFIER   {LETTER}({LETTER}|[:digit:])*
 
 %x X_COMMENT
-%x X_STRING  
+%x X_TEXT  
 %x X_NEWLINE
 %x X_BACKSLASH
 
@@ -146,6 +146,13 @@ IDENTIFIER   {LETTER}({LETTER}|[:digit:])*
 <X_COMMENT>"*)"                yy_pop_state();
 <X_COMMENT>.|\n                ;   /* ignore inside comments */
 
+
+  /* ====================================================================== */
+  /* ====[                  3.4 Palavras-chave                        ]==== */
+  /* ====================================================================== */
+"begin"                        return tBEGIN;
+"end"                          return tEND;
+
   /* ====================================================================== */
   /* ====[                  3.5 - Types                               ]==== */
   /* ====================================================================== */
@@ -154,7 +161,7 @@ IDENTIFIER   {LETTER}({LETTER}|[:digit:])*
 "double"                       return tTYPE_DOUBLE;
 "text"                         return tTYPE_TEXT;
 "void"                         return tTYPE_VOID;
-[<>]                           return *yytext;
+[\[\]<>]                       return *yytext;
 
   /* =============================================================================== */
   /* ====[                  3.9.1 - Integers                                   ]==== */      
@@ -166,21 +173,21 @@ IDENTIFIER   {LETTER}({LETTER}|[:digit:])*
   /* ====[                  3.9.2 - Floating Point Reals                       ]==== */                        
   /* =============================================================================== */
 
-([0-9]*\.[0-9]+|[0-9]+\.[0-9]*)([eE][-+]?[0-9]+)? { yylval.d = strtod(yytext, NULL); return tREAL; }
+([0-9]*\.[0-9]+|[0-9]+\.[0-9]*)([eE][-+]?[0-9]+)? { yylval.d = strtod(yytext, NULL); return tDOUBLE; }
 
   /* =============================================================================== */
   /* ====[                  3.9.3 - Strings                                    ]==== */                   
   /* =============================================================================== */
 
-"\""                           yy_push_state(X_STRING);
-<X_STRING>\\                   yy_push_state(X_BACKSLASH);
-<X_STRING>"\""                 {
+"\""                           yy_push_state(X_TEXT);
+<X_TEXT>\\                   yy_push_state(X_BACKSLASH);
+<X_TEXT>"\""                 {
                                  yylval.s = new std::string(strlit.str());
                                  strlit.str("");
                                  yy_pop_state();
-                                 return tSTRING;
+                                 return tTEXT;
                                }
-<X_STRING>.                    strlit << *yytext;
+<X_TEXT>.                    strlit << *yytext;
 
 <X_BACKSLASH>n                 strlit << '\n'; yy_pop_state();
 <X_BACKSLASH>r                 strlit << '\r'; yy_pop_state();
@@ -214,35 +221,33 @@ IDENTIFIER   {LETTER}({LETTER}|[:digit:])*
 
 "if"                           return tIF;
 "elif"                         return tELIF;
-"then"                         return tTHEN;
-"else"                         return tELSE;
+"then:"                        return tTHEN;
+"else:"                        return tELSE;
 
   /* ===================================================================== */
   /* ====[                 6.3 - Iteration Instructions              ]==== */
   /* ===================================================================== */
 
 "while"                        return tWHILE; 
-"do"                           return tDO;
+"do:"                          return tDO;
 
   /* ===================================================================== */
   /* ====[                 6.4 - Termination Instructions            ]==== */
   /* ===================================================================== */
 
 "stop"                         return tSTOP;
-"break"                        return tBREAK;
 
   /* ===================================================================== */
   /* ====[                 6.5 - Instrução de continuação            ]==== */
   /* ===================================================================== */
 
 "again"                        return tAGAIN;
-"continue"                     return tCONTINUE;
 
   /* ====================================================================== */
   /* ====[                  6.6 - Return Instruction                  ]==== */
   /* ====================================================================== */
 
-"return"                       tRETURN;
+"return"                       return tRETURN;
 
   /* ====================================================================== */
   /* ====[                  6.6 - Printing Instructions               ]==== */
@@ -255,7 +260,7 @@ IDENTIFIER   {LETTER}({LETTER}|[:digit:])*
   /* ====[                 7 - Expressions                            ]==== */
   /* ====================================================================== */
 
-[\[\]()+-?*/%~<>=@:]            return *yytext;
+[\[\]()+-?*/%<>=@:]            return *yytext;
 "not"                          return tNOT;
 "and"                          return tAND;
 "or"                           return tOR;

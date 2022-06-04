@@ -6,7 +6,6 @@
 
 namespace l22
 {
-
     /**
      * Class for describing identity nodes
      */
