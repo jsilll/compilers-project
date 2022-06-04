@@ -1,35 +1,25 @@
-#---------------------------------------------------------------
-#             CONFIGURE THESE VARIABLES IF NEEDED
-#---------------------------------------------------------------
+
 
 ROOT = ${HOME}/compiladores/root
 RTS_LIB_DIR = $(ROOT)/usr/lib
-
 COMPILER=../l22
 ASM=yasm
 
-#---------------------------------------------------------------
-#    PROBABLY, NO NEED TO CHANGE ANYTHING BEYOND THIS POINT
-#---------------------------------------------------------------
-
-COMPILER_FLAGS = 
-LDFLAGS  = -m elf_i386 -L$(RTS_LIB_DIR) -lrts
-
-SOURCES     = $(wildcard *tests/.l22)
-OBJECTS     = $(SOURCES:%.l22=%.o)
+LDFLAGS = -m elf_i386 -L$(RTS_LIB_DIR) -lrts
+SOURCES = $(wildcard ./src/*.l22)
+OBJECTS = $(SOURCES:%.l22=%.o)
 EXECUTABLES = $(SOURCES:%.l22=%)
-
-#---------------------------------------------------------------
-#                DO NOT CHANGE AFTER THIS LINE
-#---------------------------------------------------------------
+XMLS = $(SOURCES:%.l22=%.xml)
 
 all: $(EXECUTABLES)
 
-%.c: %.l22
-	$(COMPILER) $< -o $@
+xml: $(XMLS)
+
+%.xml: %.l22
+	$(COMPILER) --target xml $< -o $@
 
 %.asm: %.l22
-	$(COMPILER) --target asm $<
+	$(COMPILER) --target asm $< -o $@
 
 %.o: %.asm
 	$(ASM) -felf32 $< -o $@
@@ -38,8 +28,4 @@ all: $(EXECUTABLES)
 	$(LD) $< -o $@ $(LDFLAGS)
 
 clean:
-	$(RM) $(OBJECTS) $(EXECUTABLES) *.c *.asm
-
-#---------------------------------------------------------------
-#                           THE END
-#---------------------------------------------------------------
+	$(RM) $(OBJECTS) $(EXECUTABLES) $(XMLS) *.asm

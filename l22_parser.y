@@ -182,7 +182,7 @@ argdec : type tID { $$ = new l22::declaration_node(LINE, tPRIVATE, $1, *$2, null
        ;
 
 exprs : expr        { $$ = new cdk::sequence_node(LINE, $1); }
-      | exprs expr  { $$ = new cdk::sequence_node(LINE, $2, $1); }
+      | exprs ',' expr  { $$ = new cdk::sequence_node(LINE, $3, $1); }
       ;
 
 opt_exprs : /* empty */ { $$ = new cdk::sequence_node(LINE); }
