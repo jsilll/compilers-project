@@ -39,7 +39,7 @@ inline bool valid(int indent) {
 #define yyerror LexerError
 %}
 
-SPACE        [ \t]
+SPACE        [ ]
 INT          [[:digit:]]+
 
 LETTER       [A-Za-z_]
