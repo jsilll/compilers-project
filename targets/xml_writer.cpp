@@ -7,27 +7,27 @@
 
 void l22::xml_writer::do_nil_node(cdk::nil_node *const node, int lvl)
 {
-  // EMPTY
+  //  EMPTY
 }
 void l22::xml_writer::do_data_node(cdk::data_node *const node, int lvl)
 {
-  // EMPTY
+  //  EMPTY
 }
 void l22::xml_writer::do_double_node(cdk::double_node *const node, int lvl)
 {
-  // EMPTY
+  //  EMPTY
 }
 void l22::xml_writer::do_not_node(cdk::not_node *const node, int lvl)
 {
-  // EMPTY
+  //  EMPTY
 }
 void l22::xml_writer::do_and_node(cdk::and_node *const node, int lvl)
 {
-  // EMPTY
+  //  EMPTY
 }
 void l22::xml_writer::do_or_node(cdk::or_node *const node, int lvl)
 {
-  // EMPTY
+  //  EMPTY
 }
 
 //---------------------------------------------------------------------------
@@ -162,6 +162,12 @@ void l22::xml_writer::do_program_node(l22::program_node *const node, int lvl)
 
 //---------------------------------------------------------------------------
 
+void l22::xml_writer::do_block_node(l22::block_node *node, int lvl)
+{
+}
+
+//---------------------------------------------------------------------------
+
 void l22::xml_writer::do_evaluation_node(l22::evaluation_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
@@ -191,6 +197,14 @@ void l22::xml_writer::do_while_node(l22::while_node *const node, int lvl)
   node->block()->accept(this, lvl + 4);
   closeTag("block", lvl + 2);
   closeTag(node, lvl);
+}
+
+void l22::xml_writer::do_again_node(l22::again_node *node, int lvl)
+{
+}
+
+void l22::xml_writer::do_stop_node(l22::stop_node *node, int lvl)
+{
 }
 
 //---------------------------------------------------------------------------
@@ -226,37 +240,15 @@ void l22::xml_writer::do_if_else_node(l22::if_else_node *const node, int lvl)
 
 //---------------------------------------------------------------------------
 
-void l22::xml_writer::do_again_node(l22::again_node *node, int lvl)
+void l22::xml_writer::do_lambda_node(l22::lambda_node *node, int lvl)
 {
 }
-
-//---------------------------------------------------------------------------
-
-void l22::xml_writer::do_block_node(l22::block_node *node, int lvl)
-{
-}
-
-//---------------------------------------------------------------------------
 
 void l22::xml_writer::do_function_call_node(l22::function_call_node *node, int lvl)
 {
 }
 
-//---------------------------------------------------------------------------
-
-void l22::xml_writer::do_lambda_node(l22::lambda_node *node, int lvl)
-{
-}
-
-//---------------------------------------------------------------------------
-
 void l22::xml_writer::do_return_node(l22::return_node *node, int lvl)
-{
-}
-
-//---------------------------------------------------------------------------
-
-void l22::xml_writer::do_stop_node(l22::stop_node *node, int lvl)
 {
 }
 

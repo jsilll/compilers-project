@@ -11,7 +11,7 @@ namespace l22
    */
   class program_node : public cdk::basic_node
   {
-    l22::block_node *_block; // TODO: change this to l22::block_node (parser needs to recognize blocks)
+    l22::block_node *_block;
 
   public:
     inline program_node(int lineno, l22::block_node *block) : cdk::basic_node(lineno), _block(block)

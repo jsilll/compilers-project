@@ -12,7 +12,7 @@ namespace l22
   class while_node : public cdk::basic_node
   {
     cdk::expression_node *_condition;
-    l22::block_node *_block; // TODO: change this to l22::block_node (parser needs to recognize blocks)
+    l22::block_node *_block;
 
   public:
     inline while_node(int lineno, cdk::expression_node *condition, l22::block_node *block) : basic_node(lineno), _condition(condition), _block(block)
