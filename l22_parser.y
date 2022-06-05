@@ -47,7 +47,7 @@
 %token tSIZEOF
 %token tTYPE_DOUBLE tTYPE_INT tTYPE_TEXT tTYPE_VOID
 %token tVAR
-%token tWHILE  tDO tSTOP tAGAIN
+%token tWHILE tDO tSTOP tAGAIN
 %token tWRITE tWRITELN
 
 %token<d> tDOUBLE
@@ -240,9 +240,9 @@ expr : tINTEGER                  { $$ = new cdk::integer_node(LINE, $1); }
      
      /* Function Calls */
      | expr    '(' opt_exprs ')' { $$ = new l22::function_call_node(LINE, $1, $3); }
-     | tSIZEOF '(' expr      ')' { $$ = new l22::sizeof_node(LINE, $3); }
-     | '@'     '(' opt_exprs ')' { $$ = new l22::function_call_node(LINE, nullptr, $3);  }
      | tID     '(' opt_exprs ')' { $$ = new l22::function_call_node(LINE, *$1, $3); delete $1; }
+     | tSIZEOF '(' expr      ')' { $$ = new l22::sizeof_node(LINE, $3); }
+     | '@'     '(' opt_exprs ')' { $$ = new l22::function_call_node(LINE, "@", $3);  }
      
      /* Memory Expressions */
      | '('     expr       ')'    { $$ = $2; }

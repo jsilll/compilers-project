@@ -19,7 +19,7 @@ namespace l22
     }
 
   public:
-    inline l22::block_node *statements()
+    inline l22::block_node *block()
     {
       return _block;
     }
