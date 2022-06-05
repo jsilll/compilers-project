@@ -41,3 +41,6 @@ l22_parser.tab.c
 l22_parser.tab.h
 l22_scanner.cpp
 libs/
+tests/src/*.asm
+tests/src/*.o
+tests/src/*.xml

@@ -18,13 +18,10 @@ namespace l22
    */
   class xml_writer : public basic_ast_visitor
   {
-    cdk::symbol_table<l22::symbol> &_symtab;
-
     std::ostringstream _namestream;
 
-    // TODO: see what is necessary from here
-    // semantic analysis
-    std::stack<int> _forIni, _forStep, _forEnd; // for break/repeat
+    cdk::symbol_table<l22::symbol> &_symtab;
+    std::stack<int> _forIni, _forStep, _forEnd; // for break / continue
     std::stack<bool> _globals;                  // for deciding whether a variable is global or not
     std::shared_ptr<l22::symbol> _function;     // for keeping track of the current function and its arguments
 

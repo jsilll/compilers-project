@@ -29,4 +29,5 @@ asm: $(ASMS)
 	$(LD) $< -o $@ $(LDFLAGS)
 
 clean:
-	$(RM) $(OBJECTS) $(EXECUTABLES) $(ASMS) $(XMLS)
+	$(info Cleaning ...)
+	@$(RM) $(OBJECTS) $(EXECUTABLES) $(ASMS) $(XMLS)
