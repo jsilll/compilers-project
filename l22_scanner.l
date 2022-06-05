@@ -140,7 +140,7 @@ IDENTIFIER   {LETTER}({LETTER}|[[:digit:]])*
 
 {SPACE}*"..."\n                ;   /* ignore continuation marks */
 
-";".*$                         ;   /* match the whole line (it is ignored) */
+";".*\n                        ;   /* match the whole line (it is ignored) */
 
 "(*"                           yy_push_state(X_COMMENT);
 <X_COMMENT>"*)"                yy_pop_state();
@@ -180,22 +180,22 @@ IDENTIFIER   {LETTER}({LETTER}|[[:digit:]])*
   /* =============================================================================== */
 
 "\""                           yy_push_state(X_TEXT);
-<X_TEXT>\\                   yy_push_state(X_BACKSLASH);
-<X_TEXT>"\""                 {
+<X_TEXT>\\                     yy_push_state(X_BACKSLASH);
+<X_TEXT>"\""                   {
                                  yylval.s = new std::string(strlit.str());
                                  strlit.str("");
                                  yy_pop_state();
                                  return tTEXT;
                                }
-<X_TEXT>.                    strlit << *yytext;
+<X_TEXT>.                      strlit << *yytext;
 
 <X_BACKSLASH>n                 strlit << '\n'; yy_pop_state();
 <X_BACKSLASH>r                 strlit << '\r'; yy_pop_state();
 <X_BACKSLASH>t                 strlit << '\t'; yy_pop_state();
 <X_BACKSLASH>\\                strlit << '\\'; yy_pop_state();
 
-<X_BACKSLASH>[[:xdigit:]]{1,2} {
-                                 strlit << (char)(unsigned char)strtoul(yytext, NULL, 16);
+<X_BACKSLASH>[0-6]{1,3}        {
+                                 strlit << (char)(unsigned char)strtoul(yytext, NULL, 7);
                                  yy_pop_state();
                                }
 <X_BACKSLASH>.                 strlit << *yytext; yy_pop_state();
