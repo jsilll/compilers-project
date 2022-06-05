@@ -81,7 +81,6 @@
 
 %%
 
-/* TODO: Regras do lvalue: será que isto contempla tudo e / ou nao contempla coisas a mais? */
 /* TODO: Conflitos: ver a ordem das regras (porque isso importa) e ver a as precedencias?? (%left e tBATATA) */
 
 file : opt_declarations         { compiler->ast($$ = $1); }
@@ -240,12 +239,10 @@ expr : tINTEGER                  { $$ = new cdk::integer_node(LINE, $1); }
      | lambda                    { $$ = $1; }
      
      /* Function Calls */
-
-     /* TODO generalize for lvalues function calling */
-     | tID     '(' opt_exprs ')' { $$ = new l22::function_call_node(LINE, *$1, $3); delete $1; }
-     | lambda  '(' opt_exprs ')' { $$ = new l22::function_call_node(LINE, $1, $3); }
-     | '@'     '(' opt_exprs ')' { $$ = new l22::function_call_node(LINE, nullptr, $3);  }
+     | expr    '(' opt_exprs ')' { $$ = new l22::function_call_node(LINE, $1, $3); }
      | tSIZEOF '(' expr      ')' { $$ = new l22::sizeof_node(LINE, $3); }
+     | '@'     '(' opt_exprs ')' { $$ = new l22::function_call_node(LINE, nullptr, $3);  }
+     | tID     '(' opt_exprs ')' { $$ = new l22::function_call_node(LINE, *$1, $3); delete $1; }
      
      /* Memory Expressions */
      | '('     expr       ')'    { $$ = $2; }
@@ -257,6 +254,7 @@ text : tTEXT      { $$ = $1; }
      | text tTEXT { $$->append(*$2); delete $2; }
      ;
 
+/* TODO: Regras do lvalue: será que isto contempla tudo e / ou nao contempla coisas a mais? */
 lvalue : tID                 { $$ = new cdk::variable_node(LINE, *$1); delete $1; }
        | expr   '[' expr ']' { $$ = new l22::index_node(LINE, $1, $3); }
        | lvalue '[' expr ']' { $$ = new l22::index_node(LINE, new cdk::rvalue_node(LINE, $1), $3); }
