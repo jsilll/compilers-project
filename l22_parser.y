@@ -57,16 +57,17 @@
 %token<s> tTEXT
 
 %nonassoc tIF
-%nonassoc tELIF
+%nonassoc tTHEN
+%nonassoc tELIF tELSE
 
-%left '*' '/' '%'
-%left '+' '-'
-%left '<' tLE tGE '>'
-%left tAND
-%left tNE tEQ
-%left tOR
-%right tNOT
 %right '='
+%left tOR
+%left tAND
+%right tNOT
+%left tNE tEQ
+%left '<' tLE tGE '>'
+%left '+' '-'
+%left '*' '/' '%'
 %right tUMINUS
 
 %type<block> block 
@@ -238,7 +239,7 @@ expr : tINTEGER                  { $$ = new cdk::integer_node(LINE, $1); }
      /* Lambdas */
      | lambda                    { $$ = $1; }
      
-     /* Function Calls */
+     /* Function Calls TODO: esta certo? */
      | expr    '(' opt_exprs ')' { $$ = new l22::function_call_node(LINE, $1, $3); }
      | tID     '(' opt_exprs ')' { $$ = new l22::function_call_node(LINE, *$1, $3); delete $1; }
      | tSIZEOF '(' expr      ')' { $$ = new l22::sizeof_node(LINE, $3); }
