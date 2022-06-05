@@ -240,6 +240,8 @@ expr : tINTEGER                  { $$ = new cdk::integer_node(LINE, $1); }
      | lambda                    { $$ = $1; }
      
      /* Function Calls */
+
+     /* TODO generalize for lvalues function calling */
      | tID     '(' opt_exprs ')' { $$ = new l22::function_call_node(LINE, *$1, $3); delete $1; }
      | lambda  '(' opt_exprs ')' { $$ = new l22::function_call_node(LINE, $1, $3); }
      | '@'     '(' opt_exprs ')' { $$ = new l22::function_call_node(LINE, "@", $3);  }
@@ -256,8 +258,8 @@ text : tTEXT      { $$ = $1; }
      ;
 
 lvalue : tID                 { $$ = new cdk::variable_node(LINE, *$1); delete $1; }
-       | lvalue '[' expr ']' { $$ = new l22::index_node(LINE, new cdk::rvalue_node(LINE, $1), $3); }
        | expr   '[' expr ']' { $$ = new l22::index_node(LINE, $1, $3); }
+       | lvalue '[' expr ']' { $$ = new l22::index_node(LINE, new cdk::rvalue_node(LINE, $1), $3); }
        ;
 
 %%
