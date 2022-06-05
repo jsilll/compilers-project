@@ -43,7 +43,7 @@ SPACE        [ ]
 INT          [[:digit:]]+
 
 LETTER       [A-Za-z_]
-IDENTIFIER   {LETTER}({LETTER}|[:digit:])*
+IDENTIFIER   {LETTER}({LETTER}|[[:digit:]])*
 
 %x X_COMMENT
 %x X_TEXT  
