@@ -53,7 +53,9 @@ void l22::xml_writer::do_sequence_node(cdk::sequence_node *const node, int lvl)
 {
   os() << std::string(lvl, ' ') << "<sequence_node size='" << node->size() << "'>" << std::endl;
   for (size_t i = 0; i < node->size(); i++)
+  {
     node->node(i)->accept(this, lvl + 2);
+  }
   closeTag(node, lvl);
 }
 
@@ -73,7 +75,7 @@ void l22::xml_writer::do_string_node(cdk::string_node *const node, int lvl)
 
 void l22::xml_writer::do_unary_operation(cdk::unary_operation_node *const node, int lvl)
 {
-  ASSERT_SAFE_EXPRESSIONS;
+  // ASSERT_SAFE_EXPRESSIONS;
   openTag(node, lvl);
   node->argument()->accept(this, lvl + 2);
   closeTag(node, lvl);
@@ -88,7 +90,7 @@ void l22::xml_writer::do_neg_node(cdk::neg_node *const node, int lvl)
 
 void l22::xml_writer::do_binary_operation(cdk::binary_operation_node *const node, int lvl)
 {
-  ASSERT_SAFE_EXPRESSIONS;
+  // ASSERT_SAFE_EXPRESSIONS;
   openTag(node, lvl);
   node->left()->accept(this, lvl + 2);
   node->right()->accept(this, lvl + 2);
@@ -144,13 +146,13 @@ void l22::xml_writer::do_eq_node(cdk::eq_node *const node, int lvl)
 
 void l22::xml_writer::do_variable_node(cdk::variable_node *const node, int lvl)
 {
-  ASSERT_SAFE_EXPRESSIONS;
+  // ASSERT_SAFE_EXPRESSIONS;
   os() << std::string(lvl, ' ') << "<" << node->label() << ">" << node->name() << "</" << node->label() << ">" << std::endl;
 }
 
 void l22::xml_writer::do_rvalue_node(cdk::rvalue_node *const node, int lvl)
 {
-  ASSERT_SAFE_EXPRESSIONS;
+  // ASSERT_SAFE_EXPRESSIONS;
   openTag(node, lvl);
   node->lvalue()->accept(this, lvl + 4);
   closeTag(node, lvl);
@@ -158,7 +160,7 @@ void l22::xml_writer::do_rvalue_node(cdk::rvalue_node *const node, int lvl)
 
 void l22::xml_writer::do_assignment_node(cdk::assignment_node *const node, int lvl)
 {
-  ASSERT_SAFE_EXPRESSIONS;
+  // ASSERT_SAFE_EXPRESSIONS;
   openTag(node, lvl);
 
   node->lvalue()->accept(this, lvl);
@@ -173,7 +175,7 @@ void l22::xml_writer::do_assignment_node(cdk::assignment_node *const node, int l
 void l22::xml_writer::do_program_node(l22::program_node *const node, int lvl)
 {
   openTag(node, lvl);
-  node->statements()->accept(this, lvl + 4);
+  node->block()->accept(this, lvl + 4);
   closeTag(node, lvl);
 }
 
@@ -182,18 +184,21 @@ void l22::xml_writer::do_program_node(l22::program_node *const node, int lvl)
 void l22::xml_writer::do_block_node(l22::block_node *node, int lvl)
 {
   openTag(node, lvl);
-  openTag("declarations", lvl);
+
+  openTag("declarations", lvl + 2);
   if (node->declarations())
   {
     node->declarations()->accept(this, lvl + 4);
   }
-  closeTag("declarations", lvl);
-  openTag("instructions", lvl);
+  closeTag("declarations", lvl + 2);
+
+  openTag("instructions", lvl + 2);
   if (node->instructions())
   {
     node->instructions()->accept(this, lvl + 4);
   }
-  closeTag("instructions", lvl);
+  closeTag("instructions", lvl + 2);
+
   closeTag(node, lvl);
 }
 
@@ -201,7 +206,7 @@ void l22::xml_writer::do_block_node(l22::block_node *node, int lvl)
 
 void l22::xml_writer::do_evaluation_node(l22::evaluation_node *const node, int lvl)
 {
-  ASSERT_SAFE_EXPRESSIONS;
+  // ASSERT_SAFE_EXPRESSIONS;
   openTag(node, lvl);
   node->argument()->accept(this, lvl + 2);
   closeTag(node, lvl);
@@ -209,7 +214,7 @@ void l22::xml_writer::do_evaluation_node(l22::evaluation_node *const node, int l
 
 void l22::xml_writer::do_print_node(l22::print_node *const node, int lvl)
 {
-  ASSERT_SAFE_EXPRESSIONS;
+  // ASSERT_SAFE_EXPRESSIONS;
   openTag(node, lvl);
   node->arguments()->accept(this, lvl + 2);
   closeTag(node, lvl);
@@ -219,7 +224,7 @@ void l22::xml_writer::do_print_node(l22::print_node *const node, int lvl)
 
 void l22::xml_writer::do_while_node(l22::while_node *const node, int lvl)
 {
-  ASSERT_SAFE_EXPRESSIONS;
+  // ASSERT_SAFE_EXPRESSIONS;
   openTag(node, lvl);
   openTag("condition", lvl + 2);
   node->condition()->accept(this, lvl + 4);
@@ -246,7 +251,7 @@ void l22::xml_writer::do_stop_node(l22::stop_node *node, int lvl)
 
 void l22::xml_writer::do_if_node(l22::if_node *const node, int lvl)
 {
-  ASSERT_SAFE_EXPRESSIONS;
+  // ASSERT_SAFE_EXPRESSIONS;
   openTag(node, lvl);
   openTag("condition", lvl + 2);
   node->condition()->accept(this, lvl + 4);
@@ -259,7 +264,7 @@ void l22::xml_writer::do_if_node(l22::if_node *const node, int lvl)
 
 void l22::xml_writer::do_if_else_node(l22::if_else_node *const node, int lvl)
 {
-  ASSERT_SAFE_EXPRESSIONS;
+  // ASSERT_SAFE_EXPRESSIONS;
   openTag(node, lvl);
   openTag("condition", lvl + 2);
   node->condition()->accept(this, lvl + 4);
@@ -277,7 +282,7 @@ void l22::xml_writer::do_if_else_node(l22::if_else_node *const node, int lvl)
 
 void l22::xml_writer::do_lambda_node(l22::lambda_node *node, int lvl)
 {
-  ASSERT_SAFE_EXPRESSIONS;
+  // ASSERT_SAFE_EXPRESSIONS;
 
   _function = new_symbol();
   reset_new_symbol();
@@ -321,7 +326,7 @@ void l22::xml_writer::do_function_call_node(l22::function_call_node *node, int l
 
 void l22::xml_writer::do_return_node(l22::return_node *node, int lvl)
 {
-  ASSERT_SAFE_EXPRESSIONS;
+  // ASSERT_SAFE_EXPRESSIONS;
 
   openTag(node, lvl);
   if (node->retval())
@@ -335,11 +340,13 @@ void l22::xml_writer::do_return_node(l22::return_node *node, int lvl)
 
 void l22::xml_writer::do_declaration_node(l22::declaration_node *node, int lvl)
 {
-  ASSERT_SAFE_EXPRESSIONS;
+  // ASSERT_SAFE_EXPRESSIONS;
   reset_new_symbol();
 
+  std::string type = node->type() ? cdk::to_string(node->type()) : "var";
+
   os() << std::string(lvl, ' ') << "<" << node->label() << " name='" << node->identifier() << "' qualifier='"
-       << qualifier_name(node->qualifier()) << "' type='" << cdk::to_string(node->type()) << "'>"
+       << qualifier_name(node->qualifier()) << "' type='" << type << "'>"
        << std::endl;
 
   if (node->initializer())
@@ -348,6 +355,7 @@ void l22::xml_writer::do_declaration_node(l22::declaration_node *node, int lvl)
     node->initializer()->accept(this, lvl + 4);
     closeTag("initializer", lvl);
   }
+
   closeTag(node, lvl);
 }
 
