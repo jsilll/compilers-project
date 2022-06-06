@@ -254,7 +254,6 @@ text : tTEXT      { $$ = $1; }
      | text tTEXT { $$->append(*$2); delete $2; }
      ;
 
-/* TODO: Regras do lvalue: será que isto contempla tudo e / ou nao contempla coisas a mais? */
 lvalue : tID                             { $$ = new cdk::variable_node(LINE, *$1); delete $1; }
        | lvalue       '['    expr   ']'  { $$ = new l22::index_node(LINE, new cdk::rvalue_node(LINE, $1), $3); }
        | '(' expr ')' '['    expr   ']'  { $$ = new l22::index_node(LINE, $2, $5); }
