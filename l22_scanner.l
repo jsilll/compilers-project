@@ -81,24 +81,24 @@ IDENTIFIER   {LETTER}({LETTER}|[[:digit:]])*
 <X_NEWLINE>^{SPACE}+  {
     yy_pop_state();
     if (valid(yyleng)) {
-          std::cerr << "CASE 1" << std::endl;
-          if (lLevelsToPop == 0) {
-            // at the same level: ignore index, do not return tINDENT;
-            std::cerr << "CASE 1a (levels to pop = 0)" << std::endl;
-            return ';';
-          }
-          else {
-            // nothing is done here: the scanner will ignore the input while levels > 0
-            // and send block-end tokens to the parser
-            std::cerr << "CASE 1b (levels to pop = " << lLevelsToPop << ")" << std::endl;
-            // at least one has to be returned here...
-            if (lLevelsToPop > 0) {
-              std::cerr << "POPPING LEVELS (" << lLevelsToPop << ")" << std::endl;
-              lLevelsToPop--;
-              indents.pop_back();
-              return '}';
-            }
-          }
+      std::cerr << "CASE 1" << std::endl;
+      if (lLevelsToPop == 0) {
+        // at the same level: ignore index, do not return tINDENT;
+        std::cerr << "CASE 1a (levels to pop = 0)" << std::endl;
+        return ';';
+      }
+      else {
+        // nothing is done here: the scanner will ignore the input while levels > 0
+        // and send block-end tokens to the parser
+        std::cerr << "CASE 1b (levels to pop = " << lLevelsToPop << ")" << std::endl;
+        // at least one has to be returned here...
+        if (lLevelsToPop > 0) {
+          std::cerr << "POPPING LEVELS (" << lLevelsToPop << ")" << std::endl;
+          lLevelsToPop--;
+          indents.pop_back();
+          return '}';
+        }
+      }
     }
     else if (indents.size() == 0) {
           // first block to open
@@ -150,6 +150,7 @@ IDENTIFIER   {LETTER}({LETTER}|[[:digit:]])*
   /* ====================================================================== */
   /* ====[                  3.4 Palavras-chave                        ]==== */
   /* ====================================================================== */
+
 "begin"                        return tBEGIN;
 "end"                          return tEND;
 
@@ -194,10 +195,7 @@ IDENTIFIER   {LETTER}({LETTER}|[[:digit:]])*
 <X_BACKSLASH>t                 strlit << '\t'; yy_pop_state();
 <X_BACKSLASH>\\                strlit << '\\'; yy_pop_state();
 
-<X_BACKSLASH>[0-6]{1,3}        {
-                                 strlit << (char)(unsigned char)strtoul(yytext, NULL, 7);
-                                 yy_pop_state();
-                               }
+<X_BACKSLASH>[0-6]{1,3}        { strlit << (char)(unsigned char)strtoul(yytext, NULL, 7); yy_pop_state(); }
 <X_BACKSLASH>.                 strlit << *yytext; yy_pop_state();
 
   /* =============================================================================== */
@@ -219,7 +217,7 @@ IDENTIFIER   {LETTER}({LETTER}|[[:digit:]])*
   /* ====[                 5.2 - Function Calls                          ]==== */
   /* ========================================================================= */
 
-"@"                            return tSELF;
+"@"                            return *yytext;
 
   /* ========================================================================= */
   /* ====[                 6.2 - Conditional Instructions                ]==== */
@@ -266,7 +264,7 @@ IDENTIFIER   {LETTER}({LETTER}|[[:digit:]])*
   /* ====[                 7 - Expressions                            ]==== */
   /* ====================================================================== */
 
-[\[\]()+-?*/%<>=]            return *yytext;
+[\[\]()+-?*/%<>=]              return *yytext;
 "not"                          return tNOT;
 "and"                          return tAND;
 "or"                           return tOR;

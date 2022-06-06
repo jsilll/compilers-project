@@ -49,7 +49,6 @@
 %token tVAR
 %token tWHILE tDO tSTOP tAGAIN
 %token tWRITE tWRITELN
-%token tSELF
 
 %token<d> tDOUBLE
 %token<i> tFOREIGN tPUBLIC tUSE tPRIVATE
@@ -259,7 +258,7 @@ text : tTEXT      { $$ = $1; }
 lvalue : tID                             { $$ = new cdk::variable_node(LINE, *$1); delete $1; }
        | lvalue       '['    expr   ']'  { $$ = new l22::index_node(LINE, new cdk::rvalue_node(LINE, $1), $3); }
        | '(' expr ')' '['    expr   ']'  { $$ = new l22::index_node(LINE, $2, $5); }
-       | tSELF                           { $$ = new cdk::variable_node(LINE, "@"); }
+       | '@'                             { $$ = new cdk::variable_node(LINE, "@"); }
        ;
 
 %%
