@@ -139,6 +139,7 @@ function_type : type '<' arg_types '>' {
                                          auto v = std::vector<std::shared_ptr<cdk::basic_type>>();
                                          v.push_back($1);
                                          $$ = cdk::functional_type::create(v, *$3);
+                                         delete $3;
                                        }
               | type '<'           '>' { 
                                          auto v = std::vector<std::shared_ptr<cdk::basic_type>>();
