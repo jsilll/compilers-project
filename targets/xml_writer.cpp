@@ -305,16 +305,9 @@ void l22::xml_writer::do_lambda_node(l22::lambda_node *node, int lvl)
 
 void l22::xml_writer::do_function_call_node(l22::function_call_node *node, int lvl)
 {
-  if (node->identifier() != "")
-  {
-    os() << std::string(lvl, ' ') << "<" << node->label() << " name='" << node->identifier() << "'>" << std::endl;
-  }
-  else
-  {
-    openTag("pointer", lvl);
-    node->fptr()->accept(this, lvl + 4);
-    openTag("pointer", lvl);
-  }
+  openTag("pointer", lvl);
+  node->lambda_ptr()->accept(this, lvl + 4);
+  openTag("pointer", lvl);
   openTag("arguments", lvl);
   if (node->arguments())
   {

@@ -49,6 +49,7 @@
 %token tVAR
 %token tWHILE tDO tSTOP tAGAIN
 %token tWRITE tWRITELN
+%token tSELF
 
 %token<d> tDOUBLE
 %token<i> tFOREIGN tPUBLIC tUSE tPRIVATE
@@ -118,7 +119,6 @@ declaration :           type tID opt_initializer { $$ = new l22::declaration_nod
             |           tVAR tID '=' expr        { $$ = new l22::declaration_node(LINE, tPRIVATE, nullptr, *$2, $4); delete $2; }  
             | tPUBLIC        tID '=' expr        { $$ = new l22::declaration_node(LINE, tPUBLIC, nullptr, *$2, $4); delete $2; }
             | tPUBLIC   tVAR tID '=' expr        { $$ = new l22::declaration_node(LINE, tPUBLIC, nullptr, *$3, $5); delete $3; }
-            | tFOREIGN  tVAR tID '=' expr        { $$ = new l22::declaration_node(LINE, tFOREIGN, nullptr, *$3, $5); delete $3; }
             | tFOREIGN  type tID                 { $$ = new l22::declaration_node(LINE, $1, $2, *$3, nullptr); delete $3; }
             | tUSE      type tID                 { $$ = new l22::declaration_node(LINE, $1, $2, *$3, nullptr); delete $3; }
             ;
@@ -240,10 +240,9 @@ expr : tINTEGER                  { $$ = new cdk::integer_node(LINE, $1); }
      | lambda                    { $$ = $1; }
      
      /* Function Calls TODO: esta certo? */
-     | expr    '(' opt_exprs ')' { $$ = new l22::function_call_node(LINE, $1, $3); }
-     | tID     '(' opt_exprs ')' { $$ = new l22::function_call_node(LINE, *$1, $3); delete $1; }
-     | tSIZEOF '(' expr      ')' { $$ = new l22::sizeof_node(LINE, $3); }
-     | '@'     '(' opt_exprs ')' { $$ = new l22::function_call_node(LINE, "@", $3);  }
+     | '(' expr ')' '(' opt_exprs ')' { $$ = new l22::function_call_node(LINE, $2, $5); }
+     | lvalue       '(' opt_exprs ')' { $$ = new l22::function_call_node(LINE, new cdk::rvalue_node(LINE, $1), $3); }
+     | tSIZEOF      '(' expr      ')' { $$ = new l22::sizeof_node(LINE, $3); }
      
      /* Memory Expressions */
      | '('     expr       ')'    { $$ = $2; }
@@ -256,9 +255,10 @@ text : tTEXT      { $$ = $1; }
      ;
 
 /* TODO: Regras do lvalue: será que isto contempla tudo e / ou nao contempla coisas a mais? */
-lvalue : tID                 { $$ = new cdk::variable_node(LINE, *$1); delete $1; }
-       | expr   '[' expr ']' { $$ = new l22::index_node(LINE, $1, $3); }
-       | lvalue '[' expr ']' { $$ = new l22::index_node(LINE, new cdk::rvalue_node(LINE, $1), $3); }
+lvalue : tID                             { $$ = new cdk::variable_node(LINE, *$1); delete $1; }
+       | lvalue       '['    expr   ']'  { $$ = new l22::index_node(LINE, new cdk::rvalue_node(LINE, $1), $3); }
+       | '(' expr ')' '['    expr   ']'  { $$ = new l22::index_node(LINE, $2, $5); }
+       | tSELF                           { $$ = new cdk::variable_node(LINE, "@"); }
        ;
 
 %%

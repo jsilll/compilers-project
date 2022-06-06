@@ -35,7 +35,7 @@ OFILES  = $(SRC_CPP:%.cpp=%.o)
 
 all: .auto/all_nodes.h .auto/visitor_decls.h $(COMPILER)
 
-debug: YFLAGS += --debug --verbose
+debug: YFLAGS += --debug --verbose -Wcounterexamples
 debug: LFLAGS += -d
 debug: all
 
