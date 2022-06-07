@@ -82,8 +82,6 @@
 
 %%
 
-/* TODO: Conflitos: ver a ordem das regras (porque isso importa) e ver a as precedencias?? (%left e tBATATA) */
-
 file : opt_declarations         { compiler->ast($$ = $1); }
      | opt_declarations program { compiler->ast($$ = new cdk::sequence_node(LINE, $2, $1)); }
      ;
