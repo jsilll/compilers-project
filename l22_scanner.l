@@ -140,9 +140,10 @@ IDENTIFIER   {LETTER}({LETTER}|[[:digit:]])*
 
 {SPACE}*"..."\n                ;   /* ignore continuation marks */
 
-";".*\n                        ;   /* match the whole line (it is ignored) */
+";".*                          ;   /* match the whole line (it is ignored) */
 
 "(*"                           yy_push_state(X_COMMENT);
+<X_COMMENT>"(*"                yy_push_state(X_COMMENT);
 <X_COMMENT>"*)"                yy_pop_state();
 <X_COMMENT>.|\n                ;   /* ignore inside comments */
 
