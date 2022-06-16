@@ -16,17 +16,18 @@ xml: $(XMLS)
 
 asm: $(ASMS)
 
-%.xml: %.l22
-	$(COMPILER) --target xml $< -o $@
 
-%.asm: %.l22
-	$(COMPILER) --target asm $< -o $@
+%:%.o
+	$(LD) $< -o $@ $(LDFLAGS)
 
 %.o: %.asm
 	$(ASM) -felf32 $< -o $@
 
-%:%.o
-	$(LD) $< -o $@ $(LDFLAGS)
+%.asm: %.l22
+	$(COMPILER) --target asm $< -o $@
+
+%.xml: %.l22
+	$(COMPILER) --target xml $< -o $@
 
 clean:
 	$(info Cleaning ...)
