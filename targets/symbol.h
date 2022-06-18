@@ -10,12 +10,18 @@ namespace l22
 
   class symbol
   {
-    std::shared_ptr<cdk::basic_type> _type;
     std::string _name;
-    long _value; // hack!
+    long _value;
+
+    std::shared_ptr<cdk::basic_type> _type;
+    bool _constant;
+    int _qualifier; // public private etc
+    bool _initialized;
+    bool _function;
 
   public:
-    symbol(std::shared_ptr<cdk::basic_type> type, const std::string &name, long value) : _type(type), _name(name), _value(value)
+    symbol(std::shared_ptr<cdk::basic_type> type, const std::string &name, long value, bool constant, int qualifier, bool initialized)
+        : _type(type), _name(name), _value(value), _constant(constant), _qualifier(qualifier), _initialized(initialized)
     {
     }
 
@@ -43,6 +49,47 @@ namespace l22
     long value(long v)
     {
       return _value = v;
+    }
+
+    bool constant() const
+    {
+      return _constant;
+    }
+    int qualifier() const
+    {
+      return _qualifier;
+    }
+
+    std::shared_ptr<cdk::basic_type> type() const
+    {
+      return _type;
+    }
+    void set_type(std::shared_ptr<cdk::basic_type> t)
+    {
+      _type = t;
+    }
+    bool is_typed(cdk::typename_type name) const
+    {
+      return _type->name() == name;
+    }
+
+    const std::string &identifier() const
+    {
+      return name();
+    }
+    bool initialized() const
+    {
+      return _initialized;
+    }
+
+    bool isFunction() const
+    {
+      return _function;
+    }
+
+    bool isVariable() const
+    {
+      return !_function;
     }
   };
 
