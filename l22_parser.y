@@ -60,6 +60,9 @@
 %nonassoc tTHEN
 %nonassoc tELIF tELSE
 
+%nonassoc tWHILE
+%nonassoc tDO
+
 %right '='
 %left tOR
 %left tAND
@@ -149,27 +152,27 @@ arg_types : type               { $$ = new std::vector<std::shared_ptr<cdk::basic
           | arg_types ',' type { $1->push_back($3); $$ = $1; }
           ;
 
-instruction : expr           { $$ = new l22::evaluation_node(LINE, $1); }
+instruction : expr                                  { $$ = new l22::evaluation_node(LINE, $1); }
             
             /* Print Instructions */
-            | tWRITE   exprs { $$ = new l22::print_node(LINE, $2); }
-            | tWRITELN exprs { $$ = new l22::print_node(LINE, $2, true); }
+            | tWRITE   exprs                        { $$ = new l22::print_node(LINE, $2); }
+            | tWRITELN exprs                        { $$ = new l22::print_node(LINE, $2, true); }
             
             /* Early Stop Instructions */
-            | tAGAIN         { $$ = new l22::again_node(LINE); }
-            | tSTOP          { $$ = new l22::stop_node(LINE); }
-            | tRETURN        { $$ = new l22::return_node(LINE); }
-            | tRETURN expr   { $$ = new l22::return_node(LINE, $2); }
+            | tAGAIN                                { $$ = new l22::again_node(LINE); }
+            | tSTOP                                 { $$ = new l22::stop_node(LINE); }
+            | tRETURN                               { $$ = new l22::return_node(LINE); }
+            | tRETURN expr                          { $$ = new l22::return_node(LINE, $2); }
 
             /* Conditional Instructions */
-            | tIF     '(' expr ')' tTHEN block            { $$ = new l22::if_node(LINE, $3, $6); }
+            | tIF     '(' expr ')' tTHEN block      { $$ = new l22::if_node(LINE, $3, $6); }
             | tIF     '(' expr ')' tTHEN block elif { $$ = new l22::if_else_node(LINE, $3, $6, $7); }
             
             /* Iteration Instructions */
-            | tWHILE  '(' expr ')' tDO block              { $$ = new l22::while_node(LINE, $3, $6); }
+            | tWHILE  '(' expr ')' tDO block        { $$ = new l22::while_node(LINE, $3, $6); }
   
             /* Block Instrcution */
-            | block                                       { $$ = $1; }
+            | block                                 { $$ = $1; }
             ;
 
 lambda : '(' opt_arg_decs ')' '-' '>' type ':' block { $$ = new l22::lambda_node(LINE, $6, $2, $8); }

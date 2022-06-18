@@ -42,8 +42,7 @@ inline bool valid(int indent) {
 SPACE        [ ]
 INT          [[:digit:]]*
 
-LETTER       [A-Za-z_]
-IDENTIFIER   {LETTER}({LETTER}|[[:digit:]])*
+IDENTIFIER   [A-Za-z][A-Za-z0-9_]*
 
 %x X_COMMENT
 %x X_TEXT  
@@ -140,9 +139,10 @@ IDENTIFIER   {LETTER}({LETTER}|[[:digit:]])*
 
 {SPACE}*"..."\n                ;   /* ignore continuation marks */
 
-";".*\n                        ;   /* match the whole line (it is ignored) */
+";".*                          ;   /* match the whole line (it is ignored) */
 
 "(*"                           yy_push_state(X_COMMENT);
+<X_COMMENT>"(*"                yy_push_state(X_COMMENT);
 <X_COMMENT>"*)"                yy_pop_state();
 <X_COMMENT>.|\n                ;   /* ignore inside comments */
 
@@ -170,13 +170,14 @@ IDENTIFIER   {LETTER}({LETTER}|[[:digit:]])*
 
 0[0-6]+                                { yylval.i = strtoul(yytext, NULL, 7); return tINTEGER; }
 0[0-9]+                                yyerror("Invalid base 7 number");
-0|[1-9]{INT}                               yylval.i = strtoul(yytext, NULL, 10); return tINTEGER;
+0|[1-9]{INT}                           yylval.i = strtoul(yytext, NULL, 10); return tINTEGER;
 
   /* =============================================================================== */
   /* ====[                  3.9.2 - Floating Point Reals                       ]==== */                        
   /* =============================================================================== */
 
 ([0-9]*\.[0-9]+|[0-9]+\.[0-9]*)([eE][-+]?[0-9]+)? { yylval.d = strtod(yytext, NULL); return tDOUBLE; }
+[0-9]+([Ee][-+]?[0-9]+)                           { yylval.d = strtod(yytext, NULL); return tDOUBLE; }
 
   /* =============================================================================== */
   /* ====[                  3.9.3 - Strings                                    ]==== */                   
