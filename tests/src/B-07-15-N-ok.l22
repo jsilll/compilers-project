@@ -1,4 +1,0 @@
-begin 
-    writeln 150 % 100 
-    return 0 
-end

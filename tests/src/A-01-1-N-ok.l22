@@ -1,5 +1,0 @@
-begin
-  writeln "string"
-  return 0
-end
-

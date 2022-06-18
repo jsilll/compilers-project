@@ -1,9 +1,0 @@
-void<> f
-begin
-  f = () -> void:
-    int x = 3
-    writeln x
-  f()
-  return 0
-end
-

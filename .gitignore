@@ -44,3 +44,4 @@ libs/
 tests/src/*.asm
 tests/src/*.o
 tests/src/*.xml
+tests/src/src/*

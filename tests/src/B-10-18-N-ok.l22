@@ -1,4 +1,0 @@
-begin 
-    writeln not 10 > 3 
-    return 0 
-end

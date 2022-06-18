@@ -15,7 +15,7 @@ namespace l22
     bool _newline = false;
 
   public:
-    inline print_node(int lineno, cdk::sequence_node *arguments, bool newline = false) : cdk::basic_node(lineno), _arguments(arguments)
+    inline print_node(int lineno, cdk::sequence_node *arguments, bool newline = false) : cdk::basic_node(lineno), _arguments(arguments), _newline(newline)
     {
     }
 

@@ -1,4 +1,0 @@
-begin 
-    writeln 100 / 100 
-    return 0 
-end

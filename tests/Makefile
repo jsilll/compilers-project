@@ -2,6 +2,7 @@ ROOT = ${HOME}/compiladores/root
 RTS_LIB_DIR = $(ROOT)/usr/lib
 COMPILER=../l22
 ASM=yasm
+LD=ld
 
 LDFLAGS = -m elf_i386 -L$(RTS_LIB_DIR) -lrts
 SOURCES = $(wildcard ./src/*.l22)
@@ -16,9 +17,8 @@ xml: $(XMLS)
 
 asm: $(ASMS)
 
-
 %:%.o
-	$(LD) $< -o $@ $(LDFLAGS)
+	$(LD) $< -o src/$@ $(LDFLAGS)
 
 %.o: %.asm
 	$(ASM) -felf32 $< -o $@
@@ -31,4 +31,4 @@ asm: $(ASMS)
 
 clean:
 	$(info Cleaning ...)
-	@$(RM) $(OBJECTS) $(EXECUTABLES) $(ASMS) $(XMLS)
+	@$(RM) $(OBJECTS) $(EXECUTABLES) $(ASMS) $(XMLS) src/src/*

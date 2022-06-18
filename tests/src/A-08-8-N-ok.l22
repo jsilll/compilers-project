@@ -1,4 +1,0 @@
-begin 
-    writeln "x\nY\t\233\n"      
-    return 0 
-end

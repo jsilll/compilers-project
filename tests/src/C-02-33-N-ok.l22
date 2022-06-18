@@ -1,5 +1,0 @@
-int x = 4      
-begin 
-    writeln x     
-    return 0 
-end

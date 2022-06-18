@@ -1,4 +1,0 @@
-begin 
-    writeln 021               
-    return 0 
-end

@@ -1,5 +1,0 @@
-int x          
-begin 
-    writeln x - x 
-    return 0 
-end

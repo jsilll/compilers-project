@@ -1,5 +1,0 @@
-begin
-  writeln "\122" (* "not" "a" "string" *) "A"
-  return 0
-end
-

@@ -27,24 +27,10 @@ void l22::type_checker::do_data_node(cdk::data_node *const node, int lvl)
 {
   // EMPTY
 }
-void l22::type_checker::do_double_node(cdk::double_node *const node, int lvl)
-{
-  // EMPTY
-}
-void l22::type_checker::do_not_node(cdk::not_node *const node, int lvl)
-{
-  // EMPTY
-}
-void l22::type_checker::do_and_node(cdk::and_node *const node, int lvl)
-{
-  // EMPTY
-}
-void l22::type_checker::do_or_node(cdk::or_node *const node, int lvl)
-{
-  // EMPTY
-}
 
 //---------------------------------------------------------------------------
+
+/* data type nodes */
 
 void l22::type_checker::do_integer_node(cdk::integer_node *const node, int lvl)
 {
@@ -72,17 +58,38 @@ void l22::type_checker::do_nullptr_node(l22::nullptr_node *const node, int lvl)
 
 //---------------------------------------------------------------------------
 
+/* unary expression nodes */
+
 void l22::type_checker::processUnaryExpression(cdk::unary_operation_node *const node, int lvl)
 {
+  ASSERT_UNSPEC;
   node->argument()->accept(this, lvl + 2);
-  if (!node->argument()->is_typed(cdk::TYPE_INT))
-    throw std::string("wrong type in argument of unary expression");
-
-  // in Simple, expressions are always int
-  node->type(cdk::primitive_type::create(4, cdk::TYPE_INT));
+  if (node->argument()->is_typed(cdk::TYPE_INT))
+  {
+    node->type(cdk::primitive_type::create(4, cdk::TYPE_INT));
+  }
+  else if (node->argument()->is_typed(cdk::TYPE_UNSPEC))
+  {
+    node->type(cdk::primitive_type::create(4, cdk::TYPE_INT));
+    node->argument()->type(cdk::primitive_type::create(4, cdk::TYPE_INT));
+  }
+  else
+  {
+    throw std::string("wrong type in unary logical expression");
+  }
 }
 
 void l22::type_checker::do_neg_node(cdk::neg_node *const node, int lvl)
+{
+  processUnaryExpression(node, lvl);
+}
+
+void l22::type_checker::do_not_node(cdk::not_node *const node, int lvl)
+{
+  processUnaryExpression(node, lvl);
+}
+
+void l22::type_checker::do_identity_node(l22::identity_node *node, int lvl)
 {
   processUnaryExpression(node, lvl);
 }
@@ -104,6 +111,20 @@ void l22::type_checker::processBinaryExpression(cdk::binary_operation_node *cons
   node->type(cdk::primitive_type::create(4, cdk::TYPE_INT));
 }
 
+void l22::type_checker::do_GeneralLogicalExpression(cdk::binary_operation_node *const node, int lvl)
+{
+  ASSERT_UNSPEC;
+  node->left()->accept(this, lvl + 2);
+  node->right()->accept(this, lvl + 2);
+  if (node->left()->type() != node->right()->type())
+  {
+    throw std::string("same type expected on both sides of equality operator");
+  }
+  node->type(cdk::primitive_type::create(4, cdk::TYPE_INT));
+}
+
+/* arithmetic nodes */
+
 void l22::type_checker::do_add_node(cdk::add_node *const node, int lvl)
 {
   processBinaryExpression(node, lvl);
@@ -124,6 +145,20 @@ void l22::type_checker::do_mod_node(cdk::mod_node *const node, int lvl)
 {
   processBinaryExpression(node, lvl);
 }
+
+/* comparison nodes */
+
+// check if i want to change binary expression checking
+
+void l22::type_checker::do_and_node(cdk::and_node *const node, int lvl)
+{
+  processBinaryExpression(node, lvl);
+}
+void l22::type_checker::do_or_node(cdk::or_node *const node, int lvl)
+{
+  processBinaryExpression(node, lvl);
+}
+
 void l22::type_checker::do_lt_node(cdk::lt_node *const node, int lvl)
 {
   processBinaryExpression(node, lvl);
@@ -142,14 +177,16 @@ void l22::type_checker::do_gt_node(cdk::gt_node *const node, int lvl)
 }
 void l22::type_checker::do_ne_node(cdk::ne_node *const node, int lvl)
 {
-  processBinaryExpression(node, lvl);
+  do_GeneralLogicalExpression(node, lvl);
 }
 void l22::type_checker::do_eq_node(cdk::eq_node *const node, int lvl)
 {
-  processBinaryExpression(node, lvl);
+  do_GeneralLogicalExpression(node, lvl);
 }
 
 //---------------------------------------------------------------------------
+
+/* all variable relation nodes */
 
 void l22::type_checker::do_variable_node(cdk::variable_node *const node, int lvl)
 {
@@ -268,6 +305,59 @@ void l22::type_checker::do_assignment_node(cdk::assignment_node *const node, int
   }
 }
 
+void l22::type_checker::do_declaration_node(l22::declaration_node *node, int lvl)
+{
+  if (node->initializer() != nullptr)
+  {
+    node->initializer()->accept(this, lvl + 2);
+
+    if (node->is_typed(cdk::TYPE_INT))
+    {
+      if (!node->initializer()->is_typed(cdk::TYPE_INT))
+        throw std::string("wrong type for initializer (integer expected).");
+    }
+    else if (node->is_typed(cdk::TYPE_DOUBLE))
+    {
+      if (!node->initializer()->is_typed(cdk::TYPE_INT) && !node->initializer()->is_typed(cdk::TYPE_DOUBLE))
+      {
+        throw std::string("wrong type for initializer (integer or double expected).");
+      }
+    }
+    else if (node->is_typed(cdk::TYPE_STRING))
+    {
+      if (!node->initializer()->is_typed(cdk::TYPE_STRING))
+      {
+        throw std::string("wrong type for initializer (string expected).");
+      }
+    }
+    else if (node->is_typed(cdk::TYPE_POINTER))
+    {
+      // DAVID: FIXME: trouble!!!
+      if (!node->initializer()->is_typed(cdk::TYPE_POINTER))
+      {
+        auto in = (cdk::literal_node<int> *)node->initializer();
+        if (in == nullptr || in->value() != 0)
+          throw std::string("wrong type for initializer (pointer expected).");
+      }
+    }
+    else
+    {
+      throw std::string("unknown type for initializer.");
+    }
+
+    const std::string &id = node->identifier();
+    auto symbol = l22::make_symbol(false, node->qualifier(), node->type(), id, (bool)node->initializer());
+    if (_symtab.insert(id, symbol))
+    {
+      _parent->set_new_symbol(symbol); // advise parent that a symbol has been inserted
+    }
+    else
+    {
+      throw std::string("variable '" + id + "' redeclared");
+    }
+  }
+}
+
 //---------------------------------------------------------------------------
 
 void l22::type_checker::do_program_node(l22::program_node *const node, int lvl)
@@ -342,18 +432,6 @@ void l22::type_checker::do_stop_node(l22::stop_node *node, int lvl)
 
 //---------------------------------------------------------------------------
 
-void l22::type_checker::do_declaration_node(l22::declaration_node *node, int lvl)
-{
-}
-
-//---------------------------------------------------------------------------
-
-void l22::type_checker::do_nullptr_node(l22::nullptr_node *node, int lvl)
-{
-}
-
-//---------------------------------------------------------------------------
-
 void l22::type_checker::do_address_of_node(l22::address_of_node *node, int lvl)
 {
 }
@@ -379,11 +457,5 @@ void l22::type_checker::do_sizeof_node(l22::sizeof_node *node, int lvl)
 //---------------------------------------------------------------------------
 
 void l22::type_checker::do_stack_alloc_node(l22::stack_alloc_node *node, int lvl)
-{
-}
-
-//---------------------------------------------------------------------------
-
-void l22::type_checker::do_identity_node(l22::identity_node *node, int lvl)
 {
 }

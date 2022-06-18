@@ -1,4 +1,0 @@
-begin 
-    writeln "ola" 
-    return 0 
-end

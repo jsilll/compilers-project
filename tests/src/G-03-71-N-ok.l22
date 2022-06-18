@@ -1,4 +1,0 @@
-begin
-  writeln sizeof(null)
-end
-

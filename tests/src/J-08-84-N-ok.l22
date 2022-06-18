@@ -1,7 +1,0 @@
-int<> f = () -> int:
-  return 2
-begin
-  writeln f()
-  return 0
-end
-

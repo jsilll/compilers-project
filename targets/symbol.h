@@ -5,38 +5,52 @@
 #include <memory>
 #include <cdk/types/basic_type.h>
 
-namespace l22 {
+namespace l22
+{
 
-  class symbol {
+  class symbol
+  {
     std::shared_ptr<cdk::basic_type> _type;
     std::string _name;
     long _value; // hack!
 
   public:
-    symbol(std::shared_ptr<cdk::basic_type> type, const std::string &name, long value) :
-        _type(type), _name(name), _value(value) {
+    symbol(std::shared_ptr<cdk::basic_type> type, const std::string &name, long value) : _type(type), _name(name), _value(value)
+    {
     }
 
-    virtual ~symbol() {
+    virtual ~symbol()
+    {
       // EMPTY
     }
 
-    std::shared_ptr<cdk::basic_type> type() const {
+    std::shared_ptr<cdk::basic_type> type() const
+    {
       return _type;
     }
-    bool is_typed(cdk::typename_type name) const {
+    bool is_typed(cdk::typename_type name) const
+    {
       return _type->name() == name;
     }
-    const std::string &name() const {
+    const std::string &name() const
+    {
       return _name;
     }
-    long value() const {
+    long value() const
+    {
       return _value;
     }
-    long value(long v) {
+    long value(long v)
+    {
       return _value = v;
     }
   };
+
+  inline auto make_symbol(bool constant, int qualifier, std::shared_ptr<cdk::basic_type> type, const std::string &name,
+                          bool initialized)
+  {
+    return std::make_shared<symbol>(constant, qualifier, type, name, initialized);
+  }
 
 } // l22
 

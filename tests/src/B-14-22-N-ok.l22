@@ -1,4 +1,0 @@
-begin 
-    writeln 10 == 3 and not 10 == 3 
-    return 0 
-end

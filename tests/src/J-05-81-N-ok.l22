@@ -1,7 +1,0 @@
-var pi = () -> int:
-  return 314
-begin
-  writeln pi()
-  return 0
-end
-

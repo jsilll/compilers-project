@@ -1,4 +1,0 @@
-begin 
-    writeln 1 + 2     
-    return 0 
-end
