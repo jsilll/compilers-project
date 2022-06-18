@@ -168,7 +168,6 @@ IDENTIFIER   {LETTER}({LETTER}|[[:digit:]])*
   /* ====[                  3.9.1 - Integers                                   ]==== */      
   /* =============================================================================== */
 
-
 0[0-6]+                                { yylval.i = strtoul(yytext, NULL, 7); return tINTEGER; }
 0[0-9]+                                yyerror("Invalid base 7 number");
 0|[1-9]{INT}                               yylval.i = strtoul(yytext, NULL, 10); return tINTEGER;

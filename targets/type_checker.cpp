@@ -13,7 +13,8 @@
 
 void l22::type_checker::do_sequence_node(cdk::sequence_node *const node, int lvl)
 {
-  // EMPTY
+  for (size_t i = 0; i < node->size(); i++)
+    node->node(i)->accept(this, lvl);
 }
 
 //---------------------------------------------------------------------------
@@ -55,6 +56,18 @@ void l22::type_checker::do_string_node(cdk::string_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
   node->type(cdk::primitive_type::create(4, cdk::TYPE_STRING));
+}
+
+void l22::type_checker::do_double_node(cdk::double_node *const node, int lvl)
+{
+  ASSERT_UNSPEC;
+  node->type(cdk::primitive_type::create(4, cdk::TYPE_DOUBLE));
+}
+
+void l22::type_checker::do_nullptr_node(l22::nullptr_node *const node, int lvl)
+{
+  ASSERT_UNSPEC;
+  node->type(cdk::reference_type::create(4, nullptr));
 }
 
 //---------------------------------------------------------------------------
@@ -144,7 +157,7 @@ void l22::type_checker::do_variable_node(cdk::variable_node *const node, int lvl
   const std::string &id = node->name();
   std::shared_ptr<l22::symbol> symbol = _symtab.find(id);
 
-  if (symbol != nullptr)
+  if (symbol)
   {
     node->type(symbol->type());
   }
@@ -172,27 +185,87 @@ void l22::type_checker::do_assignment_node(cdk::assignment_node *const node, int
 {
   ASSERT_UNSPEC;
 
-  try
+  node->lvalue()->accept(this, lvl + 4);
+  node->rvalue()->accept(this, lvl + 4);
+
+  if (node->lvalue()->is_typed(cdk::TYPE_INT))
   {
-    node->lvalue()->accept(this, lvl);
+    if (node->rvalue()->is_typed(cdk::TYPE_INT))
+    {
+      node->type(cdk::primitive_type::create(4, cdk::TYPE_INT));
+    }
+    else if (node->rvalue()->is_typed(cdk::TYPE_UNSPEC))
+    {
+      node->type(cdk::primitive_type::create(4, cdk::TYPE_INT));
+      node->rvalue()->type(cdk::primitive_type::create(4, cdk::TYPE_INT));
+    }
+    else
+    {
+      throw std::string("wrong assignment to integer");
+    }
   }
-  catch (const std::string &id)
+  else if (node->lvalue()->is_typed(cdk::TYPE_POINTER))
   {
-    auto symbol = std::make_shared<l22::symbol>(cdk::primitive_type::create(4, cdk::TYPE_INT), id, 0);
-    _symtab.insert(id, symbol);
-    _parent->set_new_symbol(symbol);   // advise parent that a symbol has been inserted
-    node->lvalue()->accept(this, lvl); // DAVID: bah!
+
+    // TODO: check pointer level
+
+    if (node->rvalue()->is_typed(cdk::TYPE_POINTER))
+    {
+      node->type(node->rvalue()->type());
+    }
+    else if (node->rvalue()->is_typed(cdk::TYPE_INT))
+    {
+      // TODO: check that the integer is a literal and that it is zero
+      node->type(cdk::primitive_type::create(4, cdk::TYPE_POINTER));
+    }
+    else if (node->rvalue()->is_typed(cdk::TYPE_UNSPEC))
+    {
+      node->type(cdk::primitive_type::create(4, cdk::TYPE_ERROR));
+      node->rvalue()->type(cdk::primitive_type::create(4, cdk::TYPE_ERROR));
+    }
+    else
+    {
+      throw std::string("wrong assignment to pointer");
+    }
   }
+  else if (node->lvalue()->is_typed(cdk::TYPE_DOUBLE))
+  {
 
-  if (!node->lvalue()->is_typed(cdk::TYPE_INT))
-    throw std::string("wrong type in left argument of assignment expression");
+    if (node->rvalue()->is_typed(cdk::TYPE_DOUBLE) || node->rvalue()->is_typed(cdk::TYPE_INT))
+    {
+      node->type(cdk::primitive_type::create(8, cdk::TYPE_DOUBLE));
+    }
+    else if (node->rvalue()->is_typed(cdk::TYPE_UNSPEC))
+    {
+      node->type(cdk::primitive_type::create(8, cdk::TYPE_DOUBLE));
+      node->rvalue()->type(cdk::primitive_type::create(8, cdk::TYPE_DOUBLE));
+    }
+    else
+    {
+      throw std::string("wrong assignment to real");
+    }
+  }
+  else if (node->lvalue()->is_typed(cdk::TYPE_STRING))
+  {
 
-  node->rvalue()->accept(this, lvl + 2);
-  if (!node->rvalue()->is_typed(cdk::TYPE_INT))
-    throw std::string("wrong type in right argument of assignment expression");
-
-  // in Simple, expressions are always int
-  node->type(cdk::primitive_type::create(4, cdk::TYPE_INT));
+    if (node->rvalue()->is_typed(cdk::TYPE_STRING))
+    {
+      node->type(cdk::primitive_type::create(4, cdk::TYPE_STRING));
+    }
+    else if (node->rvalue()->is_typed(cdk::TYPE_UNSPEC))
+    {
+      node->type(cdk::primitive_type::create(4, cdk::TYPE_STRING));
+      node->rvalue()->type(cdk::primitive_type::create(4, cdk::TYPE_STRING));
+    }
+    else
+    {
+      throw std::string("wrong assignment to string");
+    }
+  }
+  else
+  {
+    throw std::string("wrong types in assignment");
+  }
 }
 
 //---------------------------------------------------------------------------
