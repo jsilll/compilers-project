@@ -17,6 +17,7 @@ L_NAME=$(LANGUAGE)_scanner
 Y_NAME=$(LANGUAGE)_parser
 
 LFLAGS   = 
+YFLAGS   = -dtv
 CXXFLAGS = -std=c++17 -DYYDEBUG=1 -pedantic -Wall -Wextra -ggdb -I. -I$(CDK_INC_DIR) -Wno-unused-parameter
 LDFLAGS  = -L$(CDK_LIB_DIR) -lcdk #-lLLVM
 COMPILER = $(LANGUAGE)
@@ -34,7 +35,7 @@ OFILES  = $(SRC_CPP:%.cpp=%.o)
 
 all: .auto/all_nodes.h .auto/visitor_decls.h $(COMPILER)
 
-debug: YFLAGS += --debug --verbose -Wcounterexamples -dtv
+debug: YFLAGS += --debug --verbose -Wcounterexamples
 debug: LFLAGS += -d
 debug: all
 
