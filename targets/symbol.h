@@ -10,18 +10,18 @@ namespace l22
 
   class symbol
   {
+    std::shared_ptr<cdk::basic_type> _type;
     std::string _name;
     long _value;
 
-    std::shared_ptr<cdk::basic_type> _type;
     bool _constant;
     int _qualifier; // public private etc
     bool _initialized;
     bool _function;
 
   public:
-    symbol(std::shared_ptr<cdk::basic_type> type, const std::string &name, long value, bool constant, int qualifier, bool initialized)
-        : _type(type), _name(name), _value(value), _constant(constant), _qualifier(qualifier), _initialized(initialized)
+    symbol(std::shared_ptr<cdk::basic_type> type, const std::string &name, bool constant, int qualifier, bool initialized, bool function)
+        : _type(type), _name(name), _value(0), _constant(constant), _qualifier(qualifier), _initialized(initialized), _function(function)
     {
     }
 
@@ -60,17 +60,9 @@ namespace l22
       return _qualifier;
     }
 
-    std::shared_ptr<cdk::basic_type> type() const
-    {
-      return _type;
-    }
     void set_type(std::shared_ptr<cdk::basic_type> t)
     {
       _type = t;
-    }
-    bool is_typed(cdk::typename_type name) const
-    {
-      return _type->name() == name;
     }
 
     const std::string &identifier() const
@@ -93,10 +85,9 @@ namespace l22
     }
   };
 
-  inline auto make_symbol(bool constant, int qualifier, std::shared_ptr<cdk::basic_type> type, const std::string &name,
-                          bool initialized)
+  inline auto make_symbol(std::shared_ptr<cdk::basic_type> type, const std::string &name, bool constant, int qualifier, bool initialized, bool function)
   {
-    return std::make_shared<symbol>(constant, qualifier, type, name, initialized);
+    return std::make_shared<symbol>(type, name, constant, qualifier, initialized, function);
   }
 
 } // l22
