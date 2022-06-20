@@ -27,10 +27,23 @@ namespace l22
       os().flush();
     }
 
+    // TODO: maybe not needed?
   protected:
-    void processUnaryExpression(cdk::unary_operation_node *const node, int lvl);
+    void do_UnaryExpression(cdk::unary_operation_node *const node, int lvl);
+
+  protected:
+    void do_IntOnlyExpression(cdk::binary_operation_node *const node, int lvl);
+    void do_PIDExpression(cdk::binary_operation_node *const node, int lvl);
+    void do_IDExpression(cdk::binary_operation_node *const node, int lvl);
+
+  protected:
+    void do_ScalarLogicalExpression(cdk::binary_operation_node *const node, int lvl);
+    void do_BooleanLogicalExpression(cdk::binary_operation_node *const node, int lvl);
     void do_GeneralLogicalExpression(cdk::binary_operation_node *const node, int lvl);
-    void processBinaryExpression(cdk::binary_operation_node *const node, int lvl);
+
+  protected:
+    void do_BinaryExpression(cdk::binary_operation_node *const node, int lvl);
+
     template <typename T>
     void process_literal(cdk::literal_node<T> *const node, int lvl)
     {
