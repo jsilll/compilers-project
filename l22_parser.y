@@ -38,6 +38,10 @@
   std::vector<std::shared_ptr<cdk::basic_type>> *vtypes;
 };
 
+/*
+TODO: block instruction and block expression, for reducing conflicts
+*/
+
 %token tBEGIN tEND
 %token tIF tELIF tTHEN tELSE
 %token tINPUT
@@ -49,6 +53,7 @@
 %token tVAR
 %token tWHILE tDO tSTOP tAGAIN
 %token tWRITE tWRITELN
+%token tSELF
 
 %token<d> tDOUBLE
 %token<i> tFOREIGN tPUBLIC tUSE tPRIVATE
@@ -95,7 +100,7 @@ program : tBEGIN block tEND { $$ = new l22::program_node(LINE, $2); }
 block : '{' opt_declarations opt_instructions '}' { $$ = new l22::block_node(LINE, $2, $3); }
       ;
 
-opt_declarations : /* empty */  { $$ = new cdk::sequence_node(LINE); }
+opt_declarations : /* empty */  { $$ = nullptr; }
                  | declarations { $$ = $1; }
                  ;
 
@@ -105,7 +110,7 @@ declarations : declaration                  { $$ = new cdk::sequence_node(LINE, 
              | declarations declaration ';' { $$ = new cdk::sequence_node(LINE, $2, $1); }
              ;
 
-opt_instructions : /* empty */  { $$ = new cdk::sequence_node(LINE); }
+opt_instructions : /* empty */  { $$ = nullptr; }
                  | instructions { $$ = $1; }
                  ;
 
@@ -178,7 +183,7 @@ instruction : expr                                  { $$ = new l22::evaluation_n
 lambda : '(' opt_arg_decs ')' '-' '>' type ':' block { $$ = new l22::lambda_node(LINE, $6, $2, $8); }
        ;
 
-opt_arg_decs : /* empty */              { $$ = new cdk::sequence_node(LINE); }
+opt_arg_decs : /* empty */               { $$ = nullptr; }
              | arg_desc                  { $$ = new cdk::sequence_node(LINE, $1); }
              | opt_arg_decs ',' arg_desc { $$ = new cdk::sequence_node(LINE, $3, $1); }
              ;
@@ -190,7 +195,7 @@ exprs : expr             { $$ = new cdk::sequence_node(LINE, $1); }
       | exprs ',' expr   { $$ = new cdk::sequence_node(LINE, $3, $1); }
       ;
 
-opt_exprs : /* empty */ { $$ = new cdk::sequence_node(LINE); }
+opt_exprs : /* empty */ { $$ = nullptr; }
           | exprs       { $$ = $1; }
           ;
 
@@ -258,7 +263,7 @@ text : tTEXT      { $$ = $1; }
 lvalue : tID                             { $$ = new cdk::variable_node(LINE, *$1); delete $1; }
        | lvalue       '['    expr   ']'  { $$ = new l22::index_node(LINE, new cdk::rvalue_node(LINE, $1), $3); }
        | '(' expr ')' '['    expr   ']'  { $$ = new l22::index_node(LINE, $2, $5); }
-       | '@'                             { $$ = new cdk::variable_node(LINE, "@"); }
+       | tSELF                           { $$ = new cdk::variable_node(LINE, "@"); }
        ;
 
 %%
