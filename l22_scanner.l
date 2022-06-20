@@ -168,30 +168,16 @@ IDENTIFIER   [A-Za-z][A-Za-z0-9_]*
   /* ====[                  3.9.1 - Integers                                   ]==== */      
   /* =============================================================================== */
 
-0[0-6]+                                { try { 
-                                           yylval.i = std::stoi(yytext, nullptr, 7);
-                                           return tINTEGER;
-                                         } catch (std::out_of_range& e) { yyerror("Integer out of range."); }
-                                       }
+0[0-6]+                                { yylval.i = strtoul(yytext, NULL, 7); return tINTEGER; }
 0[0-9]+                                yyerror("Invalid base 7 number");
-0|[1-9]{INT}                           {  try { 
-                                          yylval.i = std::stoi(yytext, nullptr, 10);
-                                          return tINTEGER;
-                                          } catch (std::out_of_range& e) { yyerror("Integer out of range.");}
-                                       }
+0|[1-9]{INT}                           yylval.i = strtoul(yytext, NULL, 10); return tINTEGER;
 
   /* =============================================================================== */
   /* ====[                  3.9.2 - Floating Point Reals                       ]==== */                        
   /* =============================================================================== */
 
-([0-9]*\.[0-9]+|[0-9]+\.[0-9]*)([eE][-+]?[0-9]+)? { try { yylval.d = strtod(yytext, NULL); 
-                                                          return tDOUBLE;
-                                                        } catch (std::out_of_range& e) { yyerror("Real out of range."); } 
-                                                  }
-[0-9]+([Ee][-+]?[0-9]+)                           { try { yylval.d = strtod(yytext, NULL); 
-                                                          return tDOUBLE;
-                                                        } catch (std::out_of_range& e) { yyerror("Real out of range."); } 
-                                                  }
+([0-9]*\.[0-9]+|[0-9]+\.[0-9]*)([eE][-+]?[0-9]+)? { yylval.d = strtod(yytext, NULL); return tDOUBLE; }
+[0-9]+([Ee][-+]?[0-9]+)                           { yylval.d = strtod(yytext, NULL); return tDOUBLE; }
 
   /* =============================================================================== */
   /* ====[                  3.9.3 - Strings                                    ]==== */                   
@@ -212,14 +198,7 @@ IDENTIFIER   [A-Za-z][A-Za-z0-9_]*
 <X_BACKSLASH>t                 strlit << '\t'; yy_pop_state();
 <X_BACKSLASH>\\                strlit << '\\'; yy_pop_state();
 
-<X_BACKSLASH>[0-6]{1,3}        { 
-                                unsigned long int res =  std::strtoul(yytext, NULL, 7);
-                                if (res > 255) 
-                                {
-                                  yyerror("Special character out of range");
-                                }
-                                strlit << (char)(unsigned char)res; yy_pop_state(); 
-                               }
+<X_BACKSLASH>[0-6]{1,3}        { strlit << (char)(unsigned char)strtoul(yytext, NULL, 7); yy_pop_state(); }
 <X_BACKSLASH>.                 strlit << *yytext; yy_pop_state();
 
   /* =============================================================================== */
@@ -241,7 +220,7 @@ IDENTIFIER   [A-Za-z][A-Za-z0-9_]*
   /* ====[                 5.2 - Function Calls                          ]==== */
   /* ========================================================================= */
 
-"@"                            return tSELF;
+"@"                            return *yytext;
 
   /* ========================================================================= */
   /* ====[                 6.2 - Conditional Instructions                ]==== */
