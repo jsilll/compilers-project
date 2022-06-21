@@ -399,7 +399,13 @@ void l22::postfix_writer::do_if_else_node(l22::if_else_node *const node, int lvl
 
 //---------------------------------------------------------------------------
 
+/* loop jumping nodes */
+
 void l22::postfix_writer::do_again_node(l22::again_node *node, int lvl)
+{
+}
+
+void l22::postfix_writer::do_stop_node(l22::stop_node *node, int lvl)
 {
 }
 
@@ -461,12 +467,6 @@ void l22::postfix_writer::do_return_node(l22::return_node *node, int lvl)
 
   // _pf.JMP(_currentBodyRetLabel);
   // _returnSeen = true;
-}
-
-//---------------------------------------------------------------------------
-
-void l22::postfix_writer::do_stop_node(l22::stop_node *node, int lvl)
-{
 }
 
 //---------------------------------------------------------------------------
