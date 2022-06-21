@@ -33,7 +33,7 @@ namespace l22
   public:
     // do not edit these lines
 #define __IN_VISITOR_HEADER__
-#include "ast/visitor_decls" // automatically generated
+#include ".auto/visitor_decls.h" // automatically generated
 #undef __IN_VISITOR_HEADER__
     // do not edit these lines: end
   };

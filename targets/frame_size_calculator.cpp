@@ -1,26 +1,12 @@
 #include <string>
 #include "targets/frame_size_calculator.h"
+#include "targets/type_checker.h"
 #include "targets/symbol.h"
-#include "ast/all.h"
+#include ".auto/all_nodes.h"
 
 l22::frame_size_calculator::~frame_size_calculator()
 {
   os().flush();
-}
-
-void l22::frame_size_calculator::do_power_node(l22::power_node *const node, int lvl)
-{
-  // EMPTY
-}
-
-void l22::frame_size_calculator::do_while_node(l22::while_node *const node, int lvl)
-{
-  // EMPTY
-}
-
-void l22::frame_size_calculator::do_do_while_node(l22::do_while_node *const node, int lvl)
-{
-  // EMPTY
 }
 
 void l22::frame_size_calculator::do_add_node(cdk::add_node *const node, int lvl)
@@ -119,7 +105,7 @@ void l22::frame_size_calculator::do_evaluation_node(l22::evaluation_node *const 
 {
   // EMPTY
 }
-void l22::frame_size_calculator::do_write_node(l22::write_node *const node, int lvl)
+void l22::frame_size_calculator::do_print_node(l22::print_node *const node, int lvl)
 {
   // EMPTY
 }
@@ -135,11 +121,13 @@ void l22::frame_size_calculator::do_function_call_node(l22::function_call_node *
 {
   // EMPTY
 }
-void l22::frame_size_calculator::do_left_index_node(l22::left_index_node *const node, int lvl)
+
+void l22::frame_size_calculator::do_index_node(l22::index_node *const node, int lvl)
 {
   // EMPTY
 }
-void l22::frame_size_calculator::do_continue_node(l22::continue_node *const node, int lvl)
+
+void l22::frame_size_calculator::do_stop_node(l22::stop_node *const node, int lvl)
 {
   // EMPTY
 }
@@ -155,23 +143,7 @@ void l22::frame_size_calculator::do_stack_alloc_node(l22::stack_alloc_node *cons
 {
   // EMPTY
 }
-void l22::frame_size_calculator::do_break_node(l22::break_node *const node, int lvl)
-{
-  // EMPTY
-}
-void l22::frame_size_calculator::do_identity_node(l22::identity_node *const node, int lvl)
-{
-  // EMPTY
-}
-void l22::frame_size_calculator::do_sizeof_node(l22::sizeof_node *const node, int lvl)
-{
-  // EMPTY
-}
-void l22::frame_size_calculator::do_tuple_index_node(l22::tuple_index_node *const node, int lvl)
-{
-  // EMPTY
-}
-void l22::frame_size_calculator::do_tuple_node(l22::tuple_node *const node, int lvl)
+void l22::frame_size_calculator::do_again_node(l22::again_node *const node, int lvl)
 {
   // EMPTY
 }
@@ -195,14 +167,6 @@ void l22::frame_size_calculator::do_block_node(l22::block_node *const node, int 
     node->instructions()->accept(this, lvl + 2);
 }
 
-void l22::frame_size_calculator::do_for_node(l22::for_node *const node, int lvl)
-{
-  if (node->inits())
-    node->inits()->accept(this, lvl + 2);
-
-  node->block()->accept(this, lvl + 2);
-}
-
 void l22::frame_size_calculator::do_if_node(l22::if_node *const node, int lvl)
 {
   node->block()->accept(this, lvl + 2);
@@ -215,16 +179,32 @@ void l22::frame_size_calculator::do_if_else_node(l22::if_else_node *const node, 
     node->elseblock()->accept(this, lvl + 2);
 }
 
-void l22::frame_size_calculator::do_variable_declaration_node(l22::variable_declaration_node *const node, int lvl)
+void l22::frame_size_calculator::do_while_node(l22::while_node *const node, int lvl)
+{
+  node->block()->accept(this, lvl + 2);
+}
+
+void l22::frame_size_calculator::do_declaration_node(l22::declaration_node *const node, int lvl)
 {
   _localsize += node->type()->size();
 }
 
-void l22::frame_size_calculator::do_function_definition_node(l22::function_definition_node *const node, int lvl)
+void l22::frame_size_calculator::do_lambda_node(l22::lambda_node *const node, int lvl)
 {
-  if (node->block())
-  {
-    _localsize += node->type()->size(); // save space for the function's return type
-    node->block()->accept(this, lvl + 2);
-  }
+  node->block()->accept(this, lvl + 2);
+}
+
+void l22::frame_size_calculator::do_program_node(l22::program_node *const node, int lvl)
+{
+  node->block()->accept(this, lvl + 2);
+}
+
+void l22::frame_size_calculator::do_sizeof_node(l22::sizeof_node *const node, int lvl)
+{
+  // EMPTY
+}
+
+void l22::frame_size_calculator::do_identity_node(l22::identity_node *const node, int lvl)
+{
+  // EMPTY
 }
