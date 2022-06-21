@@ -24,7 +24,6 @@ static std::string qualifier_name(int qualifier)
 
 void l22::xml_writer::do_program_node(l22::program_node *const node, int lvl)
 {
-  ASSERT_SAFE_EXPRESSIONS;
   openTag(node, lvl);
   node->block()->accept(this, lvl + 2);
   closeTag(node, lvl);

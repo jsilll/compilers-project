@@ -1,7 +1,6 @@
 #include <string>
 #include "targets/type_checker.h"
 #include ".auto/all_nodes.h"
-#include <cdk/types/primitive_type.h>
 
 #define ASSERT_UNSPEC                                                 \
   {                                                                   \
@@ -108,19 +107,29 @@ void l22::type_checker::do_return_node(l22::return_node *node, int lvl)
     }
 
     node->retval()->accept(this, lvl + 2);
-    if (fType->output()->name() == cdk::TYPE_INT && !node->retval()->is_typed(cdk::TYPE_INT))
+
+    if (fType->output()->component(0)->name() == cdk::TYPE_INT)
     {
-      throw std::string("Wrong type for initializer (integer expected).");
+      if (!node->retval()->is_typed(cdk::TYPE_INT))
+      {
+        throw std::string("Wrong type for initializer (integer expected).");
+      }
     }
-    else if (fType->output()->name() == cdk::TYPE_DOUBLE && (!node->retval()->is_typed(cdk::TYPE_INT) && !node->retval()->is_typed(cdk::TYPE_DOUBLE)))
+    else if (fType->output()->component(0)->name() == cdk::TYPE_DOUBLE)
     {
-      throw std::string("Wrong type for initializer (integer or double expected).");
+      if (!node->retval()->is_typed(cdk::TYPE_INT) && !node->retval()->is_typed(cdk::TYPE_DOUBLE))
+      {
+        throw std::string("Wrong type for initializer (integer or double expected).");
+      }
     }
-    else if (fType->output()->name() == cdk::TYPE_STRING && !node->retval()->is_typed(cdk::TYPE_STRING))
+    else if (fType->output()->component(0)->name() == cdk::TYPE_STRING)
     {
-      throw std::string("Wrong type for initializer (string expected).");
+      if (!node->retval()->is_typed(cdk::TYPE_STRING))
+      {
+        throw std::string("Wrong type for initializer (string expected).");
+      }
     }
-    else if (fType->output()->name() == cdk::TYPE_POINTER)
+    else if (fType->output()->component(0)->name() == cdk::TYPE_POINTER)
     {
       typeOfPointer(cdk::reference_type::cast(node->retval()->type()), cdk::reference_type::cast(fType->output()));
     }
