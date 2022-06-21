@@ -96,6 +96,7 @@ void l22::postfix_writer::do_return_node(l22::return_node *node, int lvl)
 
 void l22::postfix_writer::do_declaration_node(l22::declaration_node *node, int lvl)
 {
+  ASSERT_SAFE_EXPRESSIONS;
   std::cout << "void l22::postfix_writer::do_declaration_node(l22::declaration_node *node, int lvl)" << std::endl;
 
   std::string id = node->identifier();

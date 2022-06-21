@@ -199,9 +199,10 @@ void l22::type_checker::do_declaration_node(l22::declaration_node *node, int lvl
           throw std::string("Unknown node with unspecified type.");
         }
       }
-      else if (node->is_typed(cdk::TYPE_INT) && !node->initializer()->is_typed(cdk::TYPE_INT))
+      else if (node->is_typed(cdk::TYPE_INT))
       {
-        throw std::string("wrong type for initializer (integer expected).");
+        if (!node->initializer()->is_typed(cdk::TYPE_INT))
+          throw std::string("wrong type for initializer (integer expected).");
       }
       else if (node->is_typed(cdk::TYPE_DOUBLE) && !node->initializer()->is_typed(cdk::TYPE_INT) && !node->initializer()->is_typed(cdk::TYPE_DOUBLE))
       {
