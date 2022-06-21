@@ -54,15 +54,7 @@ void l22::postfix_writer::do_sequence_node(cdk::sequence_node *const node, int l
   }
 }
 
-void l22::postfix_writer::do_block_node(l22::block_node *node, int lvl)
-{
-  _symtab.push();
-  if (node->declarations())
-    node->declarations()->accept(this, lvl + 2);
-  if (node->instructions())
-    node->instructions()->accept(this, lvl + 2);
-  _symtab.pop();
-}
+
 
 void l22::postfix_writer::do_return_node(l22::return_node *node, int lvl)
 {
@@ -491,6 +483,3 @@ void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)
 {
 }
 
-void l22::postfix_writer::do_function_call_node(l22::function_call_node *node, int lvl)
-{
-}
