@@ -23,7 +23,7 @@ namespace l22
         }
 
     public:
-        cdk::basic_node *lambda_ptr()
+        cdk::expression_node *lambda_ptr()
         {
             return _lambda_ptr;
         }
@@ -31,6 +31,11 @@ namespace l22
         inline cdk::sequence_node *arguments()
         {
             return _arguments;
+        }
+
+        inline cdk::expression_node *argument(size_t ix)
+        {
+            return dynamic_cast<cdk::expression_node *>(_arguments->node(ix));
         }
 
         void accept(basic_ast_visitor *sp, int level)
