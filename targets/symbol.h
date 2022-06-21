@@ -18,6 +18,7 @@ namespace l22
     int _qualifier; // public private etc
     bool _initialized;
     bool _function;
+    int _offset = 0;
 
   public:
     symbol(std::shared_ptr<cdk::basic_type> type, const std::string &name, bool constant, int qualifier, bool initialized, bool function)
@@ -82,6 +83,16 @@ namespace l22
     bool isVariable() const
     {
       return !_function;
+    }
+
+    int offset() const
+    {
+      return _offset;
+    }
+
+    void set_offset(int offset)
+    {
+      _offset = offset;
     }
   };
 
