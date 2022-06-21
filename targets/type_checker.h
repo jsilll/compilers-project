@@ -3,9 +3,13 @@
 
 #include "targets/basic_ast_visitor.h"
 
+#include <cdk/types/reference_type.h>
+#include <cdk/types/functional_type.h>
+
+#include <stack>
+
 namespace l22
 {
-
   /**
    * Print nodes as XML elements to the output stream.
    */
@@ -13,8 +17,8 @@ namespace l22
   {
     cdk::symbol_table<l22::symbol> &_symtab;
     basic_ast_visitor *_parent;
-    std::shared_ptr<l22::symbol> _function = nullptr;
     std::shared_ptr<cdk::basic_type> _inBlockReturnType = nullptr;
+    std::stack<std::shared_ptr<cdk::functional_type>> _lambda_stack;
 
   public:
     type_checker(std::shared_ptr<cdk::compiler> compiler, cdk::symbol_table<l22::symbol> &symtab, basic_ast_visitor *parent) : basic_ast_visitor(compiler), _symtab(symtab), _parent(parent)
@@ -28,9 +32,24 @@ namespace l22
     }
 
   protected:
-    void processUnaryExpression(cdk::unary_operation_node *const node, int lvl);
+    std::shared_ptr<cdk::basic_type> typeOfPointer(std::shared_ptr<cdk::reference_type> leftPtr, std::shared_ptr<cdk::reference_type> rightPtr);
+
+  protected:
+    void do_UnaryExpression(cdk::unary_operation_node *const node, int lvl);
+
+  protected:
+    void do_IntOnlyExpression(cdk::binary_operation_node *const node, int lvl);
+    void do_PIDExpression(cdk::binary_operation_node *const node, int lvl);
+    void do_IDExpression(cdk::binary_operation_node *const node, int lvl);
+
+  protected:
+    void do_ScalarLogicalExpression(cdk::binary_operation_node *const node, int lvl);
+    void do_BooleanLogicalExpression(cdk::binary_operation_node *const node, int lvl);
     void do_GeneralLogicalExpression(cdk::binary_operation_node *const node, int lvl);
-    void processBinaryExpression(cdk::binary_operation_node *const node, int lvl);
+
+  protected:
+    void do_BinaryExpression(cdk::binary_operation_node *const node, int lvl);
+
     template <typename T>
     void process_literal(cdk::literal_node<T> *const node, int lvl)
     {
