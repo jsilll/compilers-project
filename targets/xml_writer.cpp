@@ -46,7 +46,6 @@ void l22::xml_writer::do_nil_node(cdk::nil_node *const node, int lvl)
 
 void l22::xml_writer::do_sequence_node(cdk::sequence_node *const node, int lvl)
 {
-  ASSERT_SAFE_EXPRESSIONS;
   os() << std::string(lvl, ' ') << "<sequence_node size='" << node->size() << "'>" << std::endl;
   for (size_t i = 0; i < node->size(); i++)
   {
