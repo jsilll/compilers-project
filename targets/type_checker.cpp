@@ -49,7 +49,7 @@ std::shared_ptr<cdk::basic_type> l22::type_checker::typeOfPointer(std::shared_pt
 void l22::type_checker::do_program_node(l22::program_node *const node, int lvl)
 {
   std::cout << "void l22::type_checker::do_program_node(l22::program_node *const node, int lvl)" << std::endl;
-  node->block()->accept(this, lvl + 2);
+  // colocar aqui a criacao do simbolo e maybe ver em dar push para a lambda stack
 }
 
 //---------------------------------------------------------------------------
