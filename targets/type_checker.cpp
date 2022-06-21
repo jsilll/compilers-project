@@ -47,6 +47,8 @@ std::shared_ptr<cdk::basic_type> l22::type_checker::typeOfPointer(std::shared_pt
 void l22::type_checker::do_program_node(l22::program_node *const node, int lvl)
 {
   // colocar aqui a criacao do simbolo e maybe ver em dar push para a lambda stack
+  auto lambda = cdk::functional_type::create(cdk::primitive_type::create(4, cdk::TYPE_INT));
+  _parent->set_new_lambda(lambda);
 }
 
 //---------------------------------------------------------------------------
