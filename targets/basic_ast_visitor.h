@@ -29,7 +29,6 @@ protected:
 private:
   // last symbol inserted in symbol table
   std::shared_ptr<l22::symbol> _new_symbol;
-  std::shared_ptr<cdk::functional_type> _new_lambda;
 
 protected:
   basic_ast_visitor(std::shared_ptr<cdk::compiler> compiler) : _compiler(compiler)
@@ -65,21 +64,6 @@ public:
   void reset_new_symbol()
   {
     _new_symbol = nullptr;
-  }
-
-  std::shared_ptr<cdk::functional_type> new_lambda()
-  {
-    return _new_lambda;
-  }
-
-  void set_new_lambda(std::shared_ptr<cdk::functional_type> ftype)
-  {
-    _new_lambda = ftype;
-  }
-
-  void reset_new_lambda()
-  {
-    _new_lambda = nullptr;
   }
 
 public:

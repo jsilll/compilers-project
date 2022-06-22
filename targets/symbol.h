@@ -18,11 +18,12 @@ namespace l22
     int _qualifier; // public private etc
     bool _initialized;
     bool _function;
+    bool _returned;
     int _offset = 0;
 
   public:
-    symbol(std::shared_ptr<cdk::basic_type> type, const std::string &name, bool constant, int qualifier, bool initialized, bool function)
-        : _type(type), _name(name), _value(0), _constant(constant), _qualifier(qualifier), _initialized(initialized), _function(function)
+    symbol(std::shared_ptr<cdk::basic_type> type, const std::string &name, bool constant, int qualifier, bool initialized, bool function, bool returned = false)
+        : _type(type), _name(name), _value(0), _constant(constant), _qualifier(qualifier), _initialized(initialized), _function(function), _returned(returned)
     {
     }
 
@@ -66,6 +67,11 @@ namespace l22
       _type = t;
     }
 
+    void set_name(std::string id)
+    {
+      _name = id;
+    }
+
     const std::string &identifier() const
     {
       return name();
@@ -93,6 +99,16 @@ namespace l22
     void set_offset(int offset)
     {
       _offset = offset;
+    }
+
+    void set_return()
+    {
+      _returned = true;
+    }
+
+    bool returned() const
+    {
+      return _returned;
     }
   };
 

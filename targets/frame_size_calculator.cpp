@@ -186,11 +186,13 @@ void l22::frame_size_calculator::do_while_node(l22::while_node *const node, int 
 
 void l22::frame_size_calculator::do_declaration_node(l22::declaration_node *const node, int lvl)
 {
+  ASSERT_SAFE_EXPRESSIONS;
   _localsize += node->type()->size();
 }
 
 void l22::frame_size_calculator::do_lambda_node(l22::lambda_node *const node, int lvl)
 {
+  ASSERT_SAFE_EXPRESSIONS;
   node->block()->accept(this, lvl + 2);
 }
 

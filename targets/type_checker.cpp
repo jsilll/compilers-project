@@ -2,6 +2,8 @@
 #include "targets/type_checker.h"
 #include ".auto/all_nodes.h"
 
+#include "l22_parser.tab.h"
+
 #define ASSERT_UNSPEC                                                 \
   {                                                                   \
     if (node->type() != nullptr && !node->is_typed(cdk::TYPE_UNSPEC)) \
@@ -47,8 +49,8 @@ std::shared_ptr<cdk::basic_type> l22::type_checker::typeOfPointer(std::shared_pt
 void l22::type_checker::do_program_node(l22::program_node *const node, int lvl)
 {
   // colocar aqui a criacao do simbolo e maybe ver em dar push para a lambda stack
-  auto lambda = cdk::functional_type::create(cdk::primitive_type::create(4, cdk::TYPE_INT));
-  _parent->set_new_lambda(lambda);
+  auto symbol = make_symbol(cdk::primitive_type::create(4, cdk::TYPE_INT), "", true, tPUBLIC, true, true);
+  _parent->set_new_symbol(symbol);
 }
 
 //---------------------------------------------------------------------------
@@ -204,17 +206,20 @@ void l22::type_checker::do_declaration_node(l22::declaration_node *node, int lvl
         if (!node->initializer()->is_typed(cdk::TYPE_INT))
           throw std::string("wrong type for initializer (integer expected).");
       }
-      else if (node->is_typed(cdk::TYPE_DOUBLE) && !node->initializer()->is_typed(cdk::TYPE_INT) && !node->initializer()->is_typed(cdk::TYPE_DOUBLE))
+      else if (node->is_typed(cdk::TYPE_DOUBLE))
       {
-        throw std::string("wrong type for initializer (integer or double expected).");
+        if (!node->initializer()->is_typed(cdk::TYPE_INT) && !node->initializer()->is_typed(cdk::TYPE_DOUBLE))
+          throw std::string("wrong type for initializer (integer or double expected).");
       }
-      else if (node->is_typed(cdk::TYPE_STRING) && !node->initializer()->is_typed(cdk::TYPE_STRING))
+      else if (node->is_typed(cdk::TYPE_STRING))
       {
-        throw std::string("wrong type for initializer (string expected).");
+        if (!node->initializer()->is_typed(cdk::TYPE_STRING))
+          throw std::string("wrong type for initializer (string expected).");
       }
-      else if (node->is_typed(cdk::TYPE_POINTER) && !node->initializer()->is_typed(cdk::TYPE_POINTER))
+      else if (node->is_typed(cdk::TYPE_POINTER))
       {
-        throw std::string("Wrong type for initializer (pointer expected).");
+        if (!node->initializer()->is_typed(cdk::TYPE_POINTER))
+          throw std::string("Wrong type for initializer (pointer expected).");
       }
       else if (node->is_typed(cdk::TYPE_POINTER) && node->initializer()->is_typed(cdk::TYPE_POINTER))
       {

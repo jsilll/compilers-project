@@ -14,8 +14,11 @@ void l22::postfix_writer::do_program_node(l22::program_node *const node, int lvl
   std::cout << "void l22::postfix_writer::do_program_node(l22::program_node *const node, int lvl)" << std::endl;
   ASSERT_SAFE_EXPRESSIONS;
 
-  _function.push(new_lambda());
-  reset_new_lambda();
+  auto func = new_symbol();
+
+  func->set_name("_main");
+  _function.push(func);
+  reset_new_symbol();
 
   // generate the main function (RTS mandates that its name be "_main")
   _pf.TEXT();
@@ -33,8 +36,11 @@ void l22::postfix_writer::do_program_node(l22::program_node *const node, int lvl
 
   _function.pop();
 
-  _pf.LEAVE();
-  _pf.RET();
+  if (!func->returned())
+  {
+    _pf.LEAVE();
+    _pf.RET();
+  }
 
   // these are just a few library function imports
   for (std::string s : _functions_to_declare)
@@ -70,16 +76,16 @@ void l22::postfix_writer::do_return_node(l22::return_node *node, int lvl)
   std::cout << "void l22::postfix_writer::do_return_node(l22::return_node *node, int lvl)" << std::endl;
   ASSERT_SAFE_EXPRESSIONS;
 
-  auto ret_type = _function.top()->output()->component(0)->name();
+  std::shared_ptr<l22::symbol> func = _function.top();
 
   // ver como retornar com functional types
-  if (!(ret_type == cdk::TYPE_VOID))
+  if (!func->is_typed(cdk::TYPE_VOID))
   {
     node->retval()->accept(this, lvl + 2);
 
-    if (ret_type == cdk::TYPE_INT || ret_type == cdk::TYPE_STRING || ret_type == cdk::TYPE_POINTER || ret_type == cdk::TYPE_FUNCTIONAL)
+    if (func->is_typed(cdk::TYPE_INT) || func->is_typed(cdk::TYPE_STRING) || func->is_typed(cdk::TYPE_POINTER) || func->is_typed(cdk::TYPE_FUNCTIONAL))
       _pf.STFVAL32();
-    else if (ret_type == cdk::TYPE_DOUBLE)
+    else if (func->is_typed(cdk::TYPE_DOUBLE))
     {
       cdk::expression_node *expression = dynamic_cast<cdk::expression_node *>(node->retval());
       if (expression->is_typed(cdk::TYPE_INT))
@@ -92,6 +98,8 @@ void l22::postfix_writer::do_return_node(l22::return_node *node, int lvl)
 
   _pf.LEAVE();
   _pf.RET();
+
+  func->set_return();
 }
 
 void l22::postfix_writer::do_declaration_node(l22::declaration_node *node, int lvl)
@@ -895,6 +903,7 @@ void l22::postfix_writer::do_if_else_node(l22::if_else_node *const node, int lvl
 void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)
 {
   std::cout << "void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)" << std::endl;
+  ASSERT_SAFE_EXPRESSIONS;
 }
 
 void l22::postfix_writer::do_function_call_node(l22::function_call_node *const node, int lvl)
