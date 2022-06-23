@@ -16,7 +16,7 @@ void l22::postfix_writer::do_program_node(l22::program_node *const node, int lvl
   auto func = new_symbol();
 
   func->set_name("_main");
-  _function.push(func);
+  _functions.push(func);
   reset_new_symbol();
 
   std::cout << "create new symbol" << std::endl;
@@ -35,7 +35,7 @@ void l22::postfix_writer::do_program_node(l22::program_node *const node, int lvl
   node->block()->accept(this, lvl);
   _inFunctionBody = false;
 
-  _function.pop();
+  _functions.pop();
 
   if (!func->returned())
   {
@@ -75,7 +75,7 @@ void l22::postfix_writer::do_sequence_node(cdk::sequence_node *const node, int l
 void l22::postfix_writer::do_return_node(l22::return_node *node, int lvl)
 {
   std::cout << "void l22::postfix_writer::do_return_node(l22::return_node *node, int lvl)" << std::endl;
-  std::shared_ptr<l22::symbol> func = _function.top();
+  std::shared_ptr<l22::symbol> func = _functions.top();
 
   // ver como retornar com functional types
   if (!func->is_typed(cdk::TYPE_VOID))
@@ -133,9 +133,9 @@ void l22::postfix_writer::do_declaration_node(l22::declaration_node *node, int l
 
   if (node->initializer())
   {
+    node->initializer()->accept(this, lvl);
     if (_inFunctionBody)
     {
-      node->initializer()->accept(this, lvl);
       if (node->is_typed(cdk::TYPE_DOUBLE))
       {
         if (node->initializer()->is_typed(cdk::TYPE_INT))
@@ -920,7 +920,7 @@ void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)
 
   std::string id = mklbl(++_lbl);
   auto function = make_symbol(node->type(), id, false, tPUBLIC, true, true);
-  _function.push(function);
+  _functions.push(function);
 
   _offset = 8;
   _symtab.push();
@@ -943,7 +943,7 @@ void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)
   _offset = 0;
   node->block()->accept(this, lvl + 4);
   _inFunctionBody = false;
-  _function.pop();
+  _functions.pop();
   _symtab.pop();
 
   if (!function->returned())

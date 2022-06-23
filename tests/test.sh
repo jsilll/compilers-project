@@ -2,8 +2,14 @@
 
 make >/dev/null
 
-for file in $(ls src/src)
+for file in $(ls src/*.exe)
 do
-    echo $file;
-    diff expected/$file.out <(src/src/$file);
+    bname=`basename $file .exe`
+    expectedfile=expected/$bname.out
+    outfile=src/$bname.out
+    $file > $outfile
+    
+    echo $outfile;
+    diff $expectedfile $outfile
+
 done
