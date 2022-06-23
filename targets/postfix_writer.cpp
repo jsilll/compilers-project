@@ -206,6 +206,10 @@ void l22::postfix_writer::do_declaration_node(l22::declaration_node *node, int l
       _pf.LABEL(id);
       _pf.SALLOC(size);
     }
+
+    if ( node->qualifier() == tUSE || node->qualifier() == tFOREIGN ) {
+      _functions_to_declare.insert(node->identifier());
+    }
   }
 }
 
@@ -628,8 +632,7 @@ void l22::postfix_writer::do_mod_node(cdk::mod_node *const node, int lvl)
 void l22::postfix_writer::do_sizeof_node(l22::sizeof_node *node, int lvl)
 {
   std::cout << "void l22::postfix_writer::do_sizeof_node(l22::sizeof_node *node, int lvl)" << std::endl;
-  cdk::typed_node *typed = dynamic_cast<cdk::typed_node *>(node->expression());
-  _pf.INT(typed->type()->size());
+  _pf.INT(node->expression()->type()->size());
   _pf.ADD();
 }
 
