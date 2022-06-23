@@ -43,7 +43,7 @@ void l22::postfix_writer::do_program_node(l22::program_node *const node, int lvl
   }
 
   // these are just a few library function imports
-  for (std::string s : _functions_to_declare)
+  for (std::string s : _symbols_to_declare)
   {
     _pf.EXTERN(s);
   }
@@ -206,6 +206,11 @@ void l22::postfix_writer::do_declaration_node(l22::declaration_node *node, int l
       _pf.LABEL(id);
       _pf.SALLOC(size);
     }
+
+    if (node->qualifier() == tUSE || node->qualifier() == tFOREIGN)
+    {
+      _symbols_to_declare.insert(node->identifier());
+    }
   }
 }
 
@@ -330,13 +335,13 @@ void l22::postfix_writer::do_input_node(l22::input_node *node, int lvl)
   ASSERT_SAFE_EXPRESSIONS;
   if (node->is_typed(cdk::TYPE_INT))
   {
-    _functions_to_declare.insert("readi");
+    _symbols_to_declare.insert("readi");
     _pf.CALL("readi");
     _pf.LDFVAL32();
   }
   else if (node->is_typed(cdk::TYPE_DOUBLE))
   {
-    _functions_to_declare.insert("readd");
+    _symbols_to_declare.insert("readd");
     _pf.CALL("readd");
     _pf.LDFVAL64();
   }
@@ -353,19 +358,19 @@ void l22::postfix_writer::do_print_node(l22::print_node *const node, int lvl)
     child->accept(this, lvl); // expression to print
     if (etype->name() == cdk::TYPE_INT)
     {
-      _functions_to_declare.insert("printi");
+      _symbols_to_declare.insert("printi");
       _pf.CALL("printi");
       _pf.TRASH(4); // trash int
     }
     else if (etype->name() == cdk::TYPE_STRING)
     {
-      _functions_to_declare.insert("prints");
+      _symbols_to_declare.insert("prints");
       _pf.CALL("prints");
       _pf.TRASH(4); // trash char pointer
     }
     else if (etype->name() == cdk::TYPE_DOUBLE)
     {
-      _functions_to_declare.insert("printd");
+      _symbols_to_declare.insert("printd");
       _pf.CALL("printd");
       _pf.TRASH(8); // trash char pointer
     }
@@ -378,7 +383,7 @@ void l22::postfix_writer::do_print_node(l22::print_node *const node, int lvl)
 
   if (node->newline())
   {
-    _functions_to_declare.insert("println");
+    _symbols_to_declare.insert("println");
     _pf.CALL("println");
   }
 }

@@ -19,7 +19,7 @@ namespace l22
   {
     cdk::symbol_table<l22::symbol> &_symtab;
 
-    std::set<std::string> _functions_to_declare;
+    std::set<std::string> _symbols_to_declare;
     std::stack<std::shared_ptr<l22::symbol>> _function;
     bool _inFunctionBody = false;
     bool _inFunctionArgs = false;
