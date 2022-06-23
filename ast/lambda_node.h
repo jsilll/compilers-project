@@ -14,16 +14,16 @@ namespace l22
      */
     class lambda_node : public cdk::expression_node
     {
+        std::shared_ptr<cdk::basic_type> _return_type;
         cdk::sequence_node *_arguments;
         l22::block_node *_block;
 
     public:
-        lambda_node(int lineno, std::shared_ptr<cdk::basic_type> funType,
+        lambda_node(int lineno, std::shared_ptr<cdk::basic_type> return_type,
                     cdk::sequence_node *arguments,
                     l22::block_node *block)
-            : cdk::expression_node(lineno), _arguments(arguments), _block(block)
+            : cdk::expression_node(lineno), _return_type(return_type), _arguments(arguments), _block(block)
         {
-            type(funType);
         }
 
     public:
@@ -38,6 +38,11 @@ namespace l22
         l22::block_node *block()
         {
             return _block;
+        }
+
+        std::shared_ptr<cdk::basic_type> return_type()
+        {
+            return _return_type;
         }
 
         void accept(basic_ast_visitor *sp, int level)

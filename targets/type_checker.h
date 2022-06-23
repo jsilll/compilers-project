@@ -24,7 +24,6 @@ namespace l22
   public:
     type_checker(std::shared_ptr<cdk::compiler> compiler, cdk::symbol_table<l22::symbol> &symtab, basic_ast_visitor *parent) : basic_ast_visitor(compiler), _symtab(symtab), _parent(parent)
     {
-      _lambda_stack.push(cdk::functional_type::create(cdk::primitive_type::create(4, cdk::TYPE_INT)));
     }
 
   public:
