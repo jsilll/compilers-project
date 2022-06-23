@@ -20,14 +20,7 @@ bool l22::type_checker::is_void_pointer(std::shared_ptr<cdk::reference_type> ptr
     curr = cdk::reference_type::cast(curr)->referenced();
   }
 
-  if (curr->name() == cdk::TYPE_VOID)
-  {
-    return true;
-  }
-  else
-  {
-    return false;
-  }
+  return curr->name() == cdk::TYPE_VOID;
 }
 
 std::shared_ptr<cdk::basic_type> l22::type_checker::same_pointer_types(std::shared_ptr<cdk::reference_type> leftPtr, std::shared_ptr<cdk::reference_type> rightPtr)
@@ -134,7 +127,6 @@ void l22::type_checker::do_return_node(l22::return_node *node, int lvl)
     }
 
     node->retval()->accept(this, lvl + 2);
-
     if (fType->output()->component(0)->name() == cdk::TYPE_INT)
     {
       if (!node->retval()->is_typed(cdk::TYPE_INT))
@@ -226,6 +218,7 @@ void l22::type_checker::do_declaration_node(l22::declaration_node *node, int lvl
           else
           {
             same_pointer_types(cdk::reference_type::cast(node->type()), cdk::reference_type::cast(node->initializer()->type()));
+            node->initializer()->type(node->type());
           }
         }
         else
@@ -276,6 +269,7 @@ void l22::type_checker::do_declaration_node(l22::declaration_node *node, int lvl
         else
         {
           same_pointer_types(cdk::reference_type::cast(node->type()), cdk::reference_type::cast(node->initializer()->type()));
+          node->initializer()->type(node->type());
         }
       }
       else if (node->is_typed(cdk::TYPE_FUNCTIONAL) && !node->initializer()->is_typed(cdk::TYPE_FUNCTIONAL))
@@ -379,7 +373,7 @@ void l22::type_checker::do_nullptr_node(l22::nullptr_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
   std::cout << "void l22::type_checker::do_nullptr_node(l22::nullptr_node *const node, int lvl)" << std::endl;
-  node->type(cdk::reference_type::create(4, nullptr));
+  node->type(cdk::reference_type::create(4, cdk::primitive_type::create(0, cdk::TYPE_VOID)));
 }
 
 //---------------------------------------------------------------------------
@@ -457,7 +451,6 @@ void l22::type_checker::do_rvalue_node(cdk::rvalue_node *const node, int lvl)
   std::cout << "void l22::type_checker::do_rvalue_node(cdk::rvalue_node *const node, int lvl)" << std::endl;
   node->lvalue()->accept(this, lvl);
   node->type(node->lvalue()->type());
-  std::cout << "sai daqui" << std::endl;
 }
 
 void l22::type_checker::do_assignment_node(cdk::assignment_node *const node, int lvl)
@@ -472,41 +465,20 @@ void l22::type_checker::do_assignment_node(cdk::assignment_node *const node, int
     throw std::string("Left value must have a type.");
   }
 
+  // l22::input_node case
   if (node->rvalue()->is_typed(cdk::TYPE_UNSPEC))
   {
-    // l22::input_node case
-    if (node->rvalue()->is_typed(cdk::TYPE_UNSPEC))
+    if (node->lvalue()->is_typed(cdk::TYPE_INT) || node->lvalue()->is_typed(cdk::TYPE_DOUBLE))
     {
-      if (node->lvalue()->is_typed(cdk::TYPE_INT) || node->lvalue()->is_typed(cdk::TYPE_DOUBLE))
-      {
-        node->rvalue()->type(node->lvalue()->type());
-      }
-      else
-      {
-        std::cout << std::string("THROW Invalid expression for lvalue node.") << std::endl;
-        throw std::string("Invalid expression for lvalue node.");
-      }
-    }
-    else if (node->lvalue()->is_typed(cdk::TYPE_POINTER) && node->rvalue()->is_typed(cdk::TYPE_POINTER))
-    {
-      // l22::stack_alloc_node case + nullptr case
-      if (is_void_pointer(cdk::reference_type::cast(node->rvalue()->type())))
-      {
-        node->type(node->lvalue()->type());
-      }
-      else
-      {
-        same_pointer_types(cdk::reference_type::cast(node->lvalue()->type()), cdk::reference_type::cast(node->rvalue()->type()));
-      }
+      node->rvalue()->type(node->lvalue()->type());
     }
     else
     {
-      std::cout << std::string("THROW Unknown node with unspecified type.") << std::endl;
-      throw std::string("Unknown node with unspecified type.");
+      std::cout << std::string("THROW Invalid expression for lvalue node.") << std::endl;
+      throw std::string("Invalid expression for lvalue node.");
     }
   }
-
-  if (node->lvalue()->is_typed(cdk::TYPE_INT) && node->rvalue()->is_typed(cdk::TYPE_INT))
+  else if (node->lvalue()->is_typed(cdk::TYPE_INT) && node->rvalue()->is_typed(cdk::TYPE_INT))
   {
     node->type(cdk::primitive_type::create(4, cdk::TYPE_INT));
   }
@@ -528,6 +500,7 @@ void l22::type_checker::do_assignment_node(cdk::assignment_node *const node, int
     else
     {
       same_pointer_types(cdk::reference_type::cast(node->lvalue()->type()), cdk::reference_type::cast(node->rvalue()->type()));
+      node->type(node->lvalue()->type());
     }
   }
   else if (node->lvalue()->is_typed(cdk::TYPE_FUNCTIONAL) && node->rvalue()->is_typed(cdk::TYPE_FUNCTIONAL))
@@ -553,11 +526,11 @@ void l22::type_checker::do_assignment_node(cdk::assignment_node *const node, int
     {
       if (fType1->input(i)->name() != fType2->input(i)->name())
       {
-        std::cout << cdk::to_string(fType1->input(i)) << " " << cdk::to_string(fType2->input(i));
         std::cout << std::string("THROW Mismatching argument types.") << std::endl;
         throw std::string("Mismatching argument types.");
       }
     }
+
     node->type(node->lvalue()->type());
   }
   else
@@ -1098,12 +1071,18 @@ void l22::type_checker::do_stack_alloc_node(l22::stack_alloc_node *node, int lvl
   ASSERT_UNSPEC;
   std::cout << "void l22::type_checker::do_stack_alloc_node(l22::stack_alloc_node *node, int lvl)" << std::endl;
   node->argument()->accept(this, lvl + 2);
+  if (node->argument()->is_typed(cdk::TYPE_UNSPEC))
+  {
+    node->argument()->type(cdk::primitive_type::create(4, cdk::TYPE_INT));
+  }
+
   if (!node->argument()->is_typed(cdk::TYPE_INT))
   {
     std::cout << std::string("THROW integer expression expected in allocation expression") << std::endl;
     throw std::string("integer expression expected in allocation expression");
   }
-  node->type(cdk::reference_type::create(4, nullptr));
+
+  node->type(cdk::reference_type::create(4, cdk::primitive_type::create(4, cdk::TYPE_VOID)));
 }
 
 //---------------------------------------------------------------------------
