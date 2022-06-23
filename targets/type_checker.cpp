@@ -914,16 +914,6 @@ void l22::type_checker::do_sub_node(cdk::sub_node *const node, int lvl)
     }
     node->type(node->left()->type());
   }
-  else if (node->left()->is_typed(cdk::TYPE_INT) && node->right()->is_typed(cdk::TYPE_POINTER))
-  {
-    std::shared_ptr<cdk::reference_type> reference_type = cdk::reference_type::cast(node->right()->type());
-    if (reference_type->referenced()->name() == cdk::TYPE_FUNCTIONAL)
-    {
-      std::cout << std::string("THROW Pointer arithmetic not supported for function pointers.") << std::endl;
-      throw std::string("Pointer arithmetic not supported for function pointers.");
-    }
-    node->type(node->right()->type());
-  }
   else if (node->left()->is_typed(cdk::TYPE_POINTER) && node->right()->is_typed(cdk::TYPE_POINTER))
   {
     std::shared_ptr<cdk::reference_type> reference_type_left = cdk::reference_type::cast(node->left()->type());

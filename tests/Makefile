@@ -4,10 +4,10 @@ COMPILER= ../l22
 ASM= yasm
 LD= ld
 
-LDFLAGS = -m elf_i386 -L$(RTS_LIB_DIR) -lrts
+LDFLAGS = -melf_i386 -L$(RTS_LIB_DIR) -lrts
 SOURCES = $(wildcard ./src/*.l22)
 OBJECTS = $(SOURCES:%.l22=%.o)
-EXECUTABLES = $(SOURCES:%.l22=%)
+EXECUTABLES = $(SOURCES:%.l22=%.exe)
 ASMS = $(SOURCES:%.l22=%.asm)
 XMLS = $(SOURCES:%.l22=%.xml)
 
@@ -16,9 +16,6 @@ all: $(EXECUTABLES)
 xml: $(XMLS)
 
 asm: $(ASMS)
-
-%:%.o
-	$(LD) $< -o src/$@ $(LDFLAGS)
 
 %.o: %.asm
 	$(ASM) -felf32 $< -o $@
@@ -29,6 +26,9 @@ asm: $(ASMS)
 %.xml: %.l22
 	$(COMPILER) --target xml $< -o $@
 
+%.exe:%.o
+	$(LD) $< -o $@ $(LDFLAGS)
+
 clean:
 	$(info Cleaning ...)
-	@$(RM) $(OBJECTS) $(EXECUTABLES) $(ASMS) $(XMLS) src/src/*
+	@$(RM) $(OBJECTS) $(EXECUTABLES) $(ASMS) $(XMLS)
