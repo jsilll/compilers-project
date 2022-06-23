@@ -24,7 +24,6 @@ namespace l22
   public:
     type_checker(std::shared_ptr<cdk::compiler> compiler, cdk::symbol_table<l22::symbol> &symtab, basic_ast_visitor *parent) : basic_ast_visitor(compiler), _symtab(symtab), _parent(parent)
     {
-      _lambda_stack.push(cdk::functional_type::create(cdk::primitive_type::create(4, cdk::TYPE_INT)));
     }
 
   public:
@@ -34,7 +33,8 @@ namespace l22
     }
 
   protected:
-    std::shared_ptr<cdk::basic_type> typeOfPointer(std::shared_ptr<cdk::reference_type> leftPtr, std::shared_ptr<cdk::reference_type> rightPtr);
+    static bool is_void_pointer(std::shared_ptr<cdk::reference_type> ptr);
+    std::shared_ptr<cdk::basic_type> same_pointer_types(std::shared_ptr<cdk::reference_type> leftPtr, std::shared_ptr<cdk::reference_type> rightPtr);
 
   protected:
     void do_UnaryExpression(cdk::unary_operation_node *const node, int lvl);
