@@ -29,10 +29,11 @@ namespace l22
     // code generation
     cdk::basic_postfix_emitter &_pf;
     int _lbl;
+    int _flbl;
 
   public:
     postfix_writer(std::shared_ptr<cdk::compiler> compiler, cdk::symbol_table<l22::symbol> &symtab,
-                   cdk::basic_postfix_emitter &pf) : basic_ast_visitor(compiler), _symtab(symtab), _pf(pf), _lbl(0)
+                   cdk::basic_postfix_emitter &pf) : basic_ast_visitor(compiler), _symtab(symtab), _pf(pf), _lbl(0), _flbl(0)
     {
     }
 
@@ -51,6 +52,16 @@ namespace l22
         oss << ".L" << -lbl;
       else
         oss << "_L" << lbl;
+      return oss.str();
+    }
+
+    inline std::string mkflbl(int lbl)
+    {
+      std::ostringstream oss;
+      if (lbl < 0)
+        oss << ".F" << -lbl;
+      else
+        oss << "_F" << lbl;
       return oss.str();
     }
 
