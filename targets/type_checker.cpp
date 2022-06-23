@@ -386,6 +386,7 @@ void l22::type_checker::do_variable_node(cdk::variable_node *const node, int lvl
     {
       if (_lambda_stack.size() == 1)
       {
+        std::cout << std::string("Recursive call in most outtter level is not allowed.") << std::endl;
         throw std::string("Recursive call in most outtter level is not allowed.");
       }
       else
