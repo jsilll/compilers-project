@@ -62,15 +62,7 @@ std::shared_ptr<cdk::basic_type> l22::type_checker::same_pointer_types(std::shar
 void l22::type_checker::do_program_node(l22::program_node *const node, int lvl)
 {
   std::cout << "void l22::type_checker::do_program_node(l22::program_node *const node, int lvl)" << std::endl;
-  // colocar aqui a criacao do simbolo e maybe ver em dar push para a lambda stack
-  auto symbol = make_symbol(cdk::primitive_type::create(4, cdk::TYPE_INT), "", true, tPUBLIC, true, true);
   _lambda_stack.push(cdk::functional_type::create(cdk::primitive_type::create(4, cdk::TYPE_INT)));
-  _parent->set_new_symbol(symbol);
-  if (node->block())
-  {
-    node->block()->accept(this, lvl + 2);
-  }
-  _lambda_stack.pop();
 }
 
 //---------------------------------------------------------------------------
@@ -320,10 +312,7 @@ void l22::type_checker::do_declaration_node(l22::declaration_node *node, int lvl
   {
     _parent->set_new_symbol(symbol);
   }
-  else if (_symtab.find(id)->qualifier() == tUSE)
-  {
-  }
-  else
+  else if (!(_symtab.find(id)->qualifier() == tUSE))
   {
     std::cout << std::string("THROW variable '" + id + "' redeclared") << std::endl;
     throw std::string("variable '" + id + "' redeclared");

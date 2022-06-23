@@ -11,15 +11,14 @@
 
 void l22::postfix_writer::do_program_node(l22::program_node *const node, int lvl)
 {
-  std::cout << "void l22::postfix_writer::do_program_node(l22::program_node *const node, int lvl)" << std::endl;
   ASSERT_SAFE_EXPRESSIONS;
-  auto func = new_symbol();
+  std::cout << "void l22::postfix_writer::do_program_node(l22::program_node *const node, int lvl)" << std::endl;
+
+  std::shared_ptr<l22::symbol> func = make_symbol(cdk::primitive_type::create(4, cdk::TYPE_INT), "_main", true, tPUBLIC, true, true);
 
   func->set_name("_main");
   _functions.push(func);
   reset_new_symbol();
-
-  std::cout << "create new symbol" << std::endl;
 
   // generate the main function (RTS mandates that its name be "_main")
   _pf.TEXT();
