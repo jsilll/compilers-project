@@ -31,4 +31,4 @@ asm: $(ASMS)
 
 clean:
 	$(info Cleaning ...)
-	@$(RM) $(OBJECTS) $(EXECUTABLES) $(ASMS) $(XMLS)
+	@$(RM) $(OBJECTS) $(EXECUTABLES) $(ASMS) $(XMLS) src/src/*

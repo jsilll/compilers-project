@@ -12,12 +12,11 @@ namespace l22
   class frame_size_calculator : public basic_ast_visitor
   {
     cdk::symbol_table<l22::symbol> &_symtab;
-    std::shared_ptr<l22::symbol> _function;
 
     size_t _localsize;
 
   public:
-    frame_size_calculator(std::shared_ptr<cdk::compiler> compiler, cdk::symbol_table<l22::symbol> &symtab, std::shared_ptr<l22::symbol> func) : basic_ast_visitor(compiler), _symtab(symtab), _function(func), _localsize(0)
+    frame_size_calculator(std::shared_ptr<cdk::compiler> compiler, cdk::symbol_table<l22::symbol> &symtab) : basic_ast_visitor(compiler), _symtab(symtab)
     {
     }
 

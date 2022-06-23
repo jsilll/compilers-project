@@ -24,6 +24,7 @@ static std::string qualifier_name(int qualifier)
 
 void l22::xml_writer::do_program_node(l22::program_node *const node, int lvl)
 {
+  ASSERT_SAFE_EXPRESSIONS;
   openTag(node, lvl);
   node->block()->accept(this, lvl + 2);
   closeTag(node, lvl);
@@ -46,7 +47,6 @@ void l22::xml_writer::do_nil_node(cdk::nil_node *const node, int lvl)
 
 void l22::xml_writer::do_sequence_node(cdk::sequence_node *const node, int lvl)
 {
-  ASSERT_SAFE_EXPRESSIONS;
   os() << std::string(lvl, ' ') << "<sequence_node size='" << node->size() << "'>" << std::endl;
   for (size_t i = 0; i < node->size(); i++)
   {
