@@ -165,6 +165,7 @@ void l22::type_checker::do_return_node(l22::return_node *node, int lvl)
 
 void l22::type_checker::do_declaration_node(l22::declaration_node *node, int lvl)
 {
+  ASSERT_UNSPEC;
   std::cout << "void l22::type_checker::do_declaration_node(l22::declaration_node *node, int lvl)" << std::endl;
   if (node->type() == nullptr)
   {

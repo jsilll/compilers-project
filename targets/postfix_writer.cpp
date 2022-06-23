@@ -136,9 +136,9 @@ void l22::postfix_writer::do_declaration_node(l22::declaration_node *node, int l
 
   if (node->initializer())
   {
-    node->initializer()->accept(this, lvl);
     if (_inFunctionBody)
     {
+      node->initializer()->accept(this, lvl);
       if (node->is_typed(cdk::TYPE_DOUBLE))
       {
         if (node->initializer()->is_typed(cdk::TYPE_INT))
@@ -201,14 +201,21 @@ void l22::postfix_writer::do_declaration_node(l22::declaration_node *node, int l
       {
         std::string lbl = mkflbl(_flbl);
 
+        std::cout << "Generating function" << lbl << std::endl;
+
         node->initializer()->accept(this, lvl);
+
+        std::cout << "Generating function" << mkflbl(_flbl) << std::endl;
+
         _pf.DATA();
+        _pf.ALIGN();
 
         if (node->qualifier() == tPUBLIC)
         {
-          _pf.GLOBAL(lbl, _pf.OBJ());
+          _pf.GLOBAL(symbol->name(), _pf.OBJ());
         }
 
+        _pf.LABEL(symbol->name());
         _pf.SADDR(lbl);
       }
     }
