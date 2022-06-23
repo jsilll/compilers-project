@@ -9,7 +9,7 @@ do
     outfile=src/$bname.out
     $file > $outfile
     
-    echo $outfile;
+    echo $outfile
     diff $expectedfile $outfile
 
 done

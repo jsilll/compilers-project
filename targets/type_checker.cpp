@@ -320,10 +320,13 @@ void l22::type_checker::do_declaration_node(l22::declaration_node *node, int lvl
   }
 
   const std::string &id = node->identifier();
-  auto symbol = l22::make_symbol(node->type(), id, false, node->qualifier(), (bool)node->initializer(), false);
+  auto symbol = l22::make_symbol(node->type(), id, node->qualifier(), node->qualifier(), (bool)node->initializer(), false);
   if (_symtab.insert(id, symbol))
   {
     _parent->set_new_symbol(symbol);
+  }
+  else if (_symtab.find(id)->qualifier() == tUSE)
+  {
   }
   else
   {
