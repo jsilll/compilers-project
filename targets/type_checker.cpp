@@ -173,7 +173,6 @@ void l22::type_checker::do_return_node(l22::return_node *node, int lvl)
 
 void l22::type_checker::do_declaration_node(l22::declaration_node *node, int lvl)
 {
-  ASSERT_UNSPEC;
   std::cout << "void l22::type_checker::do_declaration_node(l22::declaration_node *node, int lvl)" << std::endl;
   if (node->type() == nullptr)
   {
@@ -238,26 +237,34 @@ void l22::type_checker::do_declaration_node(l22::declaration_node *node, int lvl
       else if (node->is_typed(cdk::TYPE_INT))
       {
         if (!node->initializer()->is_typed(cdk::TYPE_INT))
+        {
           std::cout << std::string("THROW wrong type for initializer (integer expected).") << std::endl;
-        throw std::string("wrong type for initializer (integer expected).");
+          throw std::string("wrong type for initializer (integer expected).");
+        }
       }
       else if (node->is_typed(cdk::TYPE_DOUBLE))
       {
         if (!node->initializer()->is_typed(cdk::TYPE_INT) && !node->initializer()->is_typed(cdk::TYPE_DOUBLE))
+        {
           std::cout << std::string("THROW wrong type for initializer (integer or double expected).") << std::endl;
-        throw std::string("wrong type for initializer (integer or double expected).");
+          throw std::string("wrong type for initializer (integer or double expected).");
+        }
       }
       else if (node->is_typed(cdk::TYPE_STRING))
       {
         if (!node->initializer()->is_typed(cdk::TYPE_STRING))
+        {
           std::cout << std::string("THROW wrong type for initializer (string expected).") << std::endl;
-        throw std::string("wrong type for initializer (string expected).");
+          throw std::string("wrong type for initializer (string expected).");
+        }
       }
       else if (node->is_typed(cdk::TYPE_POINTER))
       {
         if (!node->initializer()->is_typed(cdk::TYPE_POINTER))
+        {
           std::cout << std::string("THROW Wrong type for initializer (pointer expected).") << std::endl;
-        throw std::string("Wrong type for initializer (pointer expected).");
+          throw std::string("Wrong type for initializer (pointer expected).");
+        }
       }
       else if (node->is_typed(cdk::TYPE_POINTER) && node->initializer()->is_typed(cdk::TYPE_POINTER))
       {
@@ -313,10 +320,13 @@ void l22::type_checker::do_declaration_node(l22::declaration_node *node, int lvl
   }
 
   const std::string &id = node->identifier();
-  auto symbol = l22::make_symbol(node->type(), id, false, node->qualifier(), (bool)node->initializer(), false);
+  auto symbol = l22::make_symbol(node->type(), id, node->qualifier(), node->qualifier(), (bool)node->initializer(), false);
   if (_symtab.insert(id, symbol))
   {
     _parent->set_new_symbol(symbol);
+  }
+  else if (_symtab.find(id)->qualifier() == tUSE)
+  {
   }
   else
   {

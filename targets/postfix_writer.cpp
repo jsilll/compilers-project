@@ -136,9 +136,9 @@ void l22::postfix_writer::do_declaration_node(l22::declaration_node *node, int l
 
   if (node->initializer())
   {
+    node->initializer()->accept(this, lvl);
     if (_inFunctionBody)
     {
-      node->initializer()->accept(this, lvl);
       if (node->is_typed(cdk::TYPE_DOUBLE))
       {
         if (node->initializer()->is_typed(cdk::TYPE_INT))
