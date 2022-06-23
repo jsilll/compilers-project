@@ -10,6 +10,6 @@ do
     $file > $outfile
     
     echo $outfile
-    diff $expectedfile $outfile
+    diff --color $outfile $expectedfile
 
 done
