@@ -13,7 +13,7 @@ namespace l22
   {
     cdk::symbol_table<l22::symbol> &_symtab;
 
-    size_t _localsize;
+    size_t _localsize = 0;
 
   public:
     frame_size_calculator(std::shared_ptr<cdk::compiler> compiler, cdk::symbol_table<l22::symbol> &symtab) : basic_ast_visitor(compiler), _symtab(symtab)
