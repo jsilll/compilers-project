@@ -7,7 +7,7 @@ do
     bname=`basename $file .exe`
     expectedfile=expected/$bname.out
     outfile=src/$bname.out
-    $file | tr -d " \t\n\r" > $outfile
+    $file | tr -d "\t\n\r" > $outfile
     printf "\n" >> $outfile
 
     echo $outfile
