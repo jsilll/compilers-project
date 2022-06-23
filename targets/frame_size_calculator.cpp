@@ -45,10 +45,6 @@ void l22::frame_size_calculator::do_gt_node(cdk::gt_node *const node, int lvl)
 {
   // EMPTY
 }
-void l22::frame_size_calculator::do_variable_node(cdk::variable_node *const node, int lvl)
-{
-  // EMPTY
-}
 void l22::frame_size_calculator::do_integer_node(cdk::integer_node *const node, int lvl)
 {
   // EMPTY
@@ -187,6 +183,11 @@ void l22::frame_size_calculator::do_while_node(l22::while_node *const node, int 
 void l22::frame_size_calculator::do_declaration_node(l22::declaration_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
+  _localsize += node->type()->size();
+}
+
+void l22::frame_size_calculator::do_variable_node(cdk::variable_node *const node, int lvl)
+{
   _localsize += node->type()->size();
 }
 
