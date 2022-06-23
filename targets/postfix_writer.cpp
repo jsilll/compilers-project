@@ -144,22 +144,30 @@ void l22::postfix_writer::do_declaration_node(l22::declaration_node *node, int l
         _pf.LOCAL(offset);
         _pf.STDOUBLE();
       }
+      // se for int / pointer
       else
       {
         _pf.LOCAL(offset);
         _pf.STINT();
       }
     }
+    // caso esteja globalmente
     else if (!_inFunctionBody && !_inFunctionArgs)
     {
       if (node->is_typed(cdk::TYPE_INT) || node->is_typed(cdk::TYPE_POINTER) || node->is_typed(cdk::TYPE_DOUBLE))
       {
+        if (node->is_typed(cdk::TYPE_FUNCTIONAL))
+        {
+          node->initializer()->accept(this, lvl + 2);
+        }
+
         _pf.DATA();
         _pf.ALIGN();
         if (node->qualifier() == tPUBLIC)
         {
           _pf.GLOBAL(id, _pf.OBJ());
         }
+
         _pf.LABEL(id);
         if (node->is_typed(cdk::TYPE_INT) || node->is_typed(cdk::TYPE_POINTER))
         {
@@ -182,7 +190,7 @@ void l22::postfix_writer::do_declaration_node(l22::declaration_node *node, int l
           }
         }
       }
-      else if (node->is_typed(cdk::TYPE_STRING))
+      else if (node->is_typed(cdk::TYPE_STRING) || node->is_typed(cdk::TYPE_FUNCTIONAL))
       {
         _pf.DATA();
         _pf.ALIGN();
@@ -910,43 +918,50 @@ void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)
   std::cout << "void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)" << std::endl;
   ASSERT_SAFE_EXPRESSIONS;
 
-  if (node->block())
+  std::string id = mklbl(++_lbl);
+  auto function = make_symbol(node->type(), id, false, tPUBLIC, true, true);
+  _function.push(function);
+
+  _offset = 8;
+  _symtab.push();
+  if (node->arguments())
   {
-    std::string id = mklbl(++_lbl);
-    auto function = new_symbol();
-    function->set_name(id);
-    _function.push(function);
-    reset_new_symbol();
+    _inFunctionArgs = true;
+    node->arguments()->accept(this, lvl + 2);
+    _inFunctionArgs = false;
+  }
 
-    _offset = 8;
-    _symtab.push();
-    if (node->arguments())
-    {
-      _inFunctionArgs = true;
-      node->arguments()->accept(this, lvl + 2);
-      _inFunctionArgs = false;
-    }
+  _pf.TEXT(id);
+  _pf.ALIGN();
+  _pf.LABEL(id);
 
-    _pf.TEXT(id);
-    _pf.ALIGN();
-    _pf.LABEL(id);
+  frame_size_calculator lsc(_compiler, _symtab);
+  node->accept(&lsc, lvl);
+  _pf.ENTER(lsc.localsize());
 
-    frame_size_calculator lsc(_compiler, _symtab);
-    node->accept(&lsc, lvl);
-    _pf.ENTER(lsc.localsize());
+  _inFunctionBody = true;
+  _offset = 0;
+  node->block()->accept(this, lvl + 4);
+  _inFunctionBody = false;
+  _function.pop();
+  _symtab.pop();
 
-    _inFunctionBody = true;
-    _offset = 0;
-    node->block()->accept(this, lvl + 4);
-    _inFunctionBody = false;
-    _function.pop();
-    _symtab.pop();
+  if (!function->returned())
+  {
+    _pf.LEAVE();
+    _pf.RET();
+  }
 
-    if (!function->returned())
-    {
-      _pf.LEAVE();
-      _pf.RET();
-    }
+  _pf.ALIGN();
+  if (_inFunctionBody)
+  {
+    _pf.TEXT();
+    _pf.ADDR(id);
+  }
+  else
+  {
+    _pf.DATA();
+    _pf.SADDR(id);
   }
 }
 
@@ -954,7 +969,56 @@ void l22::postfix_writer::do_function_call_node(l22::function_call_node *const n
 {
   ASSERT_SAFE_EXPRESSIONS;
   std::cout << "void l22::postfix_writer::do_function_call_node(l22::function_call_node *const node, int lvl)" << std::endl;
-  _pf.INT(0);
+
+  // a() @() a[0]() (() -> {})()
+
+  int argumentsSize = 0;
+  // if (node->arguments())
+  // {
+  //   for (size_t i = node->arguments()->size(); i > 0; i--)
+  //   {
+  //     cdk::expression_node *arg = dynamic_cast<cdk::expression_node *>(node->arguments()->node(i - 1));
+  //     std::shared_ptr<cdk::basic_type> type = arg->type();
+  //     arg->accept(this, lvl + 2);
+  //     if (type->name() == cdk::TYPE_DOUBLE && arg->is_typed(cdk::TYPE_INT))
+  //     {
+  //       _pf.I2D();
+  //     }
+  //     argumentsSize += type->size();
+  //   }
+  // }
+
+  node->lambda_ptr()->accept(this, lvl + 2);
+  // if variable node
+
+  auto var = dynamic_cast<cdk::variable_node *>(node->lambda_ptr());
+  if (var != nullptr)
+  {
+    std::string id = var->name();
+    // _pf.CALL(id);
+  }
+
+  _pf.CALL("_L1");
+
+  if (argumentsSize != 0)
+  {
+    _pf.TRASH(argumentsSize);
+  }
+
+  std::cout << cdk::to_string(node->type()) << std::endl;
+
+  if (node->is_typed(cdk::TYPE_INT) || node->is_typed(cdk::TYPE_POINTER) || node->is_typed(cdk::TYPE_STRING) || node->is_typed(cdk::TYPE_FUNCTIONAL))
+  {
+    _pf.LDFVAL32();
+  }
+  else if (node->is_typed(cdk::TYPE_DOUBLE))
+  {
+    _pf.LDFVAL64();
+  }
+  else if (!node->is_typed(cdk::TYPE_VOID))
+  {
+    std::cerr << "Cannot call function" << std::endl;
+  }
 }
 
 void l22::postfix_writer::do_block_node(l22::block_node *const node, int lvl)

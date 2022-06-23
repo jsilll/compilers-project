@@ -1183,7 +1183,7 @@ void l22::type_checker::do_function_call_node(l22::function_call_node *node, int
     }
   }
 
-  node->type(fType->output());
+  node->type(fType->output()->component(0));
 }
 
 void l22::type_checker::do_lambda_node(l22::lambda_node *node, int lvl)
