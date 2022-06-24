@@ -200,14 +200,21 @@ void l22::postfix_writer::do_declaration_node(l22::declaration_node *node, int l
       {
         std::string lbl = mkflbl(_flbl);
 
+        std::cout << "Generating function" << lbl << std::endl;
+
         node->initializer()->accept(this, lvl);
+
+        std::cout << "Generating function" << mkflbl(_flbl) << std::endl;
+
         _pf.DATA();
+        _pf.ALIGN();
 
         if (node->qualifier() == tPUBLIC)
         {
-          _pf.GLOBAL(lbl, _pf.OBJ());
+          _pf.GLOBAL(symbol->name(), _pf.OBJ());
         }
 
+        _pf.LABEL(symbol->name());
         _pf.SADDR(lbl);
       }
     }
@@ -298,8 +305,13 @@ void l22::postfix_writer::do_variable_node(cdk::variable_node *const node, int l
   if (_inFunctionBody)
   {
     std::shared_ptr<l22::symbol> var = _symtab.find(node->name());
+
+    std::cout << "offset: " << var->offset() << std::endl;
+
     if (var->offset() == 0)
+    {
       _pf.ADDR(var->name());
+    }
     else
       _pf.LOCAL(var->offset());
   }
