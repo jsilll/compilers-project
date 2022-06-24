@@ -129,10 +129,9 @@ void l22::postfix_writer::do_declaration_node(l22::declaration_node *node, int l
 
   if (node->initializer())
   {
+    _symbols_to_declare.erase(node->identifier());
 
-    _symbols_to_declare.erase(symbol->name());
-
-    std::cout << "removed " << symbol->name() << std::endl;
+    std::cout << "removed " << node->identifier() << std::endl;
 
     if (_inFunctionBody)
     {
@@ -201,17 +200,15 @@ void l22::postfix_writer::do_declaration_node(l22::declaration_node *node, int l
 
         node->initializer()->accept(this, lvl);
 
-        std::cout << "Generating function" << mkflbl(_flbl) << std::endl;
-
         _pf.DATA();
         _pf.ALIGN();
 
         if (node->qualifier() == tPUBLIC)
         {
-          _pf.GLOBAL(symbol->name(), _pf.OBJ());
+          _pf.GLOBAL(node->identifier(), _pf.OBJ());
         }
 
-        _pf.LABEL(symbol->name());
+        _pf.LABEL(node->identifier());
         _pf.SADDR(lbl);
       }
     }
@@ -1029,12 +1026,11 @@ void l22::postfix_writer::do_function_call_node(l22::function_call_node *const n
   }
 
   // se diferente de vazio call
-  if (symbol && (symbol->qualifier() == tUSE || symbol->qualifier() == tFOREIGN))
+  if (symbol && symbol->qualifier() == tFOREIGN)
   {
     _pf.CALL(symbol->name());
   }
-
-  if (symbol && symbol->name() != "@")
+  else if (symbol && symbol->name() != "@")
   {
     std::string lbl = mkflbl(_flbl);
     node->lambda_ptr()->accept(this, lvl);
