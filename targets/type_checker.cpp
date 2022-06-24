@@ -114,46 +114,85 @@ void l22::type_checker::do_return_node(l22::return_node *node, int lvl)
       throw std::string("Return statement is not allowed outside of function.");
     }
 
-    if (fType->output()->component(0)->name() == cdk::TYPE_VOID)
+    if (fType->output(0)->name() == cdk::TYPE_VOID)
     {
       std::cout << std::string("THROW Void function cannot return values.") << std::endl;
       throw std::string("Void function cannot return values.");
     }
 
     node->retval()->accept(this, lvl + 2);
-    if (fType->output()->component(0)->name() == cdk::TYPE_INT)
+
+    if (fType->output(0)->name() == cdk::TYPE_INT)
     {
       if (!node->retval()->is_typed(cdk::TYPE_INT))
       {
-        std::cout << std::string("THROW Wrong type for initializer (integer expected).") << std::endl;
-        throw std::string("Wrong type for initializer (integer expected).");
+        std::cout << std::string("THROW Wrong type for return statement (integer expected).") << std::endl;
+        throw std::string("Wrong type for return statement (integer expected).");
       }
     }
-    else if (fType->output()->component(0)->name() == cdk::TYPE_DOUBLE)
+    else if (fType->output(0)->name() == cdk::TYPE_DOUBLE)
     {
       if (!node->retval()->is_typed(cdk::TYPE_INT) && !node->retval()->is_typed(cdk::TYPE_DOUBLE))
       {
-        std::cout << std::string("THROW Wrong type for initializer (integer or double expected).") << std::endl;
-        throw std::string("Wrong type for initializer (integer or double expected).");
+        std::cout << std::string("THROW Wrong type for return statement (integer or double expected).") << std::endl;
+        throw std::string("Wrong type for return statement (integer or double expected).");
       }
     }
-    else if (fType->output()->component(0)->name() == cdk::TYPE_STRING)
+    else if (fType->output(0)->name() == cdk::TYPE_STRING)
     {
       if (!node->retval()->is_typed(cdk::TYPE_STRING))
       {
-        std::cout << std::string("THROW Wrong type for initializer (string expected).") << std::endl;
-        throw std::string("Wrong type for initializer (string expected).");
+        std::cout << std::string("THROW Wrong type for return statement (string expected).") << std::endl;
+        throw std::string("Wrong type for return statement (string expected).");
       }
     }
-    else if (fType->output()->component(0)->name() == cdk::TYPE_POINTER)
+    else if (fType->output(0)->name() == cdk::TYPE_POINTER)
     {
       if (!node->retval()->is_typed(cdk::TYPE_POINTER))
       {
-        std::cout << std::string("THROW Wrong type for initializer (pointer expected).") << std::endl;
-        throw std::string("Wrong type for initializer (pointer expected).");
+        std::cout << std::string("THROW Wrong type for return statement (pointer expected).") << std::endl;
+        throw std::string("Wrong type for return statement (pointer expected).");
       }
 
-      same_pointer_types(cdk::reference_type::cast(node->retval()->type()), cdk::reference_type::cast(fType->output()->component(0)));
+      same_pointer_types(cdk::reference_type::cast(node->retval()->type()), cdk::reference_type::cast(fType->output(0)));
+    }
+    else if (fType->output(0)->name() == cdk::TYPE_FUNCTIONAL)
+    {
+      if (!node->retval()->is_typed(cdk::TYPE_FUNCTIONAL))
+      {
+        std::cout << std::string("THROW Wrong type for return statement (functional type expected).") << std::endl;
+        throw std::string("Wrong type for return statement (functional type expected).");
+      }
+
+      std::shared_ptr<cdk::functional_type> fRetType = cdk::functional_type::cast(fType->output(0));
+      std::shared_ptr<cdk::functional_type> retType = cdk::functional_type::cast(node->retval()->type());
+
+      if (fRetType->output(0)->name() != retType->output(0)->name())
+      {
+        if (!(fRetType->output(0)->name() == cdk::TYPE_DOUBLE && retType->output(0)->name() == cdk::TYPE_INT))
+        {
+          std::cout << std::string("THROW Mismatching function output types in return statement.") << std::endl;
+          throw std::string("Mismatching function output types in return statement.");
+        }
+      }
+
+      if (fRetType->input_length() != retType->input_length())
+      {
+        std::cout << std::string("THROW Mismatching size of function arguments in return statement.") << std::endl;
+        throw std::string("Mismatching size of function arguments in return statement.");
+      }
+
+      for (size_t i = 0; i < fRetType->input_length(); i++)
+      {
+        if (fRetType->input(i)->name() != retType->input(i)->name())
+        {
+          if (!(fRetType->input(0)->name() == cdk::TYPE_INT && retType->input(0)->name() == cdk::TYPE_DOUBLE))
+          {
+            std::cout << std::string("THROW Mismatching function argument types in return statement.") << std::endl;
+            throw std::string("Mismatching function argument types in return statement.");
+          }
+        }
+      }
     }
     else
     {
@@ -283,27 +322,27 @@ void l22::type_checker::do_declaration_node(l22::declaration_node *node, int lvl
         std::shared_ptr<cdk::functional_type> fType2 = cdk::functional_type::cast(node->initializer()->type());
         if (fType1->output(0)->name() != fType2->output(0)->name())
         {
-          if (!(fType1->output(0)->name() == cdk::TYPE_DOUBLE && fType2->output(0)->name() == cdk::TYPE_DOUBLE))
+          if (!(fType1->output(0)->name() == cdk::TYPE_DOUBLE && fType2->output(0)->name() == cdk::TYPE_INT))
           {
-            std::cout << std::string("THROW Mismatching output types in function declaration") << std::endl;
-            throw std::string("Mismatching output types in function declaration");
+            std::cout << std::string("THROW Mismatching function output types in declaration") << std::endl;
+            throw std::string("Mismatching function output types in declaration");
           }
         }
 
         if (fType1->input_length() != fType2->input_length())
         {
-          std::cout << std::string("THROW Mismatching size of arguments.") << std::endl;
-          throw std::string("Mismatching size of arguments.");
+          std::cout << std::string("THROW Mismatching size of function arguments in declaration.") << std::endl;
+          throw std::string("Mismatching size of function arguments in declaration.");
         }
 
         for (size_t i = 0; i < fType1->input_length(); i++)
         {
           if (fType1->input(i)->name() != fType2->input(i)->name())
           {
-            if (!(fType1->output(0)->name() == cdk::TYPE_DOUBLE && fType2->output(0)->name() == cdk::TYPE_DOUBLE))
+            if (!(fType1->input(0)->name() == cdk::TYPE_INT && fType2->input(0)->name() == cdk::TYPE_DOUBLE))
             {
-              std::cout << std::string("THROW Mismatching argument types.") << std::endl;
-              throw std::string("Mismatching argument types.");
+              std::cout << std::string("THROW Mismatching function argument types in declaration.") << std::endl;
+              throw std::string("Mismatching function argument types in declaration.");
             }
           }
         }
@@ -506,25 +545,28 @@ void l22::type_checker::do_assignment_node(cdk::assignment_node *const node, int
     std::shared_ptr<cdk::functional_type> fType2 = cdk::functional_type::cast(node->rvalue()->type());
     if (fType1->output(0)->name() != fType2->output(0)->name())
     {
-      if (fType1->output(0)->name() == cdk::TYPE_DOUBLE && fType2->output(0)->name() == cdk::TYPE_DOUBLE)
+      if (!(fType1->output(0)->name() == cdk::TYPE_DOUBLE && fType2->output(0)->name() == cdk::TYPE_INT))
       {
-        std::cout << std::string("THROW Mismatching output types in function declaration") << std::endl;
-        throw std::string("Mismatching output types in function declaration");
+        std::cout << std::string("THROW Mismatching function output types in assignment") << std::endl;
+        throw std::string("Mismatching function output types in assignment");
       }
     }
 
     if (fType1->input_length() != fType2->input_length())
     {
-      std::cout << std::string("THROW Mismatching size of arguments.") << std::endl;
-      throw std::string("Mismatching size of arguments.");
+      std::cout << std::string("THROW Mismatching size of function arguments in assignment.") << std::endl;
+      throw std::string("Mismatching size of function arguments in assignment.");
     }
 
     for (size_t i = 0; i < fType1->input_length(); i++)
     {
       if (fType1->input(i)->name() != fType2->input(i)->name())
       {
-        std::cout << std::string("THROW Mismatching argument types.") << std::endl;
-        throw std::string("Mismatching argument types.");
+        if (!(fType1->input(0)->name() == cdk::TYPE_INT && fType2->input(0)->name() == cdk::TYPE_DOUBLE))
+        {
+          std::cout << std::string("THROW Mismatching function argument types in assignment.") << std::endl;
+          throw std::string("Mismatching function argument types in assignment.");
+        }
       }
     }
 

@@ -461,7 +461,10 @@ void l22::postfix_writer::do_evaluation_node(l22::evaluation_node *const node, i
   ASSERT_SAFE_EXPRESSIONS;
   std::cout << "void l22::postfix_writer::do_evaluation_node(l22::evaluation_node *const node, int lvl)" << std::endl;
   node->argument()->accept(this, lvl);
-  if (node->argument()->is_typed(cdk::TYPE_INT) || node->argument()->is_typed(cdk::TYPE_STRING) || node->argument()->is_typed(cdk::TYPE_POINTER))
+  if (node->argument()->is_typed(cdk::TYPE_INT) ||
+      node->argument()->is_typed(cdk::TYPE_STRING) ||
+      node->argument()->is_typed(cdk::TYPE_POINTER) ||
+      node->argument()->is_typed(cdk::TYPE_FUNCTIONAL))
   {
     _pf.TRASH(4);
   }
@@ -1004,7 +1007,6 @@ void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)
 
   _inFunctionBody = true;
   _offset = 0;
-  std::cout << "chamei o accept do bloco " << std::endl;
   node->block()->accept(this, lvl + 4);
 
   _inFunctionBody = false;
