@@ -438,6 +438,7 @@ void l22::type_checker::do_variable_node(cdk::variable_node *const node, int lvl
         std::cout << std::string("THROW Recursive call in outter layer of program is not allowed.") << std::endl;
         throw std::string("Recursive call in outter layer of program is not allowed.");
       }
+
       node->type(_lambda_stack.top());
     }
     else
@@ -1136,8 +1137,19 @@ void l22::type_checker::do_stack_alloc_node(l22::stack_alloc_node *node, int lvl
 void l22::type_checker::do_while_node(l22::while_node *const node, int lvl)
 {
   std::cout << "void l22::type_checker::do_while_node(l22::while_node *const node, int lvl)" << std::endl;
-  node->condition()->accept(this, lvl + 2);
-  node->condition()->accept(this, lvl + 2);
+  if (node->condition())
+  {
+    node->condition()->accept(this, lvl + 2);
+  }
+
+  if (node->block())
+  {
+    _symtab.push();
+    std::cout << "type_checker::_symtab.push()" << std::endl;
+    node->block()->accept(this, lvl + 2);
+    _symtab.pop();
+    std::cout << "type_checker::_symtab.pop()" << std::endl;
+  }
 }
 
 //---------------------------------------------------------------------------
@@ -1155,6 +1167,15 @@ void l22::type_checker::do_if_node(l22::if_node *const node, int lvl)
     std::cout << std::string("THROW Expected integer condition") << std::endl;
     throw std::string("Expected integer condition");
   }
+
+  if (node->block())
+  {
+    _symtab.push();
+    std::cout << "type_checker::_symtab.push()" << std::endl;
+    node->block()->accept(this, lvl + 2);
+    _symtab.pop();
+    std::cout << "type_checker::_symtab.pop()" << std::endl;
+  }
 }
 
 void l22::type_checker::do_if_else_node(l22::if_else_node *const node, int lvl)
@@ -1169,6 +1190,24 @@ void l22::type_checker::do_if_else_node(l22::if_else_node *const node, int lvl)
   {
     std::cout << std::string("THROW Expected integer condition") << std::endl;
     throw std::string("Expected integer condition");
+  }
+
+  if (node->thenblock())
+  {
+    _symtab.push();
+    std::cout << "type_checker::_symtab.push()" << std::endl;
+    node->thenblock()->accept(this, lvl + 2);
+    _symtab.pop();
+    std::cout << "type_checker::_symtab.pop()" << std::endl;
+  }
+
+  if (node->elseblock())
+  {
+    _symtab.push();
+    std::cout << "type_checker::_symtab.push()" << std::endl;
+    node->elseblock()->accept(this, lvl + 2);
+    _symtab.pop();
+    std::cout << "type_checker::_symtab.pop()" << std::endl;
   }
 }
 
@@ -1242,12 +1281,14 @@ void l22::type_checker::do_lambda_node(l22::lambda_node *node, int lvl)
   {
     _lambda_stack.push(lambda_type);
     _symtab.push();
+    std::cout << "type_checker::_symtab.push()" << std::endl;
     if (node->arguments())
     {
       node->arguments()->accept(this, lvl + 2);
     }
     node->block()->accept(this, lvl + 2);
     _symtab.pop();
+    std::cout << "type_checker::_symtab.pop()" << std::endl;
     _lambda_stack.pop();
   }
 }

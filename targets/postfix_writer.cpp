@@ -33,8 +33,10 @@ void l22::postfix_writer::do_program_node(l22::program_node *const node, int lvl
   _inFunctionBody = true;
   std::cout << "SYMTAB PUSH" << std::endl;
   _symtab.push();
+  std::cout << "postfix_writer::_symtab.push()" << std::endl;
   node->block()->accept(this, lvl);
   _symtab.pop();
+  std::cout << "postfix_writer::_symtab.pop()" << std::endl;
   std::cout << "SYMTAB POP" << std::endl;
   _inFunctionBody = false;
 
@@ -316,17 +318,30 @@ void l22::postfix_writer::do_variable_node(cdk::variable_node *const node, int l
   std::cout << "void l22::postfix_writer::do_variable_node(cdk::variable_node *const node, int lvl)" << std::endl;
   if (_inFunctionBody)
   {
-    std::shared_ptr<l22::symbol> var = _symtab.find(node->name());
-
-    if (var->offset() == 0)
+    if (node->name() == "@")
     {
-      _pf.ADDR(var->name());
+      // TODO: MANEL
+      std::cout << "é um @" << std::endl;
     }
     else
-      _pf.LOCAL(var->offset());
+    {
+      std::shared_ptr<l22::symbol> var = _symtab.find(node->name());
+      if (var->offset() == 0)
+      {
+        _pf.ADDR(var->name());
+      }
+      else
+      {
+        _pf.LOCAL(var->offset());
+      }
+    }
   }
   else
+  {
     _pf.ADDR(node->name());
+  }
+
+  std::cout << "left variable node" << std::endl;
 }
 
 void l22::postfix_writer::do_index_node(l22::index_node *node, int lvl)
@@ -927,8 +942,10 @@ void l22::postfix_writer::do_while_node(l22::while_node *const node, int lvl)
   node->condition()->accept(this, lvl);
   _pf.JZ(mklbl(lbl2));
   _symtab.push();
+  std::cout << "postfix_writer::_symtab.push()" << std::endl;
   node->block()->accept(this, lvl + 2);
   _symtab.pop();
+  std::cout << "postfix_writer::_symtab.pop()" << std::endl;
   _pf.JMP(mklbl(lbl1));
   _pf.LABEL(mklbl(lbl2));
 
@@ -963,8 +980,10 @@ void l22::postfix_writer::do_if_node(l22::if_node *const node, int lvl)
   node->condition()->accept(this, lvl);
   _pf.JZ(mklbl(lbl1 = ++_lbl));
   _symtab.push();
+  std::cout << "postfix_writer::_symtab.push()" << std::endl;
   node->block()->accept(this, lvl + 2);
   _symtab.pop();
+  std::cout << "postfix_writer::_symtab.pop()" << std::endl;
   _pf.LABEL(mklbl(lbl1));
 }
 
@@ -974,14 +993,22 @@ void l22::postfix_writer::do_if_else_node(l22::if_else_node *const node, int lvl
   int lbl1, lbl2;
   node->condition()->accept(this, lvl);
   _pf.JZ(mklbl(lbl1 = ++_lbl));
+
   _symtab.push();
+  std::cout << "postfix_writer::_symtab.push()" << std::endl;
   node->thenblock()->accept(this, lvl + 2);
   _symtab.pop();
+  std::cout << "postfix_writer::_symtab.pop()" << std::endl;
+
   _pf.JMP(mklbl(lbl2 = ++_lbl));
   _pf.LABEL(mklbl(lbl1));
+
   _symtab.push();
+  std::cout << "postfix_writer::_symtab.push()" << std::endl;
   node->elseblock()->accept(this, lvl + 2);
   _symtab.pop();
+  std::cout << "postfix_writer::_symtab.pop()" << std::endl;
+
   _pf.LABEL(mklbl(lbl1 = lbl2));
 }
 
@@ -1006,6 +1033,7 @@ void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)
   // tem aqui um retlbl what??
   _offset = 8;
   _symtab.push();
+  std::cout << "postfix_writer::_symtab.push()" << std::endl;
   if (node->arguments())
   {
     _inFunctionArgs = true;
@@ -1043,6 +1071,7 @@ void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)
   _inFunctionBody = false;
   _functions.pop();
   _symtab.pop();
+  std::cout << "postfix_writer::_symtab.pop()" << std::endl;
 
   if (!function->returned())
   {
@@ -1078,8 +1107,6 @@ void l22::postfix_writer::do_function_call_node(l22::function_call_node *const n
   {
     funcType = cdk::functional_type::cast(node->lambda_ptr()->type());
   }
-
-  std::cout << "func type: " << cdk::to_string(funcType) << std::endl;
 
   int argumentsSize = 0;
   if (node->arguments())
