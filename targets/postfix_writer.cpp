@@ -87,21 +87,37 @@ void l22::postfix_writer::do_return_node(l22::return_node *node, int lvl)
   std::shared_ptr<cdk::functional_type> funcType = cdk::functional_type::cast(_functions.top()->type());
 
   // ver como retornar com functional types
-  if (!(funcType->output(0)->name() == cdk::TYPE_VOID))
+  if (funcType->output(0)->name() != cdk::TYPE_VOID)
   {
     // TODO ver quando retornam funcoes
     std::string lbl = mkflbl(_flbl);
 
     node->retval()->accept(this, lvl + 2);
 
-    if (funcType->output(0)->name() == cdk::TYPE_INT || funcType->output(0)->name() == cdk::TYPE_STRING || funcType->output(0)->name() == cdk::TYPE_POINTER || funcType->output(0)->name() == cdk::TYPE_FUNCTIONAL)
+    if (funcType->output(0)->name() == cdk::TYPE_INT || funcType->output(0)->name() == cdk::TYPE_STRING || funcType->output(0)->name() == cdk::TYPE_POINTER)
+    {
+      _pf.DUP32();
       _pf.STFVAL32();
+
+      _pf.I2D();
+      _pf.STFVAL64();
+    }
     else if (funcType->output(0)->name() == cdk::TYPE_DOUBLE)
     {
-      cdk::expression_node *expression = dynamic_cast<cdk::expression_node *>(node->retval());
-      if (expression->is_typed(cdk::TYPE_INT))
+      if (node->retval()->is_typed(cdk::TYPE_INT))
         _pf.I2D();
       std::cout << "return com double" << std::endl;
+      _pf.STFVAL64();
+    }
+    else if (funcType->output(0)->name() == cdk::TYPE_FUNCTIONAL)
+    {
+      std::cout << "type functional" << std::endl;
+      _pf.ADDR(lbl);
+
+      _pf.DUP32();
+      _pf.STFVAL32();
+
+      _pf.I2D();
       _pf.STFVAL64();
     }
     else
@@ -1075,8 +1091,6 @@ void l22::postfix_writer::do_function_call_node(l22::function_call_node *const n
   {
     funcType = cdk::functional_type::cast(node->lambda_ptr()->type());
   }
-
-  std::cout << "func type: " << cdk::to_string(funcType) << std::endl;
 
   int argumentsSize = 0;
   if (node->arguments())
