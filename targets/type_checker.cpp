@@ -362,7 +362,7 @@ void l22::type_checker::do_nullptr_node(l22::nullptr_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
   std::cout << "void l22::type_checker::do_nullptr_node(l22::nullptr_node *const node, int lvl)" << std::endl;
-  node->type(cdk::reference_type::create(4, cdk::primitive_type::create(0, cdk::TYPE_VOID)));
+  node->type(cdk::reference_type::create(4, cdk::primitive_type::create(4, cdk::TYPE_VOID)));
 }
 
 //---------------------------------------------------------------------------
