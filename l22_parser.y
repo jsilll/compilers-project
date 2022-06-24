@@ -117,8 +117,8 @@ declaration :           type tID opt_initializer { $$ = new l22::declaration_nod
             |           tVAR tID initializer     { $$ = new l22::declaration_node(LINE, tPRIVATE, nullptr, *$2, $3); delete $2; }  
             | tPUBLIC        tID initializer     { $$ = new l22::declaration_node(LINE, tPUBLIC, nullptr, *$2, $3); delete $2; }
             | tPUBLIC   tVAR tID initializer     { $$ = new l22::declaration_node(LINE, tPUBLIC, nullptr, *$3, $4); delete $3; }
-            | tFOREIGN  type tID ';'             { $$ = new l22::declaration_node(LINE, $1, $2, *$3, nullptr); delete $3; }
-            | tUSE      type tID ';'             { $$ = new l22::declaration_node(LINE, $1, $2, *$3, nullptr); delete $3; }
+            | tFOREIGN  type tID ';'             { $$ = new l22::declaration_node(LINE, tFOREIGN, $2, *$3, nullptr); delete $3; }
+            | tUSE      type tID ';'             { $$ = new l22::declaration_node(LINE, tUSE, $2, *$3, nullptr); delete $3; }
             ;
 
 opt_initializer : ';'         { $$ = nullptr; }
