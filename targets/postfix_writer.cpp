@@ -306,8 +306,13 @@ void l22::postfix_writer::do_variable_node(cdk::variable_node *const node, int l
   if (_inFunctionBody)
   {
     std::shared_ptr<l22::symbol> var = _symtab.find(node->name());
+
+    std::cout << "offset: " << var->offset() << std::endl;
+
     if (var->offset() == 0)
+    {
       _pf.ADDR(var->name());
+    }
     else
       _pf.LOCAL(var->offset());
   }
