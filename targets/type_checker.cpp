@@ -1199,7 +1199,6 @@ void l22::type_checker::do_lambda_node(l22::lambda_node *node, int lvl)
     }
     node->block()->accept(this, lvl + 2);
     _symtab.pop();
-    std::cout << "fiz pop" << std::endl;
     _lambda_stack.pop();
   }
 }

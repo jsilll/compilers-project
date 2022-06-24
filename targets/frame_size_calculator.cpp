@@ -26,6 +26,7 @@ void l22::frame_size_calculator::do_sequence_node(cdk::sequence_node *const node
 void l22::frame_size_calculator::do_block_node(l22::block_node *const node, int lvl)
 {
   std::cout << "void l22::frame_size_calculator::do_block_node(l22::block_node *const node, int lvl)" << std::endl;
+  _symtab.push();
   if (node->declarations())
   {
     node->declarations()->accept(this, lvl + 2);
@@ -34,6 +35,7 @@ void l22::frame_size_calculator::do_block_node(l22::block_node *const node, int 
   {
     node->instructions()->accept(this, lvl + 2);
   }
+  _symtab.pop();
 }
 
 void l22::frame_size_calculator::do_if_node(l22::if_node *const node, int lvl)
