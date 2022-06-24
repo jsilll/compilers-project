@@ -407,7 +407,7 @@ void l22::postfix_writer::do_assignment_node(cdk::assignment_node *const node, i
     _pf.DUP32();
   }
 
-  if (node->rvalue()->is_typed(cdk::TYPE_FUNCTIONAL) && dynamic_cast<l22::lambda_node *>(node->rvalue()))
+  if (node->rvalue()->is_typed(cdk::TYPE_FUNCTIONAL))
   {
     _pf.ADDR(lbl);
     node->lvalue()->accept(this, lvl);
