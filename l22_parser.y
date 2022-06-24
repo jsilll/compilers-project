@@ -79,7 +79,7 @@
 %type<node> program instruction block_instruction elif 
 %type<s> text
 %type<sequence> expressions file arg_declarations opt_arg_declarations declarations opt_declarations opt_exprs instructions opt_instructions
-%type<type> function_type type
+%type<type> type
 %type<vtypes> arg_types
 
 %%
@@ -129,38 +129,25 @@ initializer : '=' expression ';'   { $$ = $2; }
             | '=' block_expression { $$ = $2; }
             ;
 
-type : tTYPE_INT        { $$ = cdk::primitive_type::create(4, cdk::TYPE_INT); }
-     | tTYPE_DOUBLE     { $$ = cdk::primitive_type::create(8, cdk::TYPE_DOUBLE); }
-     | tTYPE_TEXT       { $$ = cdk::primitive_type::create(4, cdk::TYPE_STRING); }
-     | tTYPE_VOID       { $$ = cdk::primitive_type::create(0, cdk::TYPE_VOID); }
-     | '[' type ']'     { $$ = cdk::reference_type::create(4, $2); }
-     | function_type    { $$ = $1; }
+type : tTYPE_INT                   { $$ = cdk::primitive_type::create(4, cdk::TYPE_INT); }
+     | tTYPE_DOUBLE                { $$ = cdk::primitive_type::create(8, cdk::TYPE_DOUBLE); }
+     | tTYPE_TEXT                  { $$ = cdk::primitive_type::create(4, cdk::TYPE_STRING); }
+     | tTYPE_VOID                  { $$ = cdk::primitive_type::create(0, cdk::TYPE_VOID); }
+     | '[' type ']'                { $$ = cdk::reference_type::create(4, $2); }
+     | type '<' arg_types '>' { $$ = cdk::functional_type::create(*$3, $1); delete $3;}
      ;
 
-function_type : type '<' arg_types '>' { 
-                                         auto v = std::vector<std::shared_ptr<cdk::basic_type>>();
-                                         v.push_back($1);
-                                         $$ = cdk::functional_type::create(v, *$3);
-                                         delete $3;
-                                       }
-              | type '<'           '>' { 
-                                         auto v = std::vector<std::shared_ptr<cdk::basic_type>>();
-                                         v.push_back($1);
-                                         $$ = cdk::functional_type::create(v);
-                                       }
-              ;
+arg_types  : /* empty */        { $$ = new std::vector<std::shared_ptr<cdk::basic_type>>(); }
+           | type               { $$ = new std::vector<std::shared_ptr<cdk::basic_type>>(); $$->push_back($1); }
+           | arg_types ',' type { $$ = $1; $$->push_back($3); }
 
-arg_types : type               { $$ = new std::vector<std::shared_ptr<cdk::basic_type>>(); $$->push_back($1); }
-          | arg_types ',' type { $1->push_back($3); $$ = $1; }
-          ;
-
-instruction : expression         { $$ = new l22::evaluation_node(LINE, $1); }
-            | tWRITE   expressions     { $$ = new l22::print_node(LINE, $2); }
-            | tWRITELN expressions     { $$ = new l22::print_node(LINE, $2, true); }
-            | tAGAIN             { $$ = new l22::again_node(LINE); }
-            | tSTOP              { $$ = new l22::stop_node(LINE); }
-            | tRETURN            { $$ = new l22::return_node(LINE); }
-            | tRETURN expression { $$ = new l22::return_node(LINE, $2); }
+instruction : expression           { $$ = new l22::evaluation_node(LINE, $1); }
+            | tWRITE   expressions { $$ = new l22::print_node(LINE, $2); }
+            | tWRITELN expressions { $$ = new l22::print_node(LINE, $2, true); }
+            | tAGAIN               { $$ = new l22::again_node(LINE); }
+            | tSTOP                { $$ = new l22::stop_node(LINE); }
+            | tRETURN              { $$ = new l22::return_node(LINE); }
+            | tRETURN expression   { $$ = new l22::return_node(LINE, $2); }
             ;
 
 block_instruction : tIF     '(' expression ')' tTHEN block      { $$ = new l22::if_node(LINE, $3, $6); }

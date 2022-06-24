@@ -1,4 +1,4 @@
 #! /bin/sh 
 
 make clean;
-make asm --debug=b > type_checker.out
+make asm --debug=b -B > type_checker.out

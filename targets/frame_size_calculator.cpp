@@ -11,6 +11,7 @@ l22::frame_size_calculator::~frame_size_calculator()
 
 void l22::frame_size_calculator::do_sequence_node(cdk::sequence_node *const node, int lvl)
 {
+  std::cout << "void l22::frame_size_calculator::do_sequence_node(cdk::sequence_node *const node, int lvl)" << std::endl;
   for (size_t i = 0; i < node->size(); i++)
   {
     cdk::basic_node *n = node->node(i);
@@ -24,6 +25,8 @@ void l22::frame_size_calculator::do_sequence_node(cdk::sequence_node *const node
 
 void l22::frame_size_calculator::do_block_node(l22::block_node *const node, int lvl)
 {
+  std::cout << "void l22::frame_size_calculator::do_block_node(l22::block_node *const node, int lvl)" << std::endl;
+  _symtab.push();
   if (node->declarations())
   {
     node->declarations()->accept(this, lvl + 2);
@@ -32,15 +35,18 @@ void l22::frame_size_calculator::do_block_node(l22::block_node *const node, int 
   {
     node->instructions()->accept(this, lvl + 2);
   }
+  _symtab.pop();
 }
 
 void l22::frame_size_calculator::do_if_node(l22::if_node *const node, int lvl)
 {
+  std::cout << "void l22::frame_size_calculator::do_if_node(l22::if_node *const node, int lvl)" << std::endl;
   node->block()->accept(this, lvl + 2);
 }
 
 void l22::frame_size_calculator::do_if_else_node(l22::if_else_node *const node, int lvl)
 {
+  std::cout << "void l22::frame_size_calculator::do_if_else_node(l22::if_else_node *const node, int lvl)" << std::endl;
   node->thenblock()->accept(this, lvl + 2);
   if (node->elseblock())
   {
@@ -50,29 +56,34 @@ void l22::frame_size_calculator::do_if_else_node(l22::if_else_node *const node, 
 
 void l22::frame_size_calculator::do_while_node(l22::while_node *const node, int lvl)
 {
+  std::cout << "void l22::frame_size_calculator::do_while_node(l22::while_node *const node, int lvl)" << std::endl;
   node->block()->accept(this, lvl + 2);
 }
 
 void l22::frame_size_calculator::do_declaration_node(l22::declaration_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
+  std::cout << "void l22::frame_size_calculator::do_declaration_node(l22::declaration_node *const node, int lvl)" << std::endl;
   _localsize += node->type()->size();
 }
 
 void l22::frame_size_calculator::do_variable_node(cdk::variable_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
+  std::cout << "void l22::frame_size_calculator::do_variable_node(cdk::variable_node *const node, int lvl)" << std::endl;
   _localsize += node->type()->size();
 }
 
 void l22::frame_size_calculator::do_lambda_node(l22::lambda_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
+  std::cout << "void l22::frame_size_calculator::do_lambda_node(l22::lambda_node *const node, int lvl)" << std::endl;
   node->block()->accept(this, lvl + 2);
 }
 
 void l22::frame_size_calculator::do_program_node(l22::program_node *const node, int lvl)
 {
+  std::cout << "void l22::frame_size_calculator::do_program_node(l22::program_node *const node, int lvl)" << std::endl;
   node->block()->accept(this, lvl + 2);
 }
 
