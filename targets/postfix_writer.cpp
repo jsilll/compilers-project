@@ -944,6 +944,7 @@ void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)
   if (node->arguments())
   {
     _inFunctionArgs = true;
+    // ter em atencao chamadas a funcoes nos argumentos
     node->arguments()->accept(this, lvl + 2);
     _inFunctionArgs = false;
   }
@@ -1005,6 +1006,7 @@ void l22::postfix_writer::do_function_call_node(l22::function_call_node *const n
   int argumentsSize = 0;
   if (node->arguments())
   {
+    std::cout << "tem argumentos ..." << std::endl;
     for (int i = node->arguments()->size() - 1; i >= 0; i--)
     {
       cdk::expression_node *arg = dynamic_cast<cdk::expression_node *>(node->arguments()->node(i));
@@ -1030,7 +1032,12 @@ void l22::postfix_writer::do_function_call_node(l22::function_call_node *const n
   {
     _pf.CALL(symbol->name());
   }
-  else if (symbol && symbol->name() != "@")
+  else if (symbol && symbol->name() == "@")
+  {
+    _pf.ADDR(_functions.top()->name());
+    _pf.BRANCH();
+  }
+  else
   {
     std::string lbl = mkflbl(_flbl);
     node->lambda_ptr()->accept(this, lvl);
@@ -1041,11 +1048,6 @@ void l22::postfix_writer::do_function_call_node(l22::function_call_node *const n
       _pf.ADDR(lbl);
     }
 
-    _pf.BRANCH();
-  }
-  else
-  {
-    _pf.ADDR(_functions.top()->name());
     _pf.BRANCH();
   }
 
