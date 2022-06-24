@@ -21,6 +21,8 @@ namespace l22
     std::shared_ptr<cdk::basic_type> _inBlockReturnType = nullptr;
     std::stack<std::shared_ptr<cdk::functional_type>> _lambda_stack;
 
+    bool _programHasStarted = false;
+
   public:
     type_checker(std::shared_ptr<cdk::compiler> compiler, cdk::symbol_table<l22::symbol> &symtab, basic_ast_visitor *parent) : basic_ast_visitor(compiler), _symtab(symtab), _parent(parent)
     {

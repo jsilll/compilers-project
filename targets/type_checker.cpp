@@ -66,6 +66,7 @@ void l22::type_checker::do_program_node(l22::program_node *const node, int lvl)
 {
   std::cout << "void l22::type_checker::do_program_node(l22::program_node *const node, int lvl)" << std::endl;
   _lambda_stack.push(cdk::functional_type::create(cdk::primitive_type::create(4, cdk::TYPE_INT)));
+  _programHasStarted = true;
 }
 
 //---------------------------------------------------------------------------
@@ -429,13 +430,19 @@ void l22::type_checker::do_variable_node(cdk::variable_node *const node, int lvl
   }
   else if (id == "@")
   {
-    if (!_lambda_stack.empty() && _lambda_stack.size() != 1)
+    if (!_lambda_stack.empty())
     {
+      if (_programHasStarted && _lambda_stack.size() != 1)
+      {
+
+        std::cout << std::string("THROW Recursive call in outter layer of program is not allowed.") << std::endl;
+        throw std::string("Recursive call in outter layer of program is not allowed.");
+      }
       node->type(_lambda_stack.top());
     }
     else
     {
-      std::cout << std::string("Recursive call outside of function is not allowed.") << std::endl;
+      std::cout << std::string("THROW Recursive call outside of function is not allowed.") << std::endl;
       throw std::string("Recursive call outside of function is not allowed.");
     }
   }
