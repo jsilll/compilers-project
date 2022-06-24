@@ -14,7 +14,7 @@ void l22::postfix_writer::do_program_node(l22::program_node *const node, int lvl
   ASSERT_SAFE_EXPRESSIONS;
   std::cout << "void l22::postfix_writer::do_program_node(l22::program_node *const node, int lvl)" << std::endl;
 
-  std::shared_ptr<l22::symbol> func = make_symbol(cdk::primitive_type::create(4, cdk::TYPE_INT), "_main", true, tPUBLIC, true, true);
+  std::shared_ptr<l22::symbol> func = make_symbol(cdk::functional_type::create(cdk::primitive_type::create(4, cdk::TYPE_INT)), "_main", true, tPUBLIC, true, true);
 
   func->set_name("_main");
   _functions.push(func);
@@ -83,21 +83,20 @@ void l22::postfix_writer::do_sequence_node(cdk::sequence_node *const node, int l
 void l22::postfix_writer::do_return_node(l22::return_node *node, int lvl)
 {
   std::cout << "void l22::postfix_writer::do_return_node(l22::return_node *node, int lvl)" << std::endl;
-  std::shared_ptr<l22::symbol> func = _functions.top();
 
-  std::cout << "return node " << cdk::to_string(func->type()) << " nome: " << func->name() << std::endl;
+  std::shared_ptr<cdk::functional_type> funcType = cdk::functional_type::cast(_functions.top()->type());
 
   // ver como retornar com functional types
-  if (!func->is_typed(cdk::TYPE_VOID))
+  if (!(funcType->output(0)->name() == cdk::TYPE_VOID))
   {
     // TODO ver quando retornam funcoes
     std::string lbl = mkflbl(_flbl);
 
     node->retval()->accept(this, lvl + 2);
 
-    if (func->is_typed(cdk::TYPE_INT) || func->is_typed(cdk::TYPE_STRING) || func->is_typed(cdk::TYPE_POINTER) || func->is_typed(cdk::TYPE_FUNCTIONAL))
+    if (funcType->output(0)->name() == cdk::TYPE_INT || funcType->output(0)->name() == cdk::TYPE_STRING || funcType->output(0)->name() == cdk::TYPE_POINTER || funcType->output(0)->name() == cdk::TYPE_FUNCTIONAL)
       _pf.STFVAL32();
-    else if (func->is_typed(cdk::TYPE_DOUBLE))
+    else if (funcType->output(0)->name() == cdk::TYPE_DOUBLE)
     {
       cdk::expression_node *expression = dynamic_cast<cdk::expression_node *>(node->retval());
       if (expression->is_typed(cdk::TYPE_INT))
@@ -112,7 +111,7 @@ void l22::postfix_writer::do_return_node(l22::return_node *node, int lvl)
   _pf.LEAVE();
   _pf.RET();
 
-  func->set_return();
+  _functions.top()->set_return();
 }
 
 void l22::postfix_writer::do_declaration_node(l22::declaration_node *node, int lvl)
@@ -1026,7 +1025,7 @@ void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)
     lbl = mkflbl(_flbl++);
   }
 
-  auto function = make_symbol(node->return_type(), lbl, false, tPUBLIC, true, true);
+  auto function = make_symbol(node->type(), lbl, false, tPUBLIC, true, true);
   _functions.push(function);
 
   _pf.TEXT();
@@ -1079,6 +1078,8 @@ void l22::postfix_writer::do_function_call_node(l22::function_call_node *const n
   {
     funcType = cdk::functional_type::cast(node->lambda_ptr()->type());
   }
+
+  std::cout << "func type: " << cdk::to_string(funcType) << std::endl;
 
   int argumentsSize = 0;
   if (node->arguments())
