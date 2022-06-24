@@ -85,6 +85,8 @@ void l22::postfix_writer::do_return_node(l22::return_node *node, int lvl)
   std::cout << "void l22::postfix_writer::do_return_node(l22::return_node *node, int lvl)" << std::endl;
   std::shared_ptr<l22::symbol> func = _functions.top();
 
+  std::cout << "return node " << cdk::to_string(func->type()) << " nome: " << func->name() << std::endl;
+
   // ver como retornar com functional types
   if (!func->is_typed(cdk::TYPE_VOID))
   {
@@ -100,6 +102,7 @@ void l22::postfix_writer::do_return_node(l22::return_node *node, int lvl)
       cdk::expression_node *expression = dynamic_cast<cdk::expression_node *>(node->retval());
       if (expression->is_typed(cdk::TYPE_INT))
         _pf.I2D();
+      std::cout << "return com double" << std::endl;
       _pf.STFVAL64();
     }
     else
@@ -240,7 +243,7 @@ void l22::postfix_writer::do_declaration_node(l22::declaration_node *node, int l
     {
       _symbols_to_declare.insert(node->identifier());
     }
-    else
+    else if (!_inFunctionArgs && !_inFunctionBody && !node->is_typed(cdk::TYPE_VOID))
     {
       _pf.BSS();
 
@@ -1000,7 +1003,6 @@ void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)
   }
 
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)" << std::endl;
 
   // tem aqui um retlbl what??
   _offset = 8;
@@ -1024,7 +1026,7 @@ void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)
     lbl = mkflbl(_flbl++);
   }
 
-  auto function = make_symbol(node->type(), lbl, false, tPUBLIC, true, true);
+  auto function = make_symbol(node->return_type(), lbl, false, tPUBLIC, true, true);
   _functions.push(function);
 
   _pf.TEXT();
