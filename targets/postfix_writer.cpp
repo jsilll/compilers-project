@@ -12,9 +12,10 @@
 void l22::postfix_writer::do_program_node(l22::program_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_program_node(l22::program_node *const node, int lvl)" << std::endl;
 
-  std::shared_ptr<l22::symbol> func = make_symbol(cdk::functional_type::create(cdk::primitive_type::create(4, cdk::TYPE_INT)), "_main", true, tPUBLIC, true, true);
+  std::shared_ptr<l22::symbol> func = make_symbol(cdk::functional_type::create(
+                                                      cdk::primitive_type::create(4, cdk::TYPE_INT)),
+                                                  "_main", true, tPUBLIC, true, true);
 
   func->set_name("_main");
   _functions.push(func);
@@ -31,13 +32,9 @@ void l22::postfix_writer::do_program_node(l22::program_node *const node, int lvl
   _pf.ENTER(lsc.localsize()); // total stack size reserved for local variables
 
   _inFunctionBody = true;
-  std::cout << "SYMTAB PUSH" << std::endl;
   _symtab.push();
-  std::cout << "postfix_writer::_symtab.push()" << std::endl;
   node->block()->accept(this, lvl);
   _symtab.pop();
-  std::cout << "postfix_writer::_symtab.pop()" << std::endl;
-  std::cout << "SYMTAB POP" << std::endl;
   _inFunctionBody = false;
 
   _functions.pop();
@@ -64,18 +61,16 @@ void l22::postfix_writer::do_program_node(l22::program_node *const node, int lvl
 
 void l22::postfix_writer::do_data_node(cdk::data_node *const node, int lvl)
 {
-  std::cout << "void l22::postfix_writer::do_data_node(cdk::data_node *const node, int lvl)" << std::endl;
   // EMPTY
 }
 
 void l22::postfix_writer::do_nil_node(cdk::nil_node *const node, int lvl)
 {
-  std::cout << "void l22::postfix_writer::do_nil_node(cdk::nil_node *const node, int lvl)" << std::endl;
+  // EMPTY
 }
 
 void l22::postfix_writer::do_sequence_node(cdk::sequence_node *const node, int lvl)
 {
-  std::cout << "void l22::postfix_writer::do_sequence_node(cdk::sequence_node *const node, int lvl)" << std::endl;
   for (size_t i = 0; i < node->size(); i++)
   {
     node->node(i)->accept(this, lvl);
@@ -84,8 +79,6 @@ void l22::postfix_writer::do_sequence_node(cdk::sequence_node *const node, int l
 
 void l22::postfix_writer::do_return_node(l22::return_node *node, int lvl)
 {
-  std::cout << "void l22::postfix_writer::do_return_node(l22::return_node *node, int lvl)" << std::endl;
-
   std::shared_ptr<cdk::functional_type> funcType = cdk::functional_type::cast(_functions.top()->type());
 
   // ver como retornar com functional types
@@ -108,12 +101,10 @@ void l22::postfix_writer::do_return_node(l22::return_node *node, int lvl)
     {
       if (node->retval()->is_typed(cdk::TYPE_INT))
         _pf.I2D();
-      std::cout << "return com double" << std::endl;
       _pf.STFVAL64();
     }
     else if (funcType->output(0)->name() == cdk::TYPE_FUNCTIONAL)
     {
-      std::cout << "type functional" << std::endl;
       _pf.ADDR(lbl);
 
       _pf.DUP32();
@@ -135,7 +126,6 @@ void l22::postfix_writer::do_return_node(l22::return_node *node, int lvl)
 void l22::postfix_writer::do_declaration_node(l22::declaration_node *node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_declaration_node(l22::declaration_node *node, int lvl)" << std::endl;
 
   std::string id = node->identifier();
 
@@ -203,7 +193,6 @@ void l22::postfix_writer::do_declaration_node(l22::declaration_node *node, int l
         }
         else if (node->is_typed(cdk::TYPE_DOUBLE))
         {
-          std::cout << "control reached here " << std::endl;
           if (node->is_typed(cdk::TYPE_DOUBLE))
           {
             node->initializer()->accept(this, lvl);
@@ -231,8 +220,6 @@ void l22::postfix_writer::do_declaration_node(l22::declaration_node *node, int l
       else if (node->is_typed(cdk::TYPE_FUNCTIONAL))
       {
         std::string lbl = mkflbl(_flbl);
-
-        std::cout << "Generating function" << lbl << std::endl;
 
         node->initializer()->accept(this, lvl);
 
@@ -281,7 +268,6 @@ void l22::postfix_writer::do_declaration_node(l22::declaration_node *node, int l
 void l22::postfix_writer::do_double_node(cdk::double_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_double_node(cdk::double_node *const node, int lvl)" << std::endl;
   if (_inFunctionBody)
   {
     _pf.DOUBLE(node->value());
@@ -295,17 +281,19 @@ void l22::postfix_writer::do_double_node(cdk::double_node *const node, int lvl)
 void l22::postfix_writer::do_integer_node(cdk::integer_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_integer_node(cdk::integer_node *const node, int lvl)" << std::endl;
   if (_inFunctionBody)
+  {
     _pf.INT(node->value());
+  }
   else
+  {
     _pf.SINT(node->value());
+  }
 }
 
 void l22::postfix_writer::do_string_node(cdk::string_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_string_node(cdk::string_node *const node, int lvl)" << std::endl;
   int lbl1;
 
   _pf.RODATA();
@@ -331,13 +319,11 @@ void l22::postfix_writer::do_string_node(cdk::string_node *const node, int lvl)
 void l22::postfix_writer::do_variable_node(cdk::variable_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_variable_node(cdk::variable_node *const node, int lvl)" << std::endl;
   if (_inFunctionBody)
   {
     if (node->name() == "@")
     {
-      // TODO: MANEL
-      std::cout << "é um @" << std::endl;
+      // TODO:
     }
     else
     {
@@ -356,14 +342,11 @@ void l22::postfix_writer::do_variable_node(cdk::variable_node *const node, int l
   {
     _pf.ADDR(node->name());
   }
-
-  std::cout << "left variable node" << std::endl;
 }
 
 void l22::postfix_writer::do_index_node(l22::index_node *node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_index_node(l22::index_node *node, int lvl)" << std::endl;
   node->base()->accept(this, lvl);
   node->index()->accept(this, lvl);
   _pf.INT(node->type()->size());
@@ -374,11 +357,9 @@ void l22::postfix_writer::do_index_node(l22::index_node *node, int lvl)
 void l22::postfix_writer::do_rvalue_node(cdk::rvalue_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_rvalue_node(cdk::rvalue_node *const node, int lvl)" << std::endl;
   node->lvalue()->accept(this, lvl);
   if (node->is_typed(cdk::TYPE_DOUBLE))
   {
-    std::cout << "rvalue double" << std::endl;
     _pf.LDDOUBLE();
   }
   else if (!node->is_typed(cdk::TYPE_VOID))
@@ -390,7 +371,6 @@ void l22::postfix_writer::do_rvalue_node(cdk::rvalue_node *const node, int lvl)
 void l22::postfix_writer::do_assignment_node(cdk::assignment_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_assignment_node(cdk::assignment_node *const node, int lvl)" << std::endl;
 
   std::string lbl = mkflbl(_flbl);
   node->rvalue()->accept(this, lvl);
@@ -439,7 +419,6 @@ void l22::postfix_writer::do_assignment_node(cdk::assignment_node *const node, i
 void l22::postfix_writer::do_input_node(l22::input_node *node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_input_node(l22::input_node *node, int lvl)" << std::endl;
   if (node->is_typed(cdk::TYPE_INT))
   {
     _symbols_to_declare.insert("readi");
@@ -457,7 +436,6 @@ void l22::postfix_writer::do_input_node(l22::input_node *node, int lvl)
 void l22::postfix_writer::do_print_node(l22::print_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_print_node(l22::print_node *const node, int lvl)" << std::endl;
   for (size_t ix = 0; ix < node->arguments()->size(); ix++)
   {
     auto child = dynamic_cast<cdk::expression_node *>(node->arguments()->node(ix));
@@ -498,7 +476,6 @@ void l22::postfix_writer::do_print_node(l22::print_node *const node, int lvl)
 void l22::postfix_writer::do_evaluation_node(l22::evaluation_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_evaluation_node(l22::evaluation_node *const node, int lvl)" << std::endl;
   node->argument()->accept(this, lvl);
   if (node->argument()->is_typed(cdk::TYPE_INT) ||
       node->argument()->is_typed(cdk::TYPE_STRING) ||
@@ -523,7 +500,6 @@ void l22::postfix_writer::do_evaluation_node(l22::evaluation_node *const node, i
 void l22::postfix_writer::do_neg_node(cdk::neg_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_neg_node(cdk::neg_node *const node, int lvl)" << std::endl;
   node->argument()->accept(this, lvl);
   if (node->is_typed(cdk::TYPE_DOUBLE))
   {
@@ -538,7 +514,6 @@ void l22::postfix_writer::do_neg_node(cdk::neg_node *const node, int lvl)
 void l22::postfix_writer::do_not_node(cdk::not_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_not_node(cdk::not_node *const node, int lvl)" << std::endl;
 
   node->argument()->accept(this, lvl + 2);
   _pf.INT(0);
@@ -548,7 +523,6 @@ void l22::postfix_writer::do_not_node(cdk::not_node *const node, int lvl)
 void l22::postfix_writer::do_identity_node(l22::identity_node *node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_identity_node(l22::identity_node *node, int lvl)" << std::endl;
   node->argument()->accept(this, lvl); // determine the value
 }
 
@@ -557,11 +531,9 @@ void l22::postfix_writer::do_identity_node(l22::identity_node *node, int lvl)
 void l22::postfix_writer::do_add_node(cdk::add_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_add_node(cdk::add_node *const node, int lvl)" << std::endl;
   node->left()->accept(this, lvl);
   if (node->is_typed(cdk::TYPE_DOUBLE) && node->left()->is_typed(cdk::TYPE_INT))
   {
-    std::cout << "double with left int" << std::endl;
     _pf.I2D();
   }
   else if (node->is_typed(cdk::TYPE_POINTER) && node->left()->is_typed(cdk::TYPE_INT))
@@ -581,7 +553,6 @@ void l22::postfix_writer::do_add_node(cdk::add_node *const node, int lvl)
   node->right()->accept(this, lvl);
   if (node->is_typed(cdk::TYPE_DOUBLE) && node->right()->is_typed(cdk::TYPE_INT))
   {
-    std::cout << "double with right int" << std::endl;
     _pf.I2D();
   }
   else if (node->is_typed(cdk::TYPE_POINTER) && node->right()->is_typed(cdk::TYPE_INT))
@@ -610,7 +581,6 @@ void l22::postfix_writer::do_add_node(cdk::add_node *const node, int lvl)
 void l22::postfix_writer::do_sub_node(cdk::sub_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_sub_node(cdk::sub_node *const node, int lvl)" << std::endl;
   node->left()->accept(this, lvl);
   if (node->is_typed(cdk::TYPE_DOUBLE) && node->left()->is_typed(cdk::TYPE_INT))
   {
@@ -677,7 +647,6 @@ void l22::postfix_writer::do_sub_node(cdk::sub_node *const node, int lvl)
 void l22::postfix_writer::do_mul_node(cdk::mul_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_mul_node(cdk::mul_node *const node, int lvl)" << std::endl;
   node->left()->accept(this, lvl);
   if (node->is_typed(cdk::TYPE_DOUBLE) && node->left()->is_typed(cdk::TYPE_INT))
   {
@@ -703,7 +672,6 @@ void l22::postfix_writer::do_mul_node(cdk::mul_node *const node, int lvl)
 void l22::postfix_writer::do_div_node(cdk::div_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_div_node(cdk::div_node *const node, int lvl)" << std::endl;
   node->left()->accept(this, lvl);
   if (node->is_typed(cdk::TYPE_DOUBLE) && node->left()->is_typed(cdk::TYPE_INT))
   {
@@ -729,7 +697,6 @@ void l22::postfix_writer::do_div_node(cdk::div_node *const node, int lvl)
 void l22::postfix_writer::do_mod_node(cdk::mod_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_mod_node(cdk::mod_node *const node, int lvl)" << std::endl;
   node->left()->accept(this, lvl);
   node->right()->accept(this, lvl);
   _pf.MOD();
@@ -740,7 +707,6 @@ void l22::postfix_writer::do_mod_node(cdk::mod_node *const node, int lvl)
 void l22::postfix_writer::do_sizeof_node(l22::sizeof_node *node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_sizeof_node(l22::sizeof_node *node, int lvl)" << std::endl;
   cdk::typed_node *typed = dynamic_cast<cdk::typed_node *>(node->expression());
   _pf.INT(typed->type()->size());
   _pf.ADD();
@@ -751,7 +717,6 @@ void l22::postfix_writer::do_sizeof_node(l22::sizeof_node *node, int lvl)
 void l22::postfix_writer::do_ge_node(cdk::ge_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_ge_node(cdk::ge_node *const node, int lvl)" << std::endl;
   node->left()->accept(this, lvl);
   if (node->left()->type()->name() == cdk::TYPE_INT && node->right()->type()->name() == cdk::TYPE_DOUBLE)
     _pf.I2D();
@@ -765,14 +730,12 @@ void l22::postfix_writer::do_ge_node(cdk::ge_node *const node, int lvl)
     _pf.DCMP();
     _pf.INT(0);
   }
-
   _pf.GE();
 }
 
 void l22::postfix_writer::do_gt_node(cdk::gt_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_gt_node(cdk::gt_node *const node, int lvl)" << std::endl;
   node->left()->accept(this, lvl);
   if (node->left()->type()->name() == cdk::TYPE_INT && node->right()->type()->name() == cdk::TYPE_DOUBLE)
     _pf.I2D();
@@ -793,7 +756,6 @@ void l22::postfix_writer::do_gt_node(cdk::gt_node *const node, int lvl)
 void l22::postfix_writer::do_le_node(cdk::le_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_le_node(cdk::le_node *const node, int lvl)" << std::endl;
   node->left()->accept(this, lvl);
   if (node->left()->type()->name() == cdk::TYPE_INT && node->right()->type()->name() == cdk::TYPE_DOUBLE)
     _pf.I2D();
@@ -814,7 +776,6 @@ void l22::postfix_writer::do_le_node(cdk::le_node *const node, int lvl)
 void l22::postfix_writer::do_lt_node(cdk::lt_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_lt_node(cdk::lt_node *const node, int lvl)" << std::endl;
   node->left()->accept(this, lvl);
   if (node->left()->type()->name() == cdk::TYPE_INT && node->right()->type()->name() == cdk::TYPE_DOUBLE)
     _pf.I2D();
@@ -828,7 +789,6 @@ void l22::postfix_writer::do_lt_node(cdk::lt_node *const node, int lvl)
     _pf.DCMP();
     _pf.INT(0);
   }
-
   _pf.LT();
 }
 
@@ -837,7 +797,6 @@ void l22::postfix_writer::do_lt_node(cdk::lt_node *const node, int lvl)
 void l22::postfix_writer::do_and_node(cdk::and_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_and_node(cdk::and_node *const node, int lvl)" << std::endl;
   int lbl = ++_lbl;
   node->left()->accept(this, lvl + 2);
   _pf.DUP32();
@@ -851,7 +810,6 @@ void l22::postfix_writer::do_and_node(cdk::and_node *const node, int lvl)
 void l22::postfix_writer::do_or_node(cdk::or_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_or_node(cdk::or_node *const node, int lvl)" << std::endl;
   int lbl = ++_lbl;
   node->left()->accept(this, lvl + 2);
   _pf.DUP32();
@@ -867,7 +825,6 @@ void l22::postfix_writer::do_or_node(cdk::or_node *const node, int lvl)
 void l22::postfix_writer::do_eq_node(cdk::eq_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_eq_node(cdk::eq_node *const node, int lvl)" << std::endl;
   node->left()->accept(this, lvl);
   if (node->left()->type()->name() == cdk::TYPE_INT && node->right()->type()->name() == cdk::TYPE_DOUBLE)
     _pf.I2D();
@@ -881,14 +838,12 @@ void l22::postfix_writer::do_eq_node(cdk::eq_node *const node, int lvl)
     _pf.DCMP();
     _pf.INT(0);
   }
-
   _pf.EQ();
 }
 
 void l22::postfix_writer::do_ne_node(cdk::ne_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_ne_node(cdk::ne_node *const node, int lvl)" << std::endl;
   node->left()->accept(this, lvl);
   if (node->left()->type()->name() == cdk::TYPE_INT && node->right()->type()->name() == cdk::TYPE_DOUBLE)
     _pf.I2D();
@@ -902,7 +857,6 @@ void l22::postfix_writer::do_ne_node(cdk::ne_node *const node, int lvl)
     _pf.DCMP();
     _pf.INT(0);
   }
-
   _pf.NE();
 }
 
@@ -910,7 +864,6 @@ void l22::postfix_writer::do_ne_node(cdk::ne_node *const node, int lvl)
 
 void l22::postfix_writer::do_address_of_node(l22::address_of_node *node, int lvl)
 {
-  std::cout << "void l22::postfix_writer::do_address_of_node(l22::address_of_node *node, int lvl)" << std::endl;
   ASSERT_SAFE_EXPRESSIONS
   node->lvalue()->accept(this, lvl);
 }
@@ -918,13 +871,15 @@ void l22::postfix_writer::do_address_of_node(l22::address_of_node *node, int lvl
 void l22::postfix_writer::do_stack_alloc_node(l22::stack_alloc_node *node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_stack_alloc_node(l22::stack_alloc_node *node, int lvl)" << std::endl;
   node->argument()->accept(this, lvl);
   if (cdk::reference_type::cast(node->type())->referenced()->name() == cdk::TYPE_DOUBLE)
+  {
     _pf.INT(3);
+  }
   else
+  {
     _pf.INT(2);
-
+  }
   _pf.SHTL();
   _pf.ALLOC();
   _pf.SP();
@@ -933,7 +888,6 @@ void l22::postfix_writer::do_stack_alloc_node(l22::stack_alloc_node *node, int l
 void l22::postfix_writer::do_nullptr_node(l22::nullptr_node *node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_nullptr_node(l22::nullptr_node *node, int lvl)" << std::endl;
   if (_inFunctionBody)
   {
     _pf.INT(0);
@@ -948,7 +902,6 @@ void l22::postfix_writer::do_nullptr_node(l22::nullptr_node *node, int lvl)
 
 void l22::postfix_writer::do_while_node(l22::while_node *const node, int lvl)
 {
-  std::cout << "void l22::postfix_writer::do_while_node(l22::while_node *const node, int lvl)" << std::endl;
   int lbl1 = ++_lbl;
   _cond.push(lbl1);
   int lbl2 = ++_lbl;
@@ -958,10 +911,8 @@ void l22::postfix_writer::do_while_node(l22::while_node *const node, int lvl)
   node->condition()->accept(this, lvl);
   _pf.JZ(mklbl(lbl2));
   _symtab.push();
-  std::cout << "postfix_writer::_symtab.push()" << std::endl;
   node->block()->accept(this, lvl + 2);
   _symtab.pop();
-  std::cout << "postfix_writer::_symtab.pop()" << std::endl;
   _pf.JMP(mklbl(lbl1));
   _pf.LABEL(mklbl(lbl2));
 
@@ -971,59 +922,57 @@ void l22::postfix_writer::do_while_node(l22::while_node *const node, int lvl)
 
 void l22::postfix_writer::do_again_node(l22::again_node *node, int lvl)
 {
-  std::cout << "void l22::postfix_writer::do_again_node(l22::again_node *node, int lvl)" << std::endl;
   if (_cond.size() > 0)
+  {
     _pf.JMP(mklbl(_cond.top()));
+  }
   else
+  {
     std::cerr << "Continue instruction can only be used inside a for cycle." << std::endl;
+  }
 }
 
 void l22::postfix_writer::do_stop_node(l22::stop_node *node, int lvl)
 {
-  std::cout << "void l22::postfix_writer::do_stop_node(l22::stop_node *node, int lvl)" << std::endl;
   if (_end.size() > 0)
+  {
     _pf.JMP(mklbl(_end.top()));
+  }
   else
+  {
     std::cerr << "Break instruction can only be used inside a for cycle." << std::endl;
+  }
 }
 
 //---------------------------------------------------------------------------
 
 void l22::postfix_writer::do_if_node(l22::if_node *const node, int lvl)
 {
-  std::cout << "void l22::postfix_writer::do_if_node(l22::if_node *const node, int lvl)" << std::endl;
   int lbl1;
   node->condition()->accept(this, lvl);
   _pf.JZ(mklbl(lbl1 = ++_lbl));
   _symtab.push();
-  std::cout << "postfix_writer::_symtab.push()" << std::endl;
   node->block()->accept(this, lvl + 2);
   _symtab.pop();
-  std::cout << "postfix_writer::_symtab.pop()" << std::endl;
   _pf.LABEL(mklbl(lbl1));
 }
 
 void l22::postfix_writer::do_if_else_node(l22::if_else_node *const node, int lvl)
 {
-  std::cout << "void l22::postfix_writer::do_if_else_node(l22::if_else_node *const node, int lvl)" << std::endl;
   int lbl1, lbl2;
   node->condition()->accept(this, lvl);
   _pf.JZ(mklbl(lbl1 = ++_lbl));
 
   _symtab.push();
-  std::cout << "postfix_writer::_symtab.push()" << std::endl;
   node->thenblock()->accept(this, lvl + 2);
   _symtab.pop();
-  std::cout << "postfix_writer::_symtab.pop()" << std::endl;
 
   _pf.JMP(mklbl(lbl2 = ++_lbl));
   _pf.LABEL(mklbl(lbl1));
 
   _symtab.push();
-  std::cout << "postfix_writer::_symtab.push()" << std::endl;
   node->elseblock()->accept(this, lvl + 2);
   _symtab.pop();
-  std::cout << "postfix_writer::_symtab.pop()" << std::endl;
 
   _pf.LABEL(mklbl(lbl1 = lbl2));
 }
@@ -1032,14 +981,12 @@ void l22::postfix_writer::do_if_else_node(l22::if_else_node *const node, int lvl
 
 void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)
 {
-  std::cout << "void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)" << std::endl;
 
   if (_inFunctionArgs || _inFunctionBody)
   {
     // TODO SE FOR FUNCAO MUDAR DE LBL PARA FUNCTION LABEL
     std::string id = mkflbl(_flbl++);
     _functions_to_declare[node] = id;
-
     return;
   }
 
@@ -1048,7 +995,6 @@ void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)
   // tem aqui um retlbl what??
   _offset = 8;
   _symtab.push();
-  std::cout << "postfix_writer::_symtab.push()" << std::endl;
   if (node->arguments())
   {
     _inFunctionArgs = true;
@@ -1061,7 +1007,6 @@ void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)
   if (_functions_to_declare.find(node) != _functions_to_declare.end())
   {
     lbl = _functions_to_declare[node];
-    std::cout << "declaring outside function" << std::endl;
   }
   else
   {
@@ -1086,7 +1031,6 @@ void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)
   _inFunctionBody = false;
   _functions.pop();
   _symtab.pop();
-  std::cout << "postfix_writer::_symtab.pop()" << std::endl;
 
   if (!function->returned())
   {
@@ -1098,9 +1042,6 @@ void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)
 void l22::postfix_writer::do_function_call_node(l22::function_call_node *const node, int lvl)
 {
   ASSERT_SAFE_EXPRESSIONS;
-  std::cout << "void l22::postfix_writer::do_function_call_node(l22::function_call_node *const node, int lvl)" << std::endl;
-
-  // a() @() a[0]() (() -> {})()
 
   std::shared_ptr<l22::symbol> symbol = nullptr;
   auto rvalue = dynamic_cast<cdk::rvalue_node *>(node->lambda_ptr());
@@ -1153,7 +1094,6 @@ void l22::postfix_writer::do_function_call_node(l22::function_call_node *const n
   }
   else if (symbol && symbol->name() == "@")
   {
-    std::cout << "recursive func: " << symbol->name() << std::endl;
     _pf.ADDR(_functions.top()->name());
     _pf.BRANCH();
   }
@@ -1188,7 +1128,6 @@ void l22::postfix_writer::do_function_call_node(l22::function_call_node *const n
 
 void l22::postfix_writer::do_block_node(l22::block_node *const node, int lvl)
 {
-  std::cout << "void l22::postfix_writer::do_block_node(l22::block_node *const node, int lvl)" << std::endl;
   if (node->declarations())
   {
     node->declarations()->accept(this, lvl);
