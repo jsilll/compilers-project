@@ -8,7 +8,7 @@ do
     outfile=src/$bname.out
 
     make -B $execfile 2> /dev/null 1> /dev/null
-    $execfile | tr -d "\t\n\r" > $outfile
+    timeout 3 $execfile | tr -d "\t\n\r" > $outfile
     printf "\n" >> $outfile
 
     echo $outfile

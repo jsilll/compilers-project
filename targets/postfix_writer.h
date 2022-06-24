@@ -23,6 +23,8 @@ namespace l22
     std::set<std::string> _symbols_to_declare;
     std::map<l22::lambda_node *, std::string> _functions_to_declare;
     std::stack<std::shared_ptr<l22::symbol>> _functions;
+
+    std::stack<int> _inFunctionSize;
     bool _inFunctionBody = false;
     bool _inFunctionArgs = false;
     int _offset = 0;

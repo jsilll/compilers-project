@@ -226,19 +226,6 @@ void l22::type_checker::do_declaration_node(l22::declaration_node *node, int lvl
             throw std::string("Unable to read input.");
           }
         }
-        else if (node->is_typed(cdk::TYPE_POINTER) && node->initializer()->is_typed(cdk::TYPE_POINTER))
-        {
-          // l22::stack_alloc_node case + nullptr case
-          if (is_void_pointer(cdk::reference_type::cast(node->initializer()->type())))
-          {
-            node->initializer()->type(node->type());
-          }
-          else
-          {
-            same_pointer_types(cdk::reference_type::cast(node->type()), cdk::reference_type::cast(node->initializer()->type()));
-            node->initializer()->type(node->type());
-          }
-        }
         else
         {
           throw std::string("Unknown node with unspecified type.");
@@ -275,15 +262,11 @@ void l22::type_checker::do_declaration_node(l22::declaration_node *node, int lvl
       else if (node->is_typed(cdk::TYPE_POINTER) && node->initializer()->is_typed(cdk::TYPE_POINTER))
       {
         // l22::nullptr_node and l22::stack_alloc_node
-        if (is_void_pointer(cdk::reference_type::cast(node->initializer()->type())))
-        {
-          node->initializer()->type(node->type());
-        }
-        else
+        if (!is_void_pointer(cdk::reference_type::cast(node->initializer()->type())))
         {
           same_pointer_types(cdk::reference_type::cast(node->type()), cdk::reference_type::cast(node->initializer()->type()));
-          node->initializer()->type(node->type());
         }
+        node->initializer()->type(node->type());
       }
       else if (node->is_typed(cdk::TYPE_FUNCTIONAL) && !node->initializer()->is_typed(cdk::TYPE_FUNCTIONAL))
       {
@@ -488,15 +471,12 @@ void l22::type_checker::do_assignment_node(cdk::assignment_node *const node, int
   else if (node->lvalue()->is_typed(cdk::TYPE_POINTER) && node->rvalue()->is_typed(cdk::TYPE_POINTER))
   {
     // l22::stack_alloc_node case + nullptr case
-    if (is_void_pointer(cdk::reference_type::cast(node->rvalue()->type())))
-    {
-      node->type(node->lvalue()->type());
-    }
-    else
+    if (!is_void_pointer(cdk::reference_type::cast(node->rvalue()->type())))
     {
       same_pointer_types(cdk::reference_type::cast(node->lvalue()->type()), cdk::reference_type::cast(node->rvalue()->type()));
-      node->type(node->lvalue()->type());
     }
+    node->type(node->lvalue()->type());
+    node->rvalue()->type(node->lvalue()->type());
   }
   else if (node->lvalue()->is_typed(cdk::TYPE_FUNCTIONAL) && node->rvalue()->is_typed(cdk::TYPE_FUNCTIONAL))
   {
