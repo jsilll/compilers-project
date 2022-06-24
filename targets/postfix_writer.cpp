@@ -376,6 +376,7 @@ void l22::postfix_writer::do_assignment_node(cdk::assignment_node *const node, i
   ASSERT_SAFE_EXPRESSIONS;
   std::cout << "void l22::postfix_writer::do_assignment_node(cdk::assignment_node *const node, int lvl)" << std::endl;
 
+  std::string lbl = mkflbl(_flbl);
   node->rvalue()->accept(this, lvl);
   if (node->is_typed(cdk::TYPE_DOUBLE))
   {
@@ -390,7 +391,6 @@ void l22::postfix_writer::do_assignment_node(cdk::assignment_node *const node, i
     _pf.DUP32();
   }
 
-  std::string lbl = mkflbl(_flbl);
   if (node->rvalue()->is_typed(cdk::TYPE_FUNCTIONAL) && dynamic_cast<l22::lambda_node *>(node->rvalue()))
   {
     _pf.ADDR(lbl);
@@ -839,7 +839,7 @@ void l22::postfix_writer::do_or_node(cdk::or_node *const node, int lvl)
   int lbl = ++_lbl;
   node->left()->accept(this, lvl + 2);
   _pf.DUP32();
-  _pf.JZ(mklbl(lbl));
+  _pf.JNZ(mklbl(lbl));
   node->right()->accept(this, lvl + 2);
   _pf.OR();
   _pf.ALIGN();
@@ -1024,7 +1024,6 @@ void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)
     std::string id = mkflbl(_flbl++);
     _functions_to_declare[node] = id;
 
-    std::cout << "declaration in function" << std::endl;
     return;
   }
 
@@ -1111,7 +1110,6 @@ void l22::postfix_writer::do_function_call_node(l22::function_call_node *const n
   int argumentsSize = 0;
   if (node->arguments())
   {
-    std::cout << "tem argumentos ..." << std::endl;
     for (int i = node->arguments()->size() - 1; i >= 0; i--)
     {
       cdk::expression_node *arg = dynamic_cast<cdk::expression_node *>(node->arguments()->node(i));
@@ -1139,6 +1137,7 @@ void l22::postfix_writer::do_function_call_node(l22::function_call_node *const n
   }
   else if (symbol && symbol->name() == "@")
   {
+    std::cout << "recursive func: " << symbol->name() << std::endl;
     _pf.ADDR(_functions.top()->name());
     _pf.BRANCH();
   }
