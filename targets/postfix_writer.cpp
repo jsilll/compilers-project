@@ -997,7 +997,7 @@ void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)
   auto function = make_symbol(node->type(), lbl, false, tPUBLIC, true, true);
   _functions.push(function);
 
-  _pf.TEXT(lbl);
+  _pf.TEXT();
   _pf.ALIGN();
   _pf.LABEL(lbl);
 
