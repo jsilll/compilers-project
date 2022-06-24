@@ -467,14 +467,10 @@ void l22::postfix_writer::do_evaluation_node(l22::evaluation_node *const node, i
   ASSERT_SAFE_EXPRESSIONS;
   std::cout << "void l22::postfix_writer::do_evaluation_node(l22::evaluation_node *const node, int lvl)" << std::endl;
   node->argument()->accept(this, lvl);
-<<<<<<< HEAD
-  if (node->argument()->is_typed(cdk::TYPE_INT) || node->argument()->is_typed(cdk::TYPE_STRING) || node->argument()->is_typed(cdk::TYPE_POINTER) || node->argument()->is_typed(cdk::TYPE_FUNCTIONAL))
-=======
   if (node->argument()->is_typed(cdk::TYPE_INT) ||
       node->argument()->is_typed(cdk::TYPE_STRING) ||
       node->argument()->is_typed(cdk::TYPE_POINTER) ||
       node->argument()->is_typed(cdk::TYPE_FUNCTIONAL))
->>>>>>> 0bb85e2aa2699b66c75c73dec7e4670b965ed94a
   {
     _pf.TRASH(4);
   }
