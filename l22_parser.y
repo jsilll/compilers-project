@@ -129,12 +129,12 @@ initializer : '=' expression ';'   { $$ = $2; }
             | '=' block_expression { $$ = $2; }
             ;
 
-type : tTYPE_INT     { $$ = cdk::primitive_type::create(4, cdk::TYPE_INT); }
-     | tTYPE_DOUBLE  { $$ = cdk::primitive_type::create(8, cdk::TYPE_DOUBLE); }
-     | tTYPE_TEXT    { $$ = cdk::primitive_type::create(4, cdk::TYPE_STRING); }
-     | tTYPE_VOID    { $$ = cdk::primitive_type::create(0, cdk::TYPE_VOID); }
-     | '[' type ']'  { $$ = cdk::reference_type::create(4, $2); }
-     | function_type { $$ = $1; }
+type : tTYPE_INT        { $$ = cdk::primitive_type::create(4, cdk::TYPE_INT); }
+     | tTYPE_DOUBLE     { $$ = cdk::primitive_type::create(8, cdk::TYPE_DOUBLE); }
+     | tTYPE_TEXT       { $$ = cdk::primitive_type::create(4, cdk::TYPE_STRING); }
+     | tTYPE_VOID       { $$ = cdk::primitive_type::create(0, cdk::TYPE_VOID); }
+     | '[' type ']'     { $$ = cdk::reference_type::create(4, $2); }
+     | function_type    { $$ = $1; }
      ;
 
 function_type : type '<' arg_types '>' { 
