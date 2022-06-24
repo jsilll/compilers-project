@@ -61,7 +61,6 @@ std::shared_ptr<cdk::basic_type> l22::type_checker::same_pointer_types(std::shar
 
 void l22::type_checker::do_program_node(l22::program_node *const node, int lvl)
 {
-  std::cout << "void l22::type_checker::do_program_node(l22::program_node *const node, int lvl)" << std::endl;
   _lambda_stack.push(cdk::functional_type::create(cdk::primitive_type::create(4, cdk::TYPE_INT)));
 }
 
@@ -69,13 +68,11 @@ void l22::type_checker::do_program_node(l22::program_node *const node, int lvl)
 
 void l22::type_checker::do_data_node(cdk::data_node *const node, int lvl)
 {
-  std::cout << "void l22::type_checker::do_data_node(cdk::data_node *const node, int lvl)" << std::endl;
   // EMPTY
 }
 
 void l22::type_checker::do_sequence_node(cdk::sequence_node *const node, int lvl)
 {
-  std::cout << "void l22::type_checker::do_sequence_node(cdk::sequence_node *const node, int lvl)" << std::endl;
   for (size_t i = 0; i < node->size(); i++)
   {
     node->node(i)->accept(this, lvl + 2);
@@ -84,7 +81,6 @@ void l22::type_checker::do_sequence_node(cdk::sequence_node *const node, int lvl
 
 void l22::type_checker::do_block_node(l22::block_node *node, int lvl)
 {
-  std::cout << "void l22::type_checker::do_block_node(l22::block_node *node, int lvl)" << std::endl;
   if (node->declarations())
   {
     node->declarations()->accept(this, lvl + 2);
@@ -98,7 +94,6 @@ void l22::type_checker::do_block_node(l22::block_node *node, int lvl)
 
 void l22::type_checker::do_return_node(l22::return_node *node, int lvl)
 {
-  std::cout << "void l22::type_checker::do_return_node(l22::return_node *node, int lvl)" << std::endl;
   if (node->retval())
   {
     std::shared_ptr<cdk::functional_type> fType;
@@ -157,7 +152,6 @@ void l22::type_checker::do_return_node(l22::return_node *node, int lvl)
 
 void l22::type_checker::do_declaration_node(l22::declaration_node *node, int lvl)
 {
-  std::cout << "void l22::type_checker::do_declaration_node(l22::declaration_node *node, int lvl)" << std::endl;
   if (node->type() == nullptr)
   {
     if (node->initializer() == nullptr)
@@ -322,17 +316,14 @@ void l22::type_checker::do_declaration_node(l22::declaration_node *node, int lvl
 
 void l22::type_checker::do_nil_node(cdk::nil_node *const node, int lvl)
 {
-  std::cout << "void l22::type_checker::do_nil_node(cdk::nil_node *const node, int lvl)" << std::endl;
 }
 
 void l22::type_checker::do_again_node(l22::again_node *node, int lvl)
 {
-  std::cout << "void l22::type_checker::do_again_node(l22::again_node *node, int lvl)" << std::endl;
 }
 
 void l22::type_checker::do_stop_node(l22::stop_node *node, int lvl)
 {
-  std::cout << "void l22::type_checker::do_stop_node(l22::stop_node *node, int lvl)" << std::endl;
 }
 
 //---------------------------------------------------------------------------
@@ -340,28 +331,24 @@ void l22::type_checker::do_stop_node(l22::stop_node *node, int lvl)
 void l22::type_checker::do_integer_node(cdk::integer_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_integer_node(cdk::integer_node *const node, int lvl)" << std::endl;
   node->type(cdk::primitive_type::create(4, cdk::TYPE_INT));
 }
 
 void l22::type_checker::do_double_node(cdk::double_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_double_node(cdk::double_node *const node, int lvl)" << std::endl;
   node->type(cdk::primitive_type::create(8, cdk::TYPE_DOUBLE));
 }
 
 void l22::type_checker::do_string_node(cdk::string_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_string_node(cdk::string_node *const node, int lvl)" << std::endl;
   node->type(cdk::primitive_type::create(4, cdk::TYPE_STRING));
 }
 
 void l22::type_checker::do_nullptr_node(l22::nullptr_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_nullptr_node(l22::nullptr_node *const node, int lvl)" << std::endl;
   node->type(cdk::reference_type::create(4, cdk::primitive_type::create(0, cdk::TYPE_VOID)));
 }
 
@@ -370,7 +357,6 @@ void l22::type_checker::do_nullptr_node(l22::nullptr_node *const node, int lvl)
 void l22::type_checker::do_variable_node(cdk::variable_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_variable_node(cdk::variable_node *const node, int lvl)" << std::endl;
   const std::string &id = node->name();
   std::shared_ptr<l22::symbol> symbol = _symtab.find(id);
   if (symbol)
@@ -402,7 +388,6 @@ void l22::type_checker::do_variable_node(cdk::variable_node *const node, int lvl
 void l22::type_checker::do_index_node(l22::index_node *node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_index_node(l22::index_node *node, int lvl)" << std::endl;
 
   node->base()->accept(this, lvl + 2);
   if (!node->base()->is_typed(cdk::TYPE_POINTER))
@@ -437,7 +422,6 @@ void l22::type_checker::do_index_node(l22::index_node *node, int lvl)
 void l22::type_checker::do_rvalue_node(cdk::rvalue_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_rvalue_node(cdk::rvalue_node *const node, int lvl)" << std::endl;
   node->lvalue()->accept(this, lvl);
   node->type(node->lvalue()->type());
 }
@@ -445,7 +429,6 @@ void l22::type_checker::do_rvalue_node(cdk::rvalue_node *const node, int lvl)
 void l22::type_checker::do_assignment_node(cdk::assignment_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_assignment_node(cdk::assignment_node *const node, int lvl)" << std::endl;
   node->lvalue()->accept(this, lvl + 2);
   node->rvalue()->accept(this, lvl + 2);
   if (node->lvalue()->is_typed(cdk::TYPE_UNSPEC))
@@ -534,7 +517,6 @@ void l22::type_checker::do_assignment_node(cdk::assignment_node *const node, int
 void l22::type_checker::do_UnaryExpression(cdk::unary_operation_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_UnaryExpression(cdk::unary_operation_node *const node, int lvl)" << std::endl;
   node->argument()->accept(this, lvl + 2);
   if (node->argument()->is_typed(cdk::TYPE_UNSPEC))
   {
@@ -567,14 +549,12 @@ void l22::type_checker::do_UnaryExpression(cdk::unary_operation_node *const node
 void l22::type_checker::do_neg_node(cdk::neg_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_neg_node(cdk::neg_node *const node, int lvl)" << std::endl;
   do_UnaryExpression(node, lvl);
 }
 
 void l22::type_checker::do_not_node(cdk::not_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_not_node(cdk::not_node *const node, int lvl)" << std::endl;
   node->argument()->accept(this, lvl + 2);
   if (node->argument()->is_typed(cdk::TYPE_INT))
   {
@@ -603,7 +583,6 @@ void l22::type_checker::do_not_node(cdk::not_node *const node, int lvl)
 void l22::type_checker::do_identity_node(l22::identity_node *node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_identity_node(l22::identity_node *node, int lvl)" << std::endl;
   do_UnaryExpression(node, lvl);
 }
 
@@ -612,7 +591,6 @@ void l22::type_checker::do_identity_node(l22::identity_node *node, int lvl)
 void l22::type_checker::do_GeneralLogicalExpression(cdk::binary_operation_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_GeneralLogicalExpression(cdk::binary_operation_node *const node, int lvl)" << std::endl;
 
   node->left()->accept(this, lvl + 2);
   if (node->left()->is_typed(cdk::TYPE_UNSPEC))
@@ -645,7 +623,6 @@ void l22::type_checker::do_GeneralLogicalExpression(cdk::binary_operation_node *
 void l22::type_checker::do_BooleanLogicalExpression(cdk::binary_operation_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_BooleanLogicalExpression(cdk::binary_operation_node *const node, int lvl)" << std::endl;
   node->left()->accept(this, lvl + 2);
 
   if (node->left()->is_typed(cdk::TYPE_UNSPEC))
@@ -675,7 +652,6 @@ void l22::type_checker::do_BooleanLogicalExpression(cdk::binary_operation_node *
 void l22::type_checker::do_IntOnlyExpression(cdk::binary_operation_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_IntOnlyExpression(cdk::binary_operation_node *const node, int lvl)" << std::endl;
   node->left()->accept(this, lvl + 2);
   if (node->left()->is_typed(cdk::TYPE_UNSPEC))
   {
@@ -700,7 +676,6 @@ void l22::type_checker::do_IntOnlyExpression(cdk::binary_operation_node *const n
 void l22::type_checker::do_ScalarLogicalExpression(cdk::binary_operation_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_ScalarLogicalExpression(cdk::binary_operation_node *const node, int lvl)" << std::endl;
 
   node->left()->accept(this, lvl + 2);
   if (node->left()->is_typed(cdk::TYPE_UNSPEC))
@@ -730,7 +705,6 @@ void l22::type_checker::do_ScalarLogicalExpression(cdk::binary_operation_node *c
 void l22::type_checker::do_IDExpression(cdk::binary_operation_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_IDExpression(cdk::binary_operation_node *const node, int lvl)" << std::endl;
   node->left()->accept(this, lvl + 2);
   node->right()->accept(this, lvl + 2);
 
@@ -778,7 +752,6 @@ void l22::type_checker::do_IDExpression(cdk::binary_operation_node *const node, 
 void l22::type_checker::do_add_node(cdk::add_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_add_node(cdk::add_node *const node, int lvl)" << std::endl;
   node->left()->accept(this, lvl + 2);
   node->right()->accept(this, lvl + 2);
   if (node->left()->is_typed(cdk::TYPE_DOUBLE) && node->right()->is_typed(cdk::TYPE_DOUBLE))
@@ -857,7 +830,6 @@ void l22::type_checker::do_add_node(cdk::add_node *const node, int lvl)
 void l22::type_checker::do_sub_node(cdk::sub_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_sub_node(cdk::sub_node *const node, int lvl)" << std::endl;
   node->left()->accept(this, lvl + 2);
   node->right()->accept(this, lvl + 2);
 
@@ -944,21 +916,18 @@ void l22::type_checker::do_sub_node(cdk::sub_node *const node, int lvl)
 void l22::type_checker::do_mul_node(cdk::mul_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_mul_node(cdk::mul_node *const node, int lvl)" << std::endl;
   do_IDExpression(node, lvl);
 }
 
 void l22::type_checker::do_div_node(cdk::div_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_div_node(cdk::div_node *const node, int lvl)" << std::endl;
   do_IDExpression(node, lvl);
 }
 
 void l22::type_checker::do_mod_node(cdk::mod_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_mod_node(cdk::mod_node *const node, int lvl)" << std::endl;
   do_IntOnlyExpression(node, lvl);
 }
 
@@ -967,56 +936,48 @@ void l22::type_checker::do_mod_node(cdk::mod_node *const node, int lvl)
 void l22::type_checker::do_gt_node(cdk::gt_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_gt_node(cdk::gt_node *const node, int lvl)" << std::endl;
   do_ScalarLogicalExpression(node, lvl);
 }
 
 void l22::type_checker::do_ge_node(cdk::ge_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_ge_node(cdk::ge_node *const node, int lvl)" << std::endl;
   do_ScalarLogicalExpression(node, lvl);
 }
 
 void l22::type_checker::do_le_node(cdk::le_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_le_node(cdk::le_node *const node, int lvl)" << std::endl;
   do_ScalarLogicalExpression(node, lvl);
 }
 
 void l22::type_checker::do_lt_node(cdk::lt_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_lt_node(cdk::lt_node *const node, int lvl)" << std::endl;
   do_ScalarLogicalExpression(node, lvl);
 }
 
 void l22::type_checker::do_eq_node(cdk::eq_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_eq_node(cdk::eq_node *const node, int lvl)" << std::endl;
   do_GeneralLogicalExpression(node, lvl);
 }
 
 void l22::type_checker::do_ne_node(cdk::ne_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_ne_node(cdk::ne_node *const node, int lvl)" << std::endl;
   do_GeneralLogicalExpression(node, lvl);
 }
 
 void l22::type_checker::do_and_node(cdk::and_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_and_node(cdk::and_node *const node, int lvl)" << std::endl;
   do_BooleanLogicalExpression(node, lvl);
 }
 
 void l22::type_checker::do_or_node(cdk::or_node *const node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_or_node(cdk::or_node *const node, int lvl)" << std::endl;
   do_BooleanLogicalExpression(node, lvl);
 }
 
@@ -1024,7 +985,6 @@ void l22::type_checker::do_or_node(cdk::or_node *const node, int lvl)
 
 void l22::type_checker::do_evaluation_node(l22::evaluation_node *const node, int lvl)
 {
-  std::cout << "void l22::type_checker::do_evaluation_node(l22::evaluation_node *const node, int lvl)" << std::endl;
   node->argument()->accept(this, lvl + 2);
   if (node->argument()->is_typed(cdk::TYPE_UNSPEC))
   {
@@ -1034,14 +994,12 @@ void l22::type_checker::do_evaluation_node(l22::evaluation_node *const node, int
 
 void l22::type_checker::do_print_node(l22::print_node *const node, int lvl)
 {
-  std::cout << "void l22::type_checker::do_print_node(l22::print_node *const node, int lvl)" << std::endl;
   node->arguments()->accept(this, lvl + 2);
 }
 
 void l22::type_checker::do_input_node(l22::input_node *node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_input_node(l22::input_node *node, int lvl)" << std::endl;
   node->type(cdk::primitive_type::create(0, cdk::TYPE_UNSPEC));
 }
 
@@ -1050,7 +1008,6 @@ void l22::type_checker::do_input_node(l22::input_node *node, int lvl)
 void l22::type_checker::do_address_of_node(l22::address_of_node *node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_address_of_node(l22::address_of_node *node, int lvl)" << std::endl;
   node->lvalue()->accept(this, lvl + 2);
   node->type(cdk::reference_type::create(4, node->lvalue()->type()));
 }
@@ -1058,7 +1015,6 @@ void l22::type_checker::do_address_of_node(l22::address_of_node *node, int lvl)
 void l22::type_checker::do_stack_alloc_node(l22::stack_alloc_node *node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_stack_alloc_node(l22::stack_alloc_node *node, int lvl)" << std::endl;
   node->argument()->accept(this, lvl + 2);
   if (node->argument()->is_typed(cdk::TYPE_UNSPEC))
   {
@@ -1078,7 +1034,6 @@ void l22::type_checker::do_stack_alloc_node(l22::stack_alloc_node *node, int lvl
 
 void l22::type_checker::do_while_node(l22::while_node *const node, int lvl)
 {
-  std::cout << "void l22::type_checker::do_while_node(l22::while_node *const node, int lvl)" << std::endl;
   node->condition()->accept(this, lvl + 2);
   node->condition()->accept(this, lvl + 2);
 }
@@ -1087,7 +1042,6 @@ void l22::type_checker::do_while_node(l22::while_node *const node, int lvl)
 
 void l22::type_checker::do_if_node(l22::if_node *const node, int lvl)
 {
-  std::cout << "void l22::type_checker::do_if_node(l22::if_node *const node, int lvl)" << std::endl;
   node->condition()->accept(this, lvl + 2);
   if (node->condition()->is_typed(cdk::TYPE_UNSPEC))
   {
@@ -1102,7 +1056,6 @@ void l22::type_checker::do_if_node(l22::if_node *const node, int lvl)
 
 void l22::type_checker::do_if_else_node(l22::if_else_node *const node, int lvl)
 {
-  std::cout << "void l22::type_checker::do_if_else_node(l22::if_else_node *const node, int lvl)" << std::endl;
   node->condition()->accept(this, lvl + 2);
   if (node->condition()->is_typed(cdk::TYPE_UNSPEC))
   {
@@ -1120,7 +1073,6 @@ void l22::type_checker::do_if_else_node(l22::if_else_node *const node, int lvl)
 void l22::type_checker::do_function_call_node(l22::function_call_node *node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_function_call_node(l22::function_call_node *node, int lvl)" << std::endl;
 
   node->lambda_ptr()->accept(this, lvl + 2);
   if (!node->lambda_ptr()->is_typed(cdk::TYPE_FUNCTIONAL))
@@ -1167,7 +1119,6 @@ void l22::type_checker::do_function_call_node(l22::function_call_node *node, int
 void l22::type_checker::do_lambda_node(l22::lambda_node *node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_lambda_node(l22::lambda_node *node, int lvl)" << std::endl;
   std::vector<std::shared_ptr<cdk::basic_type>> *argsTypes = new std::vector<std::shared_ptr<cdk::basic_type>>();
   if (node->arguments())
   {
@@ -1192,7 +1143,6 @@ void l22::type_checker::do_lambda_node(l22::lambda_node *node, int lvl)
 void l22::type_checker::do_sizeof_node(l22::sizeof_node *node, int lvl)
 {
   ASSERT_UNSPEC;
-  std::cout << "void l22::type_checker::do_sizeof_node(l22::sizeof_node *node, int lvl)" << std::endl;
   node->expression()->accept(this, lvl + 2);
   node->type(cdk::primitive_type::create(4, cdk::TYPE_INT));
 }
