@@ -336,11 +336,14 @@ void l22::postfix_writer::do_rvalue_node(cdk::rvalue_node *const node, int lvl)
   std::cout << "void l22::postfix_writer::do_rvalue_node(cdk::rvalue_node *const node, int lvl)" << std::endl;
   ASSERT_SAFE_EXPRESSIONS;
   node->lvalue()->accept(this, lvl);
-  if (node->is_typed(cdk::TYPE_INT) || node->is_typed(cdk::TYPE_POINTER) ||
-      node->is_typed(cdk::TYPE_STRING))
-    _pf.LDINT();
-  else if (node->is_typed(cdk::TYPE_DOUBLE))
+  if (node->is_typed(cdk::TYPE_DOUBLE))
+  {
     _pf.LDDOUBLE();
+  }
+  else if (!node->is_typed(cdk::TYPE_VOID))
+  {
+    _pf.LDINT();
+  }
 }
 
 void l22::postfix_writer::do_assignment_node(cdk::assignment_node *const node, int lvl)
