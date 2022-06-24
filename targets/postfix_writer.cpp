@@ -44,6 +44,11 @@ void l22::postfix_writer::do_program_node(l22::program_node *const node, int lvl
     _pf.RET();
   }
 
+  for (auto &p : _functions_to_declare)
+  {
+    p.first->accept(this, lvl);
+  }
+
   // these are just a few library function imports
   for (std::string s : _symbols_to_declare)
   {
@@ -338,6 +343,7 @@ void l22::postfix_writer::do_rvalue_node(cdk::rvalue_node *const node, int lvl)
   node->lvalue()->accept(this, lvl);
   if (node->is_typed(cdk::TYPE_DOUBLE))
   {
+    std::cout << "rvalue double" << std::endl;
     _pf.LDDOUBLE();
   }
   else if (!node->is_typed(cdk::TYPE_VOID))
@@ -459,7 +465,7 @@ void l22::postfix_writer::do_evaluation_node(l22::evaluation_node *const node, i
   std::cout << "void l22::postfix_writer::do_evaluation_node(l22::evaluation_node *const node, int lvl)" << std::endl;
   ASSERT_SAFE_EXPRESSIONS;
   node->argument()->accept(this, lvl);
-  if (node->argument()->is_typed(cdk::TYPE_INT) || node->argument()->is_typed(cdk::TYPE_STRING) || node->argument()->is_typed(cdk::TYPE_POINTER))
+  if (node->argument()->is_typed(cdk::TYPE_INT) || node->argument()->is_typed(cdk::TYPE_STRING) || node->argument()->is_typed(cdk::TYPE_POINTER) || node->argument()->is_typed(cdk::TYPE_FUNCTIONAL))
   {
     _pf.TRASH(4);
   }
@@ -517,6 +523,7 @@ void l22::postfix_writer::do_add_node(cdk::add_node *const node, int lvl)
   node->left()->accept(this, lvl);
   if (node->is_typed(cdk::TYPE_DOUBLE) && node->left()->is_typed(cdk::TYPE_INT))
   {
+    std::cout << "double with left int" << std::endl;
     _pf.I2D();
   }
   else if (node->is_typed(cdk::TYPE_POINTER) && node->left()->is_typed(cdk::TYPE_INT))
@@ -536,6 +543,7 @@ void l22::postfix_writer::do_add_node(cdk::add_node *const node, int lvl)
   node->right()->accept(this, lvl);
   if (node->is_typed(cdk::TYPE_DOUBLE) && node->right()->is_typed(cdk::TYPE_INT))
   {
+    std::cout << "double with right int" << std::endl;
     _pf.I2D();
   }
   else if (node->is_typed(cdk::TYPE_POINTER) && node->right()->is_typed(cdk::TYPE_INT))
@@ -976,15 +984,16 @@ void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)
 {
   std::cout << "void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)" << std::endl;
 
-  // if (_inFunctionArgs || _inFunctionBody)
-  // {
-  //   // TODO SE FOR FUNCAO MUDAR DE LBL PARA FUNCTION LABEL
-  //   std::string id = mkflbl(_flbl++);
-  //   _symbols_to_declare[node] = id;
-  //   return;
-  // }
+  if (_inFunctionArgs || _inFunctionBody)
+  {
+    // TODO SE FOR FUNCAO MUDAR DE LBL PARA FUNCTION LABEL
+    std::string id = mkflbl(_flbl++);
+    _functions_to_declare[node] = id;
 
-  // HMMMMMMMM
+    std::cout << "declaration in function" << std::endl;
+    return;
+  }
+
   ASSERT_SAFE_EXPRESSIONS;
 
   // tem aqui um retlbl what??
@@ -998,7 +1007,16 @@ void l22::postfix_writer::do_lambda_node(l22::lambda_node *node, int lvl)
     _inFunctionArgs = false;
   }
 
-  std::string lbl = mkflbl(_flbl++);
+  std::string lbl;
+  if (_functions_to_declare.find(node) != _functions_to_declare.end())
+  {
+    lbl = _functions_to_declare[node];
+    std::cout << "declaring outside function"
+  }
+  else
+  {
+    lbl = mkflbl(_flbl++);
+  }
 
   auto function = make_symbol(node->type(), lbl, false, tPUBLIC, true, true);
   _functions.push(function);

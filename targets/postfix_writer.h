@@ -5,6 +5,7 @@
 
 #include <set>
 #include <stack>
+#include <map>
 #include <string>
 #include <sstream>
 #include <cdk/emitters/basic_postfix_emitter.h>
@@ -20,6 +21,7 @@ namespace l22
     cdk::symbol_table<l22::symbol> &_symtab;
 
     std::set<std::string> _symbols_to_declare;
+    std::map<l22::lambda_node *, std::string> _functions_to_declare;
     std::stack<std::shared_ptr<l22::symbol>> _functions;
     bool _inFunctionBody = false;
     bool _inFunctionArgs = false;
