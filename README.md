@@ -5,24 +5,30 @@ This compiler is aimed at the [L22 language](https://web.tecnico.ulisboa.pt/~dav
 Building Instructions
 ===
 
-- Install CDK
+- Install [CDK](https://web.tecnico.ulisboa.pt/~david.matos/w/pt/index.php/Compiladores/Projecto_de_Compiladores/Material_de_Apoio_ao_Desenvolvimento)
 ```
 cd cdk/
 make install
 ```
-- Install RTS
+- Install [RTS](https://web.tecnico.ulisboa.pt/~david.matos/w/pt/index.php/Compiladores/Projecto_de_Compiladores/Material_de_Apoio_ao_Desenvolvimento)
 ```
 cd rts/
 make install
 ```
 - Build L22 Compiler
 ```
+cd compilers-project/
 make
+```
+Compiling a Single File
+```
+cd compilers-project/tests/
+make <file_name>.exe
 ```
 
 Running Tests
 ===
 ```
-cd tests/
+cd compilers-project/tests/
 ./test.sh
 ```
